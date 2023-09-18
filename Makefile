@@ -1,5 +1,5 @@
 SRCS := srcs/main.cpp \
-		srcs/glad.cpp \
+		includes/glad/glad.cpp \
 		srcs/setupGLFW.cpp \
 		srcs/shaders.cpp \
 		srcs/input.cpp

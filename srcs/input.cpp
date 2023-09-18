@@ -1,5 +1,15 @@
 #include "main.hpp"
 
+/**
+ * update the display mode of the drawing.
+ * 
+ * if the player press the key (action == GLFW_PRESS)
+ * and if it's the first frame (keyEnable == true),
+ * then it update the displayMode and disable the key
+ * 
+ * if the playe release the key
+ * then it enable the key
+*/
 void changeDisplayMode(unsigned int action)
 {
     static bool wireFrameMode = false;
@@ -18,6 +28,9 @@ void changeDisplayMode(unsigned int action)
         keyEnable = true;
 }
 
+/**
+ * main function to check any input of the user.
+*/
 void processInput(GLFWwindow *window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)

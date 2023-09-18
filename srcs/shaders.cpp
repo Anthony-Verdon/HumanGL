@@ -1,6 +1,12 @@
 #include "main.hpp"
 #include <iostream>
 
+/**
+ * create the shader based on a type, referenced by an ID,
+ * attach the shader source code to the shader
+ * and compile it.
+ * check if the compilation was successful
+*/
 unsigned int createShader(const char *source, GLenum shaderType)
 {
     unsigned int shader;
@@ -21,16 +27,27 @@ unsigned int createShader(const char *source, GLenum shaderType)
     return (shader);
 }
 
+/**
+ * create shaders by giving a type and a source code to createShader().
+ * source code is GLSL code (OpenGL Shading Language). 
+ * this one are really simple.
+ * shaders could also be in argument.
+ * 
+ * create a shaderProgram,
+ * attach all shaders to this program (could be in a loop),
+ * link all shaders
+ * and suppress them after.
+ * check if the creation was successful
+*/
 unsigned int createShaderProgram()
 {   
-    //GLSL code
     const char *vertexShaderSource = "#version 330 core\n"
         "layout (location = 0) in vec3 aPos;\n"
         "void main()\n"
         "{\n"
         "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
         "}\0";
-    //create a GL_VERTEX_SHADER and store it ID
+
     unsigned int vertexShader;
     vertexShader = createShader(vertexShaderSource, GL_VERTEX_SHADER);
     
@@ -43,15 +60,14 @@ unsigned int createShaderProgram()
     unsigned int fragmentShader;
     fragmentShader = createShader(fragmentShaderSource, GL_FRAGMENT_SHADER);
 
-    //create a shader program
+
     unsigned int shaderProgram;
     shaderProgram = glCreateProgram();
-    //attach shaders to program
     glAttachShader(shaderProgram, vertexShader);
     glAttachShader(shaderProgram, fragmentShader);
-    //links shaders
     glLinkProgram(shaderProgram);
-    //check if the program is created
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
 
     int  success;
     char infoLog[512];
@@ -63,7 +79,5 @@ unsigned int createShaderProgram()
         return 0;
     }
 
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
     return (shaderProgram);
 }
