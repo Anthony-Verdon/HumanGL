@@ -2,6 +2,7 @@
 #define MAIN_HPP
 
 #include "../includes/glad/glad.h"
+#include "../includes/stb_image/stb_image.h"
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <cmath>

@@ -1,5 +1,6 @@
 SRCS := srcs/main.cpp \
 		includes/glad/glad.cpp \
+		includes/stb_image/stb_image.cpp \
 		srcs/setupGLFW.cpp \
 		srcs/input.cpp \
 		srcs/classes/Shader.cpp
