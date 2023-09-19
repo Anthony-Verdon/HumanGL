@@ -1,8 +1,8 @@
 SRCS := srcs/main.cpp \
 		includes/glad/glad.cpp \
 		srcs/setupGLFW.cpp \
-		srcs/shaders.cpp \
-		srcs/input.cpp
+		srcs/input.cpp \
+		srcs/classes/Shader.cpp
 
 OBJS := $(SRCS:.cpp=.o)
 

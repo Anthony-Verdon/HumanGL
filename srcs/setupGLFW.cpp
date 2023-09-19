@@ -20,7 +20,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 GLFWwindow* initWindow()
 {
     GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "LearnOpenGL", NULL, NULL);
-    if (window == NULL)
+    if (!window)
     {
         std::cerr << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -41,7 +41,7 @@ GLFWwindow* initWindow()
 */
 GLFWwindow* initGLFW()
 {
-    glfwInit();
+    glfwInit(); //check for GL_TRUE or GL_FALSE
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
