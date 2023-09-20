@@ -1,5 +1,6 @@
 #include "main.hpp"
 #include "classes/Shader.hpp"
+#include "classes/Texture.hpp"
 /**
  * update loop of the window.
  * 
@@ -137,43 +138,11 @@ void start(GLFWwindow* window)
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    //------------
+    Texture::initTexParameter();
+    Texture wall("textures/wall.jpg");
+    Texture smiley("textures/awesomeface.png");
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    stbi_set_flip_vertically_on_load(true);
-
-    int width;
-    int height;
-    int nrChannels;
-    unsigned char *data = stbi_load("textures/wall.jpg", &width, &height, &nrChannels, 0);
-
-    unsigned int texture1;
-    glGenTextures(1, &texture1);
-    glBindTexture(GL_TEXTURE_2D, texture1);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    stbi_image_free(data);
-
-    data = stbi_load("textures/awesomeface.png", &width, &height, &nrChannels, 0);
-
-    unsigned int texture2;
-    glGenTextures(1, &texture2);
-    glBindTexture(GL_TEXTURE_2D, texture2);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    stbi_image_free(data);
-
-    //------------
-
-    updateLoop(window, VAO, texture1, texture2);
+    updateLoop(window, VAO, wall.getID(), smiley.getID());
     endProgram(VAO, VBO, EBO);
 
 }

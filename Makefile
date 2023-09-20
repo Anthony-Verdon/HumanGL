@@ -1,9 +1,10 @@
 SRCS := srcs/main.cpp \
-		includes/glad/glad.cpp \
-		includes/stb_image/stb_image.cpp \
 		srcs/setupGLFW.cpp \
 		srcs/input.cpp \
-		srcs/classes/Shader.cpp
+		includes/glad/glad.cpp \
+		includes/stb_image/stb_image.cpp \
+		srcs/classes/Shader.cpp \
+		srcs/classes/Texture.cpp
 
 OBJS := $(SRCS:.cpp=.o)
 
