@@ -3,6 +3,7 @@
 #include "classes/Texture.hpp"
 #include "classes/Camera.hpp"
 #include "classes/Time.hpp"
+#include "classes/Object.hpp"
 
 /**
  * update loop of the window.
@@ -235,8 +236,16 @@ void start(GLFWwindow* window)
  * create the shader program,
  * and start the update loop
 */
-int main(void)
+int main(int argc, char **argv)
 {
+    if (argc != 2)
+    {
+        std::cerr << "no input file provided" << std::endl;
+        return (-1);
+    }
+    Object object(argv[1]);
+    return (0);
+
     GLFWwindow* window = initGLFW();
     if (window == NULL)
         return (-1);

@@ -6,7 +6,8 @@ SRCS := srcs/main.cpp \
 		srcs/classes/Camera.cpp \
 		srcs/classes/Shader.cpp \
 		srcs/classes/Texture.cpp \
-		srcs/classes/Time.cpp
+		srcs/classes/Time.cpp \
+		srcs/classes/Object.cpp
 
 OBJS := $(SRCS:.cpp=.o)
 
