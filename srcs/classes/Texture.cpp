@@ -48,7 +48,10 @@ Texture::Texture(const Texture &copy)
 
 Texture& Texture::operator=(const Texture &copy)
 {
-    this->ID = copy.getID();
+     if (&copy != this)
+    {
+        this->ID = copy.getID();
+    }
     return (*this);
 }
 

@@ -1,4 +1,6 @@
 #include "main.hpp"
+#include "classes/Camera.hpp"
+#include "classes/Time.hpp"
 
 /**
  * update the display mode of the drawing.
@@ -28,6 +30,19 @@ void changeDisplayMode(unsigned int action)
         keyEnable = true;
 }
 
+void updateCamera(GLFWwindow *window)
+{
+    Camera *camera = reinterpret_cast<Camera *>(glfwGetWindowUserPointer(window));
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        camera->addToPosition(camera->getFrontDirection() * camera->getSpeed() * Time::getDeltaTime());
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        camera->addToPosition(-camera->getFrontDirection() * camera->getSpeed() * Time::getDeltaTime());
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        camera->addToPosition(-camera->getRightDirection() * camera->getSpeed() * Time::getDeltaTime());
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        camera->addToPosition(camera->getRightDirection() * camera->getSpeed() * Time::getDeltaTime());
+}
+
 /**
  * main function to check any input of the user.
 */
@@ -36,4 +51,5 @@ void processInput(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
     changeDisplayMode(glfwGetKey(window, GLFW_KEY_F1));
+    updateCamera(window);
 }
