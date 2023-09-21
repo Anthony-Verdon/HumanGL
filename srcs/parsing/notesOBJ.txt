@@ -22,3 +22,6 @@ tell to use a material describe in an external .mtl file
 
 "o {name}" :
 give a name to an object
+
+bonuses:
+https://paulbourke.net/dataformats/obj/#:~:text=vp%20is%20the%20parameter%20vertex,required%20for%20a%202D%20curve.
