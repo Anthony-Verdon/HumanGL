@@ -51,7 +51,6 @@ void updateLoop(GLFWwindow* window, unsigned int VAO, unsigned int texture1, uns
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         processInput(window);
 
-        //-----------
        
         glm::vec3 direction;
         direction.x = cos(glm::radians(camera.getYaw())) * cos(glm::radians(camera.getPitch()));
@@ -63,7 +62,6 @@ void updateLoop(GLFWwindow* window, unsigned int VAO, unsigned int texture1, uns
         
         glm::mat4 view = glm::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(), camera.getUpDirection());
 
-        //-----------
         ourShader.use();
         ourShader.setInt("texture1", 0);
         ourShader.setInt("texture2", 1);
