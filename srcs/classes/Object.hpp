@@ -5,14 +5,17 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <array>
 #include <vector>
 #include <map>
+
+//#define DEBUG
 
 class Object;
 
 typedef std::vector<float> Vertex;
 typedef std::vector<Vertex> Vertices;
-typedef std::vector<Vertices> Faces;
+typedef std::vector<int> Face;
 typedef std::map<std::string, void (Object::*)(std::string)> ParsingFunctions;
 typedef std::map<std::string, void (Object::*)(std::string)>::iterator ParsingFunctionsIterator;
 
@@ -22,8 +25,11 @@ class Object
         Object();
 
         static ParsingFunctions parsingFunctions;
+        std::string name;
         Vertices vertices;
-        Faces faces;
+        std::vector<Face> faces;
+        bool smoothShading;
+        //Material array
 
         //position
         //rotation
@@ -37,16 +43,17 @@ class Object
         ~Object();
 
         Vertices getVertices() const;
-        Faces getFaces() const;
+        std::vector<Face> getFaces() const;
 
         void setVertices(Vertices vertices);
-        void setFaces(Faces faces);
+        void setFaces(std::vector<Face> faces);
 
-        void ignore(std::string line);
+        std::vector<std::string> splitLine(std::string line);
         void defineVertex(std::string line);
         void defineFace(std::string line);
-        void defineMTL(std::string line);
+        void defineObject(std::string line);
         void defineSmoothShading(std::string line);
+        void defineMTL(std::string line);
         void useMTL(std::string line);
 };
 
