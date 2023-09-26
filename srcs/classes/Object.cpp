@@ -1,7 +1,6 @@
 #include "Object.hpp"
 
 ParsingFunctions Object::parsingFunctions = {
-        {"o", &Object::defineObject},
         {"s", &Object::defineSmoothShading},
         {"v", &Object::defineVertex},
         {"f", &Object::defineFace},
@@ -13,39 +12,10 @@ Object::Object()
 {
 }
 
-Object::Object(const std::string &objPath)
+Object::Object(const std::string &name)
 {
-    std::string word;
-    std::string line;
-    std::ifstream objFile;
-    Vertex vertex;
-    std::stringstream objStream;
-    ParsingFunctionsIterator it;
-
-    name = "default";
+    this->name = name;
     smoothShading = false;
-    objFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-    try
-    {
-        objFile.open(objPath);
-        objStream << objFile.rdbuf();
-        objFile.close();
-        while (std::getline(objStream, line))
-        {
-            line = line.substr(0, line.find("#"));
-            word = line.substr(0, line.find(" "));
-            it = parsingFunctions.find(word);
-            if (it != parsingFunctions.end())
-                (this->*it->second)(line);
-            else if (word.length() != 0)
-                std::cerr << "error on word " << word << std::endl;
-                //throw error
-        }
-    }
-    catch(const std::exception& e)
-    {
-        std::cerr << "error: " << e.what() << '\n';
-    }
 }
 
 
@@ -60,6 +30,8 @@ Object &Object::operator=(const Object &copy)
     {
         vertices = copy.getVertices();
         faces = copy.getFaces();
+        name = copy.getName();
+        smoothShading = copy.getSmoothShading();
     }
     return (*this);
 }
@@ -73,9 +45,66 @@ std::vector<std::vector<float> >Object::getVertices() const
     return (vertices);
 }
 
+float *Object::getVerticesIntoArray() const
+{
+    size_t j;
+    float *array;
+
+    j = 0;
+    array = new float[vertices.size() * 4 * sizeof(float)];
+    for (size_t i = 0; i < vertices.size(); i++)
+    {
+        array[j] = vertices[i][0];
+        array[j + 1] = vertices[i][1];
+        array[j + 2] = vertices[i][2];
+        array[j + 3] = vertices[i][3];
+        j += 4;
+    }
+    return (array);
+}
+
+unsigned int Object::calculateNbIndices() const
+{
+    unsigned int nbIndices;
+
+    nbIndices = 0;
+    for (size_t i = 0; i < faces.size(); i++)
+        nbIndices += faces[i].size();
+    return (nbIndices);
+}
+
+unsigned int *Object::getFacesIntoArray() const
+{
+    size_t nbIndices;
+    unsigned int *array;
+
+    nbIndices = 0;
+    array = new unsigned int[calculateNbIndices() * sizeof(unsigned int)];
+    for (size_t i = 0; i < faces.size(); i++)
+    {
+        for (size_t j = 0; j < faces[i].size(); j++)
+        {
+            array[nbIndices] = faces[i][j];
+            nbIndices++;
+        }
+    }
+
+    return (array);
+}
+
 std::vector<Face> Object::getFaces() const
 {
     return (faces);
+}
+
+std::string Object::getName() const
+{
+    return (name);
+}
+
+bool Object::getSmoothShading() const
+{
+    return (smoothShading);
 }
 
 void Object::setVertices(std::vector<std::vector<float> > vertices)
@@ -104,6 +133,7 @@ std::vector<std::string> Object::splitLine(std::string line)
     }
     return words;
 }
+
 void Object::defineVertex(std::string line)
 {
     Vertex vertex;
@@ -215,4 +245,28 @@ void Object::useMTL(std::string line)
     
     //if material exist
         //define it for the object
+}
+
+std::ostream& operator << (std::ostream& os, const Object& instance)
+{
+    os << "name: " << instance.getName() << std::endl;
+    os << "smooth shading: " << instance.getSmoothShading() << std::endl;
+    Vertices objectVertices = instance.getVertices();
+    os << "vertices: " << std::endl;
+    for (size_t i = 0; i < objectVertices.size(); i++)
+    {
+        os << "vertex nb " << i + 1 << ": ";
+        os << objectVertices[i][0] << " " << objectVertices[i][1] << " ";
+        os << objectVertices[i][2] << " " << objectVertices[i][3]<< std::endl;
+    }
+    std::vector<Face> objectFace = instance.getFaces();
+    os << "faces: " << std::endl;
+    for (size_t i = 0; i < objectFace.size(); i++)
+    {
+        os << "face nb " << i + 1 << ": ";
+        for (size_t j = 0; j < objectFace[i].size(); j++)
+            os << objectFace[i][j] << " ";
+        os << std::endl;
+    }
+    return (os);
 }

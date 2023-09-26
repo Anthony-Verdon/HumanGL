@@ -1,4 +1,5 @@
 #include "main.hpp"
+#include "parsing/parsing.hpp"
 #include "classes/Shader.hpp"
 #include "classes/Texture.hpp"
 #include "classes/Camera.hpp"
@@ -28,19 +29,6 @@ void updateLoop(GLFWwindow* window, unsigned int VAO, unsigned int texture1, uns
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     
     glEnable(GL_DEPTH_TEST);
-    glm::vec3 cubePositions[] = {
-        glm::vec3( 0.0f,  0.0f,  0.0f), 
-        glm::vec3( 2.0f,  5.0f, -15.0f), 
-        glm::vec3(-1.5f, -2.2f, -2.5f),  
-        glm::vec3(-3.8f, -2.0f, -12.3f),  
-        glm::vec3( 2.4f, -0.4f, -3.5f),  
-        glm::vec3(-1.7f,  3.0f, -7.5f),  
-        glm::vec3( 1.3f, -2.0f, -2.5f),  
-        glm::vec3( 1.5f,  2.0f, -2.5f), 
-        glm::vec3( 1.5f,  0.2f, -1.5f), 
-        glm::vec3(-1.3f,  1.0f, -1.5f)  
-        
-    };
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetWindowUserPointer(window, &camera);
@@ -51,8 +39,7 @@ void updateLoop(GLFWwindow* window, unsigned int VAO, unsigned int texture1, uns
         Time::updateTime();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         processInput(window);
-
-       
+        
         glm::vec3 direction;
         direction.x = cos(glm::radians(camera.getYaw())) * cos(glm::radians(camera.getPitch()));
         direction.y = sin(glm::radians(camera.getPitch()));
@@ -62,19 +49,18 @@ void updateLoop(GLFWwindow* window, unsigned int VAO, unsigned int texture1, uns
 
         
         glm::mat4 view = glm::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(), camera.getUpDirection());
-
         ourShader.use();
         ourShader.setInt("texture1", 0);
         ourShader.setInt("texture2", 1);
 
         glm::mat4 model = glm::mat4(1.0f); //uniform matrice
-        model = glm::rotate(model, Time::getTime() * glm::radians(-55.0f), glm::vec3(0.5f,1.0f,0.0f));
+        //model = glm::rotate(model, Time::getTime() * glm::radians(-55.0f), glm::vec3(0.5f,1.0f,0.0f));
         ourShader.setMat4("model", model);
         ourShader.setMat4("view", view);
         glm::mat4 projection;
         projection = glm::perspective(glm::radians(camera.getFov()), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
         ourShader.setMat4("projection", projection);
-
+        
         float mixPercentage = (sin(Time::getTime()) / 2.0f) + 0.5f;
         ourShader.setFloat("mixPercentage", mixPercentage);
 
@@ -84,16 +70,8 @@ void updateLoop(GLFWwindow* window, unsigned int VAO, unsigned int texture1, uns
         glBindTexture(GL_TEXTURE_2D, texture2);
     
         glBindVertexArray(VAO);
-        for(unsigned int i = 0; i < 10; i++)
-        {
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, cubePositions[i]);
-            float angle = 20.0f * i; 
-            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-            ourShader.setMat4("model", model);
-
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
+        glDrawElements(GL_TRIANGLES, 170, GL_UNSIGNED_INT, 0);
+        
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
@@ -141,57 +119,36 @@ void endProgram(unsigned int VAO, unsigned int VBO, unsigned int EBO)
  * start the update loop
  * and end the program when the loop end. 
 */
-void start(GLFWwindow* window)
+
+void start(GLFWwindow* window, std::vector<Object> objects)
 {
+    (void)objects;
+    /*
     float vertices[] = {
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-     0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-
-    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-};
+         0.5f,  0.5f, 0.0f, 1,  // top right
+         0.5f, -0.5f, 0.0f, 1,  // bottom right
+        -0.5f, -0.5f, 0.0f, 1,  // bottom left
+        -0.5f,  0.5f, 0.0f, 1  // top left 
+    };
 
     const unsigned int indices[] = {
         0, 1, 2, //first triangle
         0, 2, 3 //second triangle
     };
-
+    */
+    float *vertices = objects[1].getVerticesIntoArray();
+    const unsigned int *indices = objects[1].getFacesIntoArray();
+    #ifdef DEBUG
+        for (size_t i = 0; i < objects[1].getVertices().size() * 4; i++)
+        {
+            if (i % 4 == 0)
+                std::cout << std::endl;
+            std::cout << vertices[i] << " ";
+        }
+        std::cout << std::endl;
+        for (size_t i = 0; i < 6; i++)
+            std::cout << indices[i] << " ";
+    #endif
     unsigned int VAO;
     unsigned int VBO;
     unsigned int EBO;
@@ -204,18 +161,12 @@ void start(GLFWwindow* window)
     glBindBuffer(GL_ARRAY_BUFFER, VBO); 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); 
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * objects[1].getVertices().size() * 4, vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * 170, indices, GL_STATIC_DRAW); 
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(2);
-    /*
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
-    */
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -243,12 +194,11 @@ int main(int argc, char **argv)
         std::cerr << "no input file provided" << std::endl;
         return (-1);
     }
-    Object object(argv[1]);
-    return (0);
+    std::vector<Object> objects = parseObjFile(argv[1]);
 
     GLFWwindow* window = initGLFW();
     if (window == NULL)
         return (-1);
-    start(window);
+    start(window, objects);
     return (0);
 }

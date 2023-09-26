@@ -23,8 +23,8 @@ class Object
 {
     private:
         Object();
+        unsigned int calculateNbIndices() const;
 
-        static ParsingFunctions parsingFunctions;
         std::string name;
         Vertices vertices;
         std::vector<Face> faces;
@@ -37,13 +37,17 @@ class Object
         // ... (everything link to matrices)
 
     public:
-        Object (const std::string &objPath);
+        Object(const std::string &name);
         Object(const Object &copy);
         Object &operator=(const Object &copy);
         ~Object();
 
         Vertices getVertices() const;
         std::vector<Face> getFaces() const;
+        float *getVerticesIntoArray() const;
+        unsigned int *getFacesIntoArray() const;
+        std::string getName() const;
+        bool getSmoothShading() const;
 
         void setVertices(Vertices vertices);
         void setFaces(std::vector<Face> faces);
@@ -55,6 +59,9 @@ class Object
         void defineSmoothShading(std::string line);
         void defineMTL(std::string line);
         void useMTL(std::string line);
+
+        static ParsingFunctions parsingFunctions;
 };
 
+std::ostream& operator << (std::ostream& os, const Object& instance);
 #endif

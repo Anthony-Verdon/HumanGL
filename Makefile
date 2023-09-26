@@ -1,6 +1,7 @@
 SRCS := srcs/main.cpp \
 		srcs/setupGLFW.cpp \
 		srcs/input.cpp \
+		srcs/parsing/parsing.cpp \
 		includes/glad/glad.cpp \
 		includes/stb_image/stb_image.cpp \
 		srcs/classes/Camera.cpp \
