@@ -70,6 +70,7 @@ unsigned int Object::calculateNbIndices() const
     nbIndices = 0;
     for (size_t i = 0; i < faces.size(); i++)
         nbIndices += faces[i].size();
+    std::cout << "nb indices: " << nbIndices << std::endl;
     return (nbIndices);
 }
 
@@ -158,6 +159,86 @@ void Object::defineVertex(std::string line)
     vertices.push_back(vertex);
 }
 
+float Object::triangleArea(Vertex a, Vertex b, Vertex c) const
+{
+    Vertex AB;
+    AB.push_back(b[0] - a[0]);
+    AB.push_back(b[1] - a[1]);
+    AB.push_back(b[2] - a[2]);
+
+    Vertex AC;
+    AC.push_back(c[0] - a[0]);
+    AC.push_back(c[1] - a[1]);
+    AC.push_back(c[2] - a[2]);
+
+    float dotProduct = AB[0] * AC[0] + AB[1] * AC[1] + AB[2] * AC[2];
+    float magnitudeAB = sqrt(pow(AB[0], 2) + pow(AB[1], 2) + pow(AB[2], 2));
+    float magnitudeAC = sqrt(pow(AC[0], 2) + pow(AC[1], 2) + pow(AC[2], 2));
+    float cosAngle = dotProduct / (magnitudeAB * magnitudeAC);
+    float angle = acos(cosAngle);
+    float area = 0.5f * magnitudeAB * magnitudeAC * sin(angle);
+    return (area);
+}
+
+bool Object::insideTriangle(Vertex p, Vertex a, Vertex b, Vertex c) const
+{
+    float areaABC = triangleArea(a, b, c);
+    float areaABP = triangleArea(a, b, p);
+    float areaBCP = triangleArea(b, c, p);
+    float areaACP = triangleArea(a, c, p);
+
+    if (areaABC == areaABP + areaBCP + areaACP
+        && areaABP != 0 && areaBCP != 0 && areaACP != 0)
+        return (true);
+    else
+        return (false);
+}
+
+void Object::triangulate(Face face)
+{
+    while (face.size() > 3)
+    {
+        for (size_t i = 1; i < face.size() - 1; i++)
+        {
+            Vertex a = vertices[face[i]];
+            Vertex b = vertices[face[i - 1]];
+            Vertex c = vertices[face[i + 1]];
+
+            bool isEar = true;
+            for (size_t j = 0; j < vertices.size(); j++)
+            {
+                Vertex p = vertices[j];
+                if (p == a || p == b ||  p == c)
+                    continue;
+                if (insideTriangle(p, a, b, c))
+                {
+                    isEar = false;
+                    break ;
+                }
+            }
+            if (isEar)
+            {
+                Face newFace;
+
+                newFace.push_back(face[i - 1]);
+                newFace.push_back(face[i]);
+                newFace.push_back(face[i + 1]);
+                for (std::vector<int>::iterator it = face.begin(); it != face.end(); it++)
+                {
+                    if (*it == static_cast<int>(face[i]))
+                    {
+                        face.erase(it);
+                        break;
+                    }
+                }
+                faces.push_back(newFace);
+                break ;
+            }
+        }
+    }
+    faces.push_back(face);
+}
+
 void Object::defineFace(std::string line)
 {
     Face face;
@@ -179,14 +260,13 @@ void Object::defineFace(std::string line)
             std::cerr << "vertex ID invalid" << std::endl;
         if (vertexID < 0)
             vertexID = nbVertices + 1 + vertexID;
-        face.push_back(vertexID);
+        face.push_back(vertexID - 1);
     }
     #ifdef DEBUG
         for (size_t i = 0; i < face.size(); i++)
             std::cout << face[i] << std::endl;
     #endif
-
-    faces.push_back(face);
+    triangulate(face);
 }
 
 void Object::defineObject(std::string line)

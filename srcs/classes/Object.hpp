@@ -8,8 +8,7 @@
 #include <array>
 #include <vector>
 #include <map>
-
-//#define DEBUG
+#include <cmath>
 
 class Object;
 
@@ -24,6 +23,8 @@ class Object
     private:
         Object();
         unsigned int calculateNbIndices() const;
+        float triangleArea(Vertex a, Vertex b, Vertex c) const;
+        bool insideTriangle(Vertex x, Vertex a, Vertex b, Vertex c) const;
 
         std::string name;
         Vertices vertices;
@@ -54,6 +55,7 @@ class Object
 
         std::vector<std::string> splitLine(std::string line);
         void defineVertex(std::string line);
+        void triangulate(Face face);
         void defineFace(std::string line);
         void defineObject(std::string line);
         void defineSmoothShading(std::string line);
