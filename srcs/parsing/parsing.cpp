@@ -45,10 +45,9 @@ std::vector<Object> parseObjFile(const std::string &objPath)
             {
                 std::vector<std::string> words = splitLine(line);
                 if (words.size() != 2)
-                {
-                    //stop
-                }
-                objects.push_back(object);
+                    std::cerr << "nb argument invalid" << std::endl;
+                if (object.getFaces().size() != 0)
+                    objects.push_back(object);
                 Object new_object(words[1]);
                 object = new_object;
             }

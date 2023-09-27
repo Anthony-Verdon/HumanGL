@@ -16,6 +16,7 @@ Object::Object(const std::string &name)
 {
     this->name = name;
     smoothShading = false;
+    VAOInit = false;
 }
 
 
@@ -38,6 +39,12 @@ Object &Object::operator=(const Object &copy)
 
 Object::~Object()
 {
+    if (VAOInit)
+    {
+        glDeleteVertexArrays(1, &VAO);
+        glDeleteBuffers(1, &VBO);
+        glDeleteBuffers(1, &EBO);
+    }
 }
 
 std::vector<std::vector<float> >Object::getVertices() const
@@ -63,31 +70,19 @@ float *Object::getVerticesIntoArray() const
     return (array);
 }
 
-unsigned int Object::calculateNbIndices() const
-{
-    unsigned int nbIndices;
-
-    nbIndices = 0;
-    for (size_t i = 0; i < faces.size(); i++)
-        nbIndices += faces[i].size();
-    std::cout << "nb indices: " << nbIndices << std::endl;
-    return (nbIndices);
-}
-
 unsigned int *Object::getFacesIntoArray() const
 {
-    size_t nbIndices;
+    size_t j;
     unsigned int *array;
 
-    nbIndices = 0;
-    array = new unsigned int[calculateNbIndices() * sizeof(unsigned int)];
+    j = 0;
+    array = new unsigned int[faces.size() * 3 * sizeof(unsigned int)];
     for (size_t i = 0; i < faces.size(); i++)
     {
-        for (size_t j = 0; j < faces[i].size(); j++)
-        {
-            array[nbIndices] = faces[i][j];
-            nbIndices++;
-        }
+        array[j] = faces[i][0];
+        array[j + 1] = faces[i][1];
+        array[j + 2] = faces[i][2];
+        j += 3;
     }
 
     return (array);
@@ -108,14 +103,29 @@ bool Object::getSmoothShading() const
     return (smoothShading);
 }
 
-void Object::setVertices(std::vector<std::vector<float> > vertices)
+unsigned int Object::getVAO() const
+{
+    return (VAO);
+}
+
+void Object::setName(const std::string &name)
+{
+    this->name = name;
+}
+
+void Object::setVertices(const Vertices &vertices)
 {
     this->vertices = vertices;
 }
 
-void Object::setFaces(std::vector<Face> faces)
+void Object::setFaces(const std::vector<Face> &faces)
 {
     this->faces = faces;
+}
+
+void Object::setSmoothShading(const bool &smoothShading)
+{
+    this->smoothShading = smoothShading;
 }
 
 std::vector<std::string> Object::splitLine(std::string line)
@@ -159,7 +169,7 @@ void Object::defineVertex(std::string line)
     vertices.push_back(vertex);
 }
 
-float Object::triangleArea(Vertex a, Vertex b, Vertex c) const
+float Object::triangleArea(const Vertex &a, const Vertex &b, const Vertex &c) const
 {
     Vertex AB;
     AB.push_back(b[0] - a[0]);
@@ -180,7 +190,7 @@ float Object::triangleArea(Vertex a, Vertex b, Vertex c) const
     return (area);
 }
 
-bool Object::insideTriangle(Vertex p, Vertex a, Vertex b, Vertex c) const
+bool Object::insideTriangle(const Vertex &p, const Vertex &a, const Vertex &b, const Vertex &c) const
 {
     float areaABC = triangleArea(a, b, c);
     float areaABP = triangleArea(a, b, p);
@@ -194,7 +204,7 @@ bool Object::insideTriangle(Vertex p, Vertex a, Vertex b, Vertex c) const
         return (false);
 }
 
-void Object::triangulate(Face face)
+void Object::triangulate(Face &face)
 {
     while (face.size() > 3)
     {
@@ -325,6 +335,37 @@ void Object::useMTL(std::string line)
     
     //if material exist
         //define it for the object
+}
+
+void Object::initVAO()
+{
+    float *verticesArray;
+    unsigned int *facesArray;
+
+    verticesArray = getVerticesIntoArray();
+    facesArray = getFacesIntoArray();
+
+    glGenVertexArrays(1, &VAO); 
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size() * 4, verticesArray, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * faces.size() * 3, facesArray, GL_STATIC_DRAW); 
+    
+    delete []verticesArray;
+    delete []facesArray;
+    
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    VAOInit = true;
 }
 
 std::ostream& operator << (std::ostream& os, const Object& instance)

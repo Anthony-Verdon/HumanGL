@@ -9,6 +9,7 @@
 #include <vector>
 #include <map>
 #include <cmath>
+#include "../../includes/glad/glad.h"
 
 class Object;
 
@@ -22,14 +23,20 @@ class Object
 {
     private:
         Object();
-        unsigned int calculateNbIndices() const;
-        float triangleArea(Vertex a, Vertex b, Vertex c) const;
-        bool insideTriangle(Vertex x, Vertex a, Vertex b, Vertex c) const;
+        float triangleArea(const Vertex &a, const Vertex &b, const Vertex &c) const;
+        bool insideTriangle(const Vertex &p, const Vertex &a, const Vertex &b, const Vertex &c) const;
+        void triangulate(Face &face);
 
         std::string name;
         Vertices vertices;
         std::vector<Face> faces;
         bool smoothShading;
+
+        bool VAOInit;
+        unsigned int VAO;
+        unsigned int VBO;
+        unsigned int EBO;
+
         //Material array
 
         //position
@@ -43,24 +50,28 @@ class Object
         Object &operator=(const Object &copy);
         ~Object();
 
-        Vertices getVertices() const;
-        std::vector<Face> getFaces() const;
-        float *getVerticesIntoArray() const;
-        unsigned int *getFacesIntoArray() const;
         std::string getName() const;
+        Vertices getVertices() const;
+        float *getVerticesIntoArray() const;
+        std::vector<Face> getFaces() const;
+        unsigned int *getFacesIntoArray() const;
         bool getSmoothShading() const;
 
-        void setVertices(Vertices vertices);
-        void setFaces(std::vector<Face> faces);
+        unsigned int getVAO() const;
+        void setName(const std::string &name);
+        void setVertices(const Vertices &vertices);
+        void setFaces(const std::vector<Face> &faces);
+        void setSmoothShading(const bool &smoothShading);
 
         std::vector<std::string> splitLine(std::string line);
         void defineVertex(std::string line);
-        void triangulate(Face face);
         void defineFace(std::string line);
         void defineObject(std::string line);
         void defineSmoothShading(std::string line);
         void defineMTL(std::string line);
         void useMTL(std::string line);
+
+        void initVAO();
 
         static ParsingFunctions parsingFunctions;
 };

@@ -22,7 +22,7 @@
  * meaning the one which is displayed is replaced by the one we drew,
  * and update event like input or callback function
 */
-void updateLoop(GLFWwindow* window, unsigned int VAO, unsigned int nbIndice, unsigned int texture1, unsigned int texture2)
+void updateLoop(GLFWwindow* window, const Object &object, unsigned int texture1, unsigned int texture2)
 {
     Shader ourShader("shaders/shader.vs", "shaders/shader.fs");
     Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 0.0f, 45.0f, 2.5f);
@@ -69,8 +69,8 @@ void updateLoop(GLFWwindow* window, unsigned int VAO, unsigned int nbIndice, uns
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texture2);
     
-        glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, nbIndice, GL_UNSIGNED_INT, 0);
+        glBindVertexArray(object.getVAO());
+        glDrawElements(GL_TRIANGLES, object.getFaces().size() * 3, GL_UNSIGNED_INT, 0);
         
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -122,24 +122,8 @@ void endProgram(unsigned int VAO, unsigned int VBO, unsigned int EBO)
 
 void start(GLFWwindow* window, std::vector<Object> objects)
 {
-    (void)objects;
-
-    /*
-    float vertices[] = {
-         0.5f,  0.5f, 0.0f, 1,  // top right
-         0.5f, -0.5f, 0.0f, 1,  // bottom right
-        -0.5f, -0.5f, 0.0f, 1,  // bottom left
-        -0.5f,  0.5f, 0.0f, 1  // top left 
-    };
-
-    const unsigned int indices[] = {
-        0, 1, 2, //first triangle
-        0, 2, 3 //second triangle
-    };
-    */
-    float *vertices = objects[1].getVerticesIntoArray();
-    const unsigned int *indices = objects[1].getFacesIntoArray();
-    const unsigned int nbIndice = objects[1].getFaces().size() * 3;
+    if (objects.size() == 0)
+        return ;
     #ifdef DEBUG
         for (size_t i = 0; i < objects[1].getVertices().size() * 4; i++)
         {
@@ -156,36 +140,13 @@ void start(GLFWwindow* window, std::vector<Object> objects)
         }
         std::cout << std::endl;
     #endif
-    unsigned int VAO;
-    unsigned int VBO;
-    unsigned int EBO;
-
-    glGenVertexArrays(1, &VAO); 
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
-
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO); 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * objects[1].getVertices().size() * 4, vertices, GL_STATIC_DRAW);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * nbIndice, indices, GL_STATIC_DRAW); 
-
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
     
-
-    glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
+    objects[0].initVAO();
     Texture::initTexParameter();
     Texture wall("textures/wall.jpg");
     Texture smiley("textures/awesomeface.png");
 
-    updateLoop(window, VAO,nbIndice,  wall.getID(), smiley.getID());
-    endProgram(VAO, VBO, EBO);
-
+    updateLoop(window, objects[0], wall.getID(), smiley.getID());
 }
 
 /**
@@ -202,10 +163,10 @@ int main(int argc, char **argv)
         return (-1);
     }
     std::vector<Object> objects = parseObjFile(argv[1]);
-
     GLFWwindow* window = initGLFW();
     if (window == NULL)
         return (-1);
     start(window, objects);
+    glfwTerminate();
     return (0);
 }
