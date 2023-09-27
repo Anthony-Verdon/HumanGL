@@ -2,7 +2,6 @@
 #define MAIN_HPP
 
 #include "../includes/glad/glad.h"
-#include "../includes/stb_image/stb_image.h"
 #include "../includes/glm/glm/glm.hpp"
 #include "../includes/glm/glm/gtc/matrix_transform.hpp"
 #include "../includes/glm/glm/gtc/type_ptr.hpp"

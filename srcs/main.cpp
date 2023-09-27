@@ -5,6 +5,7 @@
 #include "classes/Camera.hpp"
 #include "classes/Time.hpp"
 #include "classes/Object.hpp"
+#include "classes/Matrix.hpp"
 
 /**
  * update loop of the window.
@@ -132,11 +133,28 @@ void start(GLFWwindow* window, std::vector<Object> objects)
  * create the shader program,
  * and start the update loop
 */
-#include <unistd.h>
-#include <fcntl.h>
-#include <stdlib.h>
 int main(int argc, char **argv)
 {
+    Matrix a(3,3);
+    Matrix b(3,3);
+
+    int values[] = {
+        4,2,0,
+        0,8,1,
+        0,1,0
+    };
+    int values2[] = {
+        4,2,1,
+        2,0,4,
+        9,4,2
+    };
+    a.setData(values, 9);
+    b.setData(values2, 9);
+    
+    std::cout << "matrix a: " << a << std::endl;
+    std::cout << "matrix b: " << b << std::endl;
+    std::cout << "matrix a * b: " << a * b << std::endl;
+    return 0;
     if (argc != 2)
     {
         std::cerr << "no input file provided" << std::endl;
