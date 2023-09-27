@@ -1,4 +1,5 @@
 #include "Object.hpp"
+#include "Utils.hpp"
 
 ParsingFunctions Object::parsingFunctions = {
         {"s", &Object::defineSmoothShading},
@@ -128,23 +129,6 @@ void Object::setSmoothShading(const bool &smoothShading)
     this->smoothShading = smoothShading;
 }
 
-std::vector<std::string> Object::splitLine(std::string line)
-{
-    size_t index;
-    std::string word;
-    std::vector<std::string> words;
-
-    index = 0;
-    while (index != std::string::npos)
-    {
-        index = line.find(" ");
-        word = line.substr(0, index);
-        words.push_back(word);
-        line = line.substr(index + 1, std::string::npos);
-    }
-    return words;
-}
-
 void Object::defineVertex(std::string line)
 {
     Vertex vertex;
@@ -154,7 +138,7 @@ void Object::defineVertex(std::string line)
         std::cout << "definition of a vertex: " << line << std::endl;
     #endif
 
-    words = splitLine(line);
+    words = Utils::splitLine(line);
     if (words.size() < 4 || words.size() > 5)
         std::cerr << "number of parameter invalid" << std::endl;
     for (size_t i = 1; i < words.size(); i++)
@@ -260,7 +244,7 @@ void Object::defineFace(std::string line)
         std::cout << "definition of a face: " << line << std::endl;
     #endif
 
-    words = splitLine(line);
+    words = Utils::splitLine(line);
     if (words.size() < 4)
         std::cerr << "number of parameter invalid" << std::endl;
     for (size_t i = 1; i < words.size(); i++)
@@ -292,7 +276,7 @@ void Object::defineSmoothShading(std::string line)
         std::cout << "definition of a smooth parameter: " << line << std::endl;
     #endif
 
-    words = splitLine(line);
+    words = Utils::splitLine(line);
     if (words.size() != 2)
         std::cerr << "number of parameter invalid" << std::endl;
 
@@ -312,7 +296,7 @@ void Object::defineMTL(std::string line)
         std::cout << "definition of a mtllib to use: " << line << std::endl;
     #endif
 
-    words = splitLine(line);
+    words = Utils::splitLine(line);
     if (words.size() != 2)
         std::cerr << "number of parameter invalid" << std::endl;
     
@@ -329,7 +313,7 @@ void Object::useMTL(std::string line)
         std::cout << "definition of a material to use: " << line << std::endl;
     #endif
 
-    words = splitLine(line);
+    words = Utils::splitLine(line);
     if (words.size() != 2)
         std::cerr << "number of parameter invalid" << std::endl;
     

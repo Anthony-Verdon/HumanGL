@@ -1,21 +1,5 @@
 #include "parsing.hpp"
-
-std::vector<std::string> splitLine(std::string line)
-{
-    size_t index;
-    std::string word;
-    std::vector<std::string> words;
-
-    index = 0;
-    while (index != std::string::npos)
-    {
-        index = line.find(" ");
-        word = line.substr(0, index);
-        words.push_back(word);
-        line = line.substr(index + 1, std::string::npos);
-    }
-    return words;
-}
+#include "../classes/Utils.hpp"
 
 std::vector<Object> parseObjFile(const std::string &objPath)
 {
@@ -43,7 +27,7 @@ std::vector<Object> parseObjFile(const std::string &objPath)
                 (object.*it->second)(line);
             else if (word == "o")
             {
-                std::vector<std::string> words = splitLine(line);
+                std::vector<std::string> words = Utils::splitLine(line);
                 if (words.size() != 2)
                     std::cerr << "nb argument invalid" << std::endl;
                 if (object.getFaces().size() != 0)

@@ -1,14 +1,14 @@
 SRCS := srcs/main.cpp \
 		srcs/setupGLFW.cpp \
 		srcs/input.cpp \
-		srcs/parsing/parsing.cpp \
+		srcs/parsing/parseObjFile.cpp \
 		includes/glad/glad.cpp \
-		includes/stb_image/stb_image.cpp \
 		srcs/classes/Camera.cpp \
 		srcs/classes/Shader.cpp \
 		srcs/classes/Texture.cpp \
 		srcs/classes/Time.cpp \
-		srcs/classes/Object.cpp
+		srcs/classes/Object.cpp \
+		srcs/classes/Utils.cpp
 
 OBJS := $(SRCS:.cpp=.o)
 

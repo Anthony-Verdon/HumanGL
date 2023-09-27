@@ -22,7 +22,7 @@
  * meaning the one which is displayed is replaced by the one we drew,
  * and update event like input or callback function
 */
-void updateLoop(GLFWwindow* window, const Object &object, unsigned int texture1, unsigned int texture2)
+void updateLoop(GLFWwindow* window, const Object &object, unsigned int texture)
 {
     Shader ourShader("shaders/shader.vs", "shaders/shader.fs");
     Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 0.0f, 45.0f, 2.5f);
@@ -51,7 +51,6 @@ void updateLoop(GLFWwindow* window, const Object &object, unsigned int texture1,
         glm::mat4 view = glm::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(), camera.getUpDirection());
         ourShader.use();
         ourShader.setInt("texture1", 0);
-        ourShader.setInt("texture2", 1);
 
         glm::mat4 model = glm::mat4(1.0f); //uniform matrice
         //model = glm::rotate(model, Time::getTime() * glm::radians(-55.0f), glm::vec3(0.5f,1.0f,0.0f));
@@ -60,14 +59,9 @@ void updateLoop(GLFWwindow* window, const Object &object, unsigned int texture1,
         glm::mat4 projection;
         projection = glm::perspective(glm::radians(camera.getFov()), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
         ourShader.setMat4("projection", projection);
-        
-        float mixPercentage = (sin(Time::getTime()) / 2.0f) + 0.5f;
-        ourShader.setFloat("mixPercentage", mixPercentage);
 
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture1);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, texture2);
+        glBindTexture(GL_TEXTURE_2D, texture);
     
         glBindVertexArray(object.getVAO());
         glDrawElements(GL_TRIANGLES, object.getFaces().size() * 3, GL_UNSIGNED_INT, 0);
@@ -75,22 +69,6 @@ void updateLoop(GLFWwindow* window, const Object &object, unsigned int texture1,
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-}
-
-/**
- * suppress all vertex array object,
- * vertex buffer object,
- * element buffer object,
- * the shaderProgram
- * and terminate GLFW.
-*/
-void endProgram(unsigned int VAO, unsigned int VBO, unsigned int EBO)
-{
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
-
-    glfwTerminate();
 }
 
 /**
@@ -143,10 +121,9 @@ void start(GLFWwindow* window, std::vector<Object> objects)
     
     objects[0].initVAO();
     Texture::initTexParameter();
-    Texture wall("textures/wall.jpg");
-    Texture smiley("textures/awesomeface.png");
-
-    updateLoop(window, objects[0], wall.getID(), smiley.getID());
+    Texture wall("textures/wall.ppm");
+    
+    updateLoop(window, objects[0], wall.getID());
 }
 
 /**
@@ -155,6 +132,9 @@ void start(GLFWwindow* window, std::vector<Object> objects)
  * create the shader program,
  * and start the update loop
 */
+#include <unistd.h>
+#include <fcntl.h>
+#include <stdlib.h>
 int main(int argc, char **argv)
 {
     if (argc != 2)

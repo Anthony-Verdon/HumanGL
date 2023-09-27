@@ -63,7 +63,6 @@ class Object
         void setFaces(const std::vector<Face> &faces);
         void setSmoothShading(const bool &smoothShading);
 
-        std::vector<std::string> splitLine(std::string line);
         void defineVertex(std::string line);
         void defineFace(std::string line);
         void defineObject(std::string line);
