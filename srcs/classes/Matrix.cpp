@@ -6,7 +6,7 @@ Matrix::Matrix()
 
 }
 
-Matrix::Matrix(const unsigned int &rows, const unsigned int &columns)
+Matrix::Matrix(unsigned int rows, unsigned int columns)
 {
     data = new int[rows * columns];
     this->rows = rows;
@@ -97,13 +97,45 @@ Matrix Matrix::operator*(const Matrix &instance) const
     return (result);
 }
 
+Matrix Matrix::operator*(int number) const
+{
+    Matrix result(rows, columns);
+    int value;
+
+    for (size_t y = 0; y < result.getRows(); y++)
+    {
+        for (size_t x = 0; x < result.getColumns(); x++)
+        {
+            value = getData(y, x) * number;
+            result.setData(y, x, value);
+        }
+    }
+    return (result);
+}
+
+Matrix operator*(int number, const Matrix &instance)
+{
+    Matrix result(instance.getRows(), instance.getColumns());
+    int value;
+
+    for (size_t y = 0; y < result.getRows(); y++)
+    {
+        for (size_t x = 0; x < result.getColumns(); x++)
+        {
+            value = instance.getData(y, x) * number;
+            result.setData(y, x, value);
+        }
+    }
+    return (result);
+}
+
 int * Matrix::getData() const
 {
     return (data);
 }
 
 
-int Matrix::getData(const unsigned int &rowIndex, const unsigned int &columnIndex) const
+int Matrix::getData(unsigned int rowIndex, unsigned int columnIndex) const
 {
     if (rowIndex >= rows || columnIndex >= columns)
         throw(Utils::Exception("MATRIX::GET_DATA::INVALID_INDEX\n"
@@ -123,7 +155,7 @@ unsigned int Matrix::getColumns() const
     return (columns);
 }
 
-void Matrix::setData(const unsigned int &rowIndex, const unsigned int &columnIndex, const int &value)
+void Matrix::setData(unsigned int rowIndex, unsigned int columnIndex, int value)
 {
     if (rowIndex >= rows || columnIndex >= columns)
         throw(Utils::Exception("MATRIX::SET_DATA::INVALID_INDEX\n"
@@ -134,7 +166,7 @@ void Matrix::setData(const unsigned int &rowIndex, const unsigned int &columnInd
     data[rowIndex * columns + columnIndex] = value;
 }
 
-void Matrix::setData(int *values, const unsigned int size)
+void Matrix::setData(int *values, unsigned int size)
 {
     if (size != rows * columns)
         throw(Utils::Exception("MATRIX::SET_DATA::INVALID_SIZE\n"
@@ -145,7 +177,23 @@ void Matrix::setData(int *values, const unsigned int size)
         data[i] = values[i];
 }
 
-std::ostream& operator << (std::ostream& os, const Matrix& instance)
+void Matrix::uniform(int value)
+{
+    for (size_t i = 0; i < rows * columns; i++)
+        data[i] = value;
+}
+
+void Matrix::identity()
+{
+    if (rows != columns)
+        throw(Utils::Exception("MATRIX::IDENTITY::INVALID_SIZE\n"
+        "MATRIX SIZE => " + std::to_string(rows) + " * " + std::to_string(columns)));
+    
+    uniform(0);
+    for (size_t i = 0; i < rows; i++)
+        setData(i, i, 1);
+}
+std::ostream& operator << (std::ostream &os, const Matrix &instance)
 {
     os << std::endl;
     for (size_t y = 0; y < instance.getRows(); y++)

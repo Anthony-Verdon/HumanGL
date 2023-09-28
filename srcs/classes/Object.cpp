@@ -124,7 +124,7 @@ void Object::setFaces(const std::vector<Face> &faces)
     this->faces = faces;
 }
 
-void Object::setSmoothShading(const bool &smoothShading)
+void Object::setSmoothShading(bool smoothShading)
 {
     this->smoothShading = smoothShading;
 }
@@ -336,7 +336,7 @@ void Object::initVAO()
     VAOInit = true;
 }
 
-std::ostream& operator << (std::ostream& os, const Object& instance)
+std::ostream& operator << (std::ostream &os, const Object &instance)
 {
     os << "name: " << instance.getName() << std::endl;
     os << "smooth shading: " << instance.getSmoothShading() << std::endl;

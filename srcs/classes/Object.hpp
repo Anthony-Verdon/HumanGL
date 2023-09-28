@@ -61,7 +61,7 @@ class Object
         void setName(const std::string &name);
         void setVertices(const Vertices &vertices);
         void setFaces(const std::vector<Face> &faces);
-        void setSmoothShading(const bool &smoothShading);
+        void setSmoothShading(bool smoothShading);
 
         void defineVertex(std::string line);
         void defineFace(std::string line);
@@ -74,5 +74,5 @@ class Object
         static ParsingFunctions parsingFunctions;
 };
 
-std::ostream& operator << (std::ostream& os, const Object& instance);
+std::ostream& operator << (std::ostream &os, const Object &instance);
 #endif
