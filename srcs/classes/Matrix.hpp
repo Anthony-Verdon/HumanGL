@@ -2,13 +2,14 @@
 #define MATRIX_HPP
 
 #include <iostream>
+#include <cmath>
 
 class Matrix
 {
 private:
     Matrix();
 
-    int *data;
+    float *data;
     unsigned int rows;
     unsigned int columns;
 
@@ -21,20 +22,26 @@ public:
     Matrix operator+(const Matrix &instance) const;
     Matrix operator-(const Matrix &instance) const;
     Matrix operator*(const Matrix &instance) const;
-    Matrix operator*(int number) const;
+    Matrix operator*(float number) const;
 
-    int *getData() const;
-    int getData(unsigned int rowIndex, unsigned int columnIndex) const;
+    float *getData() const;
+    float getData(unsigned int rowIndex, unsigned int columnIndex) const;
+    float getX() const;
+    float getY() const;
+    float getZ() const;
+    float getW() const;
     unsigned int getRows() const;
     unsigned int getColumns() const;
 
-    void uniform(int value);
+    void uniform(float value);
     void identity();
-    void setData(unsigned int rowIndex, unsigned int columnIndex, int value);
-    void setData(int *values, unsigned int size);
+    void setData(unsigned int rowIndex, unsigned int columnIndex, float value);
+    void setData(float *values, unsigned int size);
+
+    static Matrix rotate(const Matrix &instance, float angle, const Matrix &vector);
 };
 
 std::ostream &operator << (std::ostream &os, const Matrix &instance);
-Matrix operator * (int number, const Matrix &instance);
+Matrix operator * (float number, const Matrix &instance);
 
 #endif

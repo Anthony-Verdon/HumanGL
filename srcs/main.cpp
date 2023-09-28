@@ -49,17 +49,25 @@ void updateLoop(GLFWwindow* window, const Object &object, unsigned int texture)
         camera.setFrontDirection(glm::normalize(direction));
         camera.setRightDirection(glm::normalize(glm::cross(camera.getFrontDirection(), camera.getUpDirection())));
 
-        
-        glm::mat4 view = glm::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(), camera.getUpDirection());
         ourShader.use();
         ourShader.setInt("texture1", 0);
 
-        glm::mat4 model = glm::mat4(1.0f); //uniform matrice
-        //model = glm::rotate(model, Time::getTime() * glm::radians(-55.0f), glm::vec3(0.5f,1.0f,0.0f));
-        ourShader.setMat4("model", model);
+        Matrix rotation(4, 4);
+        Matrix vector(3, 1);
+        float values[] = {
+            0.0f,
+            1.0f,
+            0.0f
+        };
+        vector.setData(values, 3);
+        rotation.uniform(1.0f);
+        rotation = Matrix::rotate(rotation, Time::getTime() * 90.0f * (M_PI / 180), vector);
+        ourShader.setMat4("model", rotation);
+        
+        glm::mat4 view = glm::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(), camera.getUpDirection());
         ourShader.setMat4("view", view);
-        glm::mat4 projection;
-        projection = glm::perspective(glm::radians(camera.getFov()), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
+        //glm::mat4 projection = glm::mat4(1.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(camera.getFov()), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
         ourShader.setMat4("projection", projection);
 
         glActiveTexture(GL_TEXTURE0);
