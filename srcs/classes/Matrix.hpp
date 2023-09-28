@@ -41,6 +41,7 @@ public:
     static Matrix rotate(const Matrix &instance, float angle, const Matrix &vector);
     static Matrix perspective(float fov, float aspect, float near, float far);
     static Matrix normalize(const Matrix &vector);
+    static Matrix crossProduct(const Matrix &vector, const Matrix &vector)
 };
 
 std::ostream &operator << (std::ostream &os, const Matrix &instance);

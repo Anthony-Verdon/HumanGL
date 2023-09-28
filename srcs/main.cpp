@@ -8,6 +8,28 @@
 #include "classes/Matrix.hpp"
 #include "classes/Utils.hpp"
 
+Camera initCamera()
+{
+    Matrix position(3, 1);
+    Matrix upDirection(3, 1);
+
+    float positionValues[] = {
+        0.0f,
+        0.0f,
+        3.0f
+    };
+
+    float upDirectionValues[] = {
+        0.0f,
+        1.0f,
+        0.0f
+    };
+
+    position.setData(positionValues, 3);
+    upDirection.setData(upDirectionValues, 3);
+    Camera camera(position, upDirection, -90.0f, 0.0f, 0.0f, 45.0f, 2.5f);
+    return (camera);
+}
 /**
  * update loop of the window.
  * 
@@ -27,7 +49,7 @@
 void updateLoop(GLFWwindow* window, const Object &object, unsigned int texture)
 {
     Shader ourShader("shaders/shader.vs", "shaders/shader.fs");
-    Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 0.0f, 45.0f, 2.5f);
+    Camera camera(initCamera());
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     
     glEnable(GL_DEPTH_TEST);
@@ -42,11 +64,14 @@ void updateLoop(GLFWwindow* window, const Object &object, unsigned int texture)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         processInput(window);
         
-        glm::vec3 direction;
-        direction.x = cos(glm::radians(camera.getYaw())) * cos(glm::radians(camera.getPitch()));
-        direction.y = sin(glm::radians(camera.getPitch()));
-        direction.z = sin(glm::radians(camera.getYaw())) * cos(glm::radians(camera.getPitch()));
-        camera.setFrontDirection(glm::normalize(direction));
+        Matrix direction(3, 1);
+        float directionValues[] = {
+            cos(Utils::DegToRad(camera.getYaw())) * cos(Utils::DegToRad(camera.getPitch())),
+            sin(Utils::DegToRad(camera.getPitch())),
+            sin(Utils::DegToRad(camera.getYaw())) * cos(Utils::DegToRad(camera.getPitch()))
+        };
+        direction.setData(directionValues, 3);
+        camera.setFrontDirection(Matrix::normalize(direction));
         camera.setRightDirection(glm::normalize(glm::cross(camera.getFrontDirection(), camera.getUpDirection())));
 
         ourShader.use();

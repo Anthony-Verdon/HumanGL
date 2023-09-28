@@ -1,11 +1,17 @@
 #include "Camera.hpp"
 #include <iostream>
+#include "Utils.hpp"
 
-Camera::Camera(const glm::vec3 &position, const glm::vec3 &upDirection, const float &yaw, const float &pitch, const float &roll, const float &fov, const float &speed)
+Camera::Camera(const Matrix &position, const Matrix &upDirection, float yaw, float pitch, float roll, float fov, float speed)
 {
+    Matrix frontDirection(3, 1);
+    Matrix rightDirection(3, 1);
+
+    frontDirection.uniform(1.0f);
+    rightDirection.uniform(1.0f);
     this->position = position;
-    this->frontDirection = glm::vec3(1.0f);
-    this->rightDirection = glm::vec3(1.0f);
+    this->frontDirection = frontDirection.uniform(1.0f);
+    this->rightDirection = rightDirection.uniform(1.0f);
     this->upDirection = upDirection;
     this->yaw = yaw;
     this->pitch = pitch;
@@ -40,22 +46,22 @@ Camera::~Camera()
 {
 }
 
-glm::vec3 Camera::getPosition() const
+Matrix Camera::getPosition() const
 {
     return (position);
 }
 
-glm::vec3 Camera::getFrontDirection() const
+Matrix Camera::getFrontDirection() const
 {
     return (frontDirection);
 }
 
-glm::vec3 Camera::getRightDirection() const
+Matrix Camera::getRightDirection() const
 {
     return (rightDirection);
 }
 
-glm::vec3 Camera::getUpDirection() const
+Matrix Camera::getUpDirection() const
 {
     return (upDirection);
 }
@@ -83,66 +89,86 @@ float Camera::getSpeed() const
     return (speed);
 }
 
-void Camera::setPosition(const glm::vec3 &position) 
+void Camera::setPosition(const Matrix &position) 
 {
+    if (position.getRows() != 3 || position.getColumns() != 1)
+        throw(Utils::Exception("CAMERA::SET_POSITION::INVALID_SIZE\n"
+        "VECTOR SIZE => " + std::to_string(position.getRows()) + " * " + std::to_string(position.getColumns())));
+
     this->position = position;
 }
-void Camera::setFrontDirection(const glm::vec3 &frontDirection)
+void Camera::setFrontDirection(const Matrix &frontDirection)
 {
+    if (frontDirection.getRows() != 3 || frontDirection.getColumns() != 1)
+        throw(Utils::Exception("CAMERA::SET_FRONT_DIRECTION::INVALID_SIZE\n"
+        "VECTOR SIZE => " + std::to_string(frontDirection.getRows()) + " * " + std::to_string(frontDirection.getColumns())));
+
     this->frontDirection = frontDirection;
 }
 
-void Camera::setRightDirection(const glm::vec3 &rightDirection)
+void Camera::setRightDirection(const Matrix &rightDirection)
 {
+    if (rightDirection.getRows() != 3 || rightDirection.getColumns() != 1)
+        throw(Utils::Exception("CAMERA::SET_RIGHT_DIRECTION::INVALID_SIZE\n"
+        "VECTOR SIZE => " + std::to_string(rightDirection.getRows()) + " * " + std::to_string(rightDirection.getColumns())));
+
     this->rightDirection = rightDirection;
 }
 
-void Camera::setUpDirection(const glm::vec3 &upDirection)
+void Camera::setUpDirection(const Matrix &upDirection)
 {
+    if (upDirection.getRows() != 3 || upDirection.getColumns() != 1)
+        throw(Utils::Exception("CAMERA::SET_UP_DIRECTION::INVALID_SIZE\n"
+        "VECTOR SIZE => " + std::to_string(upDirection.getRows()) + " * " + std::to_string(upDirection.getColumns())));
+
     this->upDirection = upDirection;
 }
 
-void Camera::setYaw(const float &yaw)
+void Camera::setYaw(float yaw)
 {
     this->yaw = yaw;
 }
 
-void Camera::setPitch(const float &pitch)
+void Camera::setPitch(float pitch)
 {
     this->pitch = pitch;
 }
 
-void Camera::setRoll(const float &roll)
+void Camera::setRoll(float roll)
 {
     this->roll = roll;
 }
 
-void Camera::setFov(const float &fov)
+void Camera::setFov(float fov)
 {
     this->fov = fov;
 }
 
-void Camera::setSpeed(const float &speed)
+void Camera::setSpeed(float speed)
 {
     this->speed = speed;
 }
 
-void Camera::addToPosition(const glm::vec3 &position)
+void Camera::addToPosition(const Matrix &position)
 {
-    this->position += position;
+    if (position.getRows() != 3 || position.getColumns() != 1)
+        throw(Utils::Exception("CAMERA::ADD_TO_POSITION::INVALID_SIZE\n"
+        "VECTOR SIZE => " + std::to_string(position.getRows()) + " * " + std::to_string(position.getColumns())));
+
+    this->position = this->position + position;
 }
 
-void Camera::addToYaw(const float &yaw)
+void Camera::addToYaw(float yaw)
 {
     this->yaw += yaw;
 }
 
-void Camera::addToPitch(const float &pitch)
+void Camera::addToPitch(float pitch)
 {
     this->pitch += pitch;
 }
 
-void Camera::addToFov(const float &fov)
+void Camera::addToFov(float fov)
 {
     this->fov += fov;
 }
