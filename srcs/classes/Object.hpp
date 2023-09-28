@@ -65,7 +65,6 @@ class Object
 
         void defineVertex(std::string line);
         void defineFace(std::string line);
-        void defineObject(std::string line);
         void defineSmoothShading(std::string line);
         void defineMTL(std::string line);
         void useMTL(std::string line);

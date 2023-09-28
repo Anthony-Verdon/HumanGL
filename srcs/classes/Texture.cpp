@@ -3,6 +3,7 @@
 
 Texture::Texture()
 {
+    ID = 0;
 }
 
 bool Texture::textureExtension(const std::string &texturePath, const std::string &extension) const
@@ -30,61 +31,56 @@ void Texture::loadImage(const std::string &texturePath)
     nbLine = 0;
     pixel = 0;
     textureFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-    try
+    textureFile.open(texturePath);
+    textureStream << textureFile.rdbuf();
+    textureFile.close();
+    while (std::getline(textureStream, line))
     {
-        textureFile.open(texturePath);
-        textureStream << textureFile.rdbuf();
-        textureFile.close();
-        while (std::getline(textureStream, line))
+        line = line.substr(0, line.find("#"));
+        if (line.length() == 0)
+            continue ;
+        if (nbLine == 0 && line != "P3")
+            throw(Utils::Exception("TEXTURE::INVALID_LINE\n"
+            "LINE => " + line + "\n"
+            "LINE INDEX => NEED TO ADD PARAM"));
+        else if (nbLine == 1)
         {
-            line = line.substr(0, line.find("#"));
-            if (line.length() == 0)
-                continue ;
-            if (nbLine == 0 && line != "P3")
-                std::cerr << "err" << std::endl;
-            else if (nbLine == 1)
-            {
-                words = Utils::splitLine(line);
-                if (words.size() != 2)
-                    std::cerr << "texture err" << std::endl;
-                width = std::stoi(words[0]);
-                height = std::stoi(words[1]);
-                data = new unsigned char[width * height * 3];
-            }
-            else if (nbLine == 2)
-            {
-                words = Utils::splitLine(line);
-                if (words.size() != 1)
-                    std::cerr << "texture err" << std::endl;
-                valueMax = std::stoi(words[0]);
-            }
-            else if (nbLine > 2)
-            {
-                words = Utils::splitLine(line);
-                for (size_t i = 0; i < words.size(); i++)
-                {
-                    data[pixel] = std::stoi(words[i]);
-                    pixel++;
-                }
-            }
-            nbLine++;
+            words = Utils::splitLine(line);
+            if (words.size() != 2)
+                throw(Utils::Exception("TEXTURE::INVALID_LINE\n"
+                "LINE => " + line + "\n"
+                "LINE INDEX => NEED TO ADD PARAM"));
+            width = std::stoi(words[0]);
+            height = std::stoi(words[1]);
+            data = new unsigned char[width * height * 3];
         }
-    }
-    catch(const std::exception& e)
-    {
-        std::cerr << "error: " << e.what() << line << '\n';
-    }
+        else if (nbLine == 2)
+        {
+            words = Utils::splitLine(line);
+            if (words.size() != 1)
+                throw(Utils::Exception("TEXTURE::INVALID_LINE\n"
+                "LINE => " + line + "\n"
+                "LINE INDEX => NEED TO ADD PARAM"));
+            valueMax = std::stoi(words[0]);
+        }
+        else if (nbLine > 2)
+        {
+            words = Utils::splitLine(line);
+            for (size_t i = 0; i < words.size(); i++)
+            {
+                data[pixel] = std::stoi(words[i]);
+                pixel++;
+            }
+        }
+        nbLine++;
+    } 
 }
 
 Texture::Texture(const std::string &texturePath)
 {
+    ID = 0;
     loadImage(texturePath);
-    if (data == NULL)
-    {
-        std::cerr << "ERROR::TEXTURE::LOADING_FAILDED" << std::endl;
-        ID = 0;
-        return ;
-    }
+    
     glGenTextures(1, &ID);
     glBindTexture(GL_TEXTURE_2D, ID);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);

@@ -1,15 +1,16 @@
 #include "Matrix.hpp"
+#include "Utils.hpp"
 
 Matrix::Matrix()
 {
 
 }
 
-Matrix::Matrix(const unsigned int &width, const unsigned int &height)
+Matrix::Matrix(const unsigned int &rows, const unsigned int &columns)
 {
-    data = new int[width * height];
-    this->width = width;
-    this->height = height;
+    data = new int[rows * columns];
+    this->rows = rows;
+    this->columns = columns;
 }
 
 Matrix::Matrix(const Matrix &copy)
@@ -22,8 +23,8 @@ Matrix & Matrix::operator=(const Matrix &copy)
     if (&copy != this)
     {
         data = copy.getData();
-        width = copy.getWidth();
-        height = copy.getHeight();
+        rows = copy.getRows();
+        columns = copy.getColumns();
     }
     return (*this);
 }
@@ -35,17 +36,17 @@ Matrix::~Matrix()
 
 Matrix Matrix::operator+(const Matrix &instance) const
 {
-    Matrix result(width, height);
+    Matrix result(rows, columns);
     int value;
 
-    if (width != instance.getWidth() || height != instance.getHeight())
-        std::cerr << "matrice not same dimension" << std::endl;
+    if (rows != instance.getRows() || columns != instance.getColumns())
+        throw(Utils::Exception("MATRIX::OPERATOR +::MATRIX INCOMPATIBLE"));
 
-    for (size_t x = 0; x < width; x++)
+    for (size_t x = 0; x < rows; x++)
     {
-        for (size_t y = 0; y < height; y++)
+        for (size_t y = 0; y < columns; y++)
         {
-            value = data[x * width + y] + instance.getData()[x * width + y];
+            value = data[x * columns + y] + instance.getData()[x * columns + y];
             result.setData(x, y, value);
         }
     }
@@ -54,17 +55,17 @@ Matrix Matrix::operator+(const Matrix &instance) const
 
 Matrix Matrix::operator-(const Matrix &instance) const
 {
-    Matrix result(width, height);
+    Matrix result(rows, columns);
     int value;
 
-    if (width != instance.getWidth() || height != instance.getHeight())
-        std::cerr << "matrice not same dimension" << std::endl;
+    if (rows != instance.getRows() || columns != instance.getColumns())
+        throw(Utils::Exception("MATRIX::OPERATOR -::MATRIX INCOMPATIBLE"));
     
-    for (size_t x = 0; x < width; x++)
+    for (size_t x = 0; x < rows; x++)
     {
-        for (size_t y = 0; y < height; y++)
+        for (size_t y = 0; y < columns; y++)
         {
-            value = data[x * width + y] - instance.getData()[x * width + y];
+            value = data[x * columns + y] - instance.getData()[x * columns + y];
             result.setData(x, y, value);
         }
     }
@@ -74,49 +75,25 @@ Matrix Matrix::operator-(const Matrix &instance) const
 
 Matrix Matrix::operator*(const Matrix &instance) const
 {
-    Matrix result(height, instance.getWidth());
+    Matrix result(rows, instance.getColumns());
     int value;
 
-    if (width != instance.getHeight())
-        std::cerr << "matrice not good dimension" << std::endl;
+    if (columns != instance.getRows())
+        throw(Utils::Exception("MATRIX::OPERATOR *::MATRIX_INCOMPATIBLE\n"
+        "LEFT MATRIX SIZE => " + std::to_string(rows) + " * " + std::to_string(columns) + "\n"
+        "RIGHT MATRIX SIZE => " + std::to_string(instance.getRows()) + " * " + std::to_string(instance.getColumns())));
 
-    for (size_t x = 0; x < result.getWidth(); x++)
+    for (size_t y = 0; y < result.getRows(); y++)
     {
-        for (size_t y = 0; y < result.getHeight(); y++)
+        for (size_t x = 0; x < result.getColumns(); x++)
         {
             value = 0;
-            for (size_t i = 0; i < width; i++)
-                value += getData(x, i) * instance.getData(i, y);   
-            result.setData(x, y, value);
+            for (size_t i = 0; i < instance.getRows(); i++)
+                value += this->getData(y, i) * instance.getData(i, x);
+            result.setData(y, x, value);
         }
+        
     }
-
-    return (result);
-}
-
-Matrix Matrix::operator/(const Matrix &instance) const
-{
-   Matrix result(height, instance.getWidth());
-    int value;
-
-    if (width != instance.getHeight())
-        std::cerr << "matrice not good dimension" << std::endl;
-
-    for (size_t x = 0; x < result.getWidth(); x++)
-    {
-        for (size_t y = 0; y < result.getHeight(); y++)
-        {
-            value = 0;
-            for (size_t i = 0; i < width; i++)
-            {
-                if (instance.getData(i, y) == 0)
-                    std::cerr << "division by 0" << std::endl;
-                value += getData(x, i) / instance.getData(i, y);
-            }
-            result.setData(x, y, value);
-        }
-    }
-
     return (result);
 }
 
@@ -126,33 +103,44 @@ int * Matrix::getData() const
 }
 
 
-int Matrix::getData(const unsigned int &x, const unsigned int &y) const
+int Matrix::getData(const unsigned int &rowIndex, const unsigned int &columnIndex) const
 {
-    if (x >= width || y >= height)
-        std::cerr << "invalid index" << std::endl;
-    return (data[x * width + y]);
+    if (rowIndex >= rows || columnIndex >= columns)
+        throw(Utils::Exception("MATRIX::GET_DATA::INVALID_INDEX\n"
+        "MATRIX SIZE => " + std::to_string(rows) + " * " + std::to_string(columns) + "\n"
+        "ROW INDEX => " + std::to_string(rowIndex) + "\n"
+        "COLUMN INDEX => " + std::to_string(columnIndex)));
+
+    return (data[rowIndex * columns + columnIndex]);
 }
-unsigned int Matrix::getWidth() const
+unsigned int Matrix::getRows() const
 {
-    return (width);
+    return (rows);
 }
 
-unsigned int Matrix::getHeight() const
+unsigned int Matrix::getColumns() const
 {
-    return (height);
+    return (columns);
 }
 
-void Matrix::setData(const unsigned int &x, const unsigned int &y, const int &value)
+void Matrix::setData(const unsigned int &rowIndex, const unsigned int &columnIndex, const int &value)
 {
-    if (x >= width || y >= height)
-        std::cerr << "invalid index" << std::endl;
-    data[x * width + y] = value;
+    if (rowIndex >= rows || columnIndex >= columns)
+        throw(Utils::Exception("MATRIX::SET_DATA::INVALID_INDEX\n"
+        "MATRIX SIZE => " + std::to_string(rows) + " * " + std::to_string(columns) + "\n"
+        "ROW INDEX => " + std::to_string(rowIndex) + "\n"
+        "COLUMN INDEX => " + std::to_string(columnIndex)));
+
+    data[rowIndex * columns + columnIndex] = value;
 }
 
 void Matrix::setData(int *values, const unsigned int size)
 {
-    if (size != width * height)
-        std::cerr << "err" << std::endl;
+    if (size != rows * columns)
+        throw(Utils::Exception("MATRIX::SET_DATA::INVALID_SIZE\n"
+        "MATRIX SIZE => " + std::to_string(rows) + " * " + std::to_string(columns) + "\n"
+        "SIZE => " + std::to_string(size)));
+
     for (size_t i = 0; i < size; i++)
         data[i] = values[i];
 }
@@ -160,10 +148,10 @@ void Matrix::setData(int *values, const unsigned int size)
 std::ostream& operator << (std::ostream& os, const Matrix& instance)
 {
     os << std::endl;
-    for (size_t x = 0; x < instance.getWidth(); x++)
+    for (size_t y = 0; y < instance.getRows(); y++)
     {
-        for (size_t y = 0; y < instance.getHeight(); y++)
-            os << instance.getData()[x * instance.getWidth() + y] << ' ';
+        for (size_t x = 0; x < instance.getColumns(); x++)
+            os << instance.getData(y, x) << " ";
         os << std::endl;
     }
 

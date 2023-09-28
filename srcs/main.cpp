@@ -6,6 +6,7 @@
 #include "classes/Time.hpp"
 #include "classes/Object.hpp"
 #include "classes/Matrix.hpp"
+#include "classes/Utils.hpp"
 
 /**
  * update loop of the window.
@@ -135,36 +136,21 @@ void start(GLFWwindow* window, std::vector<Object> objects)
 */
 int main(int argc, char **argv)
 {
-    Matrix a(3,3);
-    Matrix b(3,3);
-
-    int values[] = {
-        4,2,0,
-        0,8,1,
-        0,1,0
-    };
-    int values2[] = {
-        4,2,1,
-        2,0,4,
-        9,4,2
-    };
-    a.setData(values, 9);
-    b.setData(values2, 9);
-    
-    std::cout << "matrix a: " << a << std::endl;
-    std::cout << "matrix b: " << b << std::endl;
-    std::cout << "matrix a * b: " << a * b << std::endl;
-    return 0;
-    if (argc != 2)
+    try
     {
-        std::cerr << "no input file provided" << std::endl;
+        if (argc != 2)
+            throw(Utils::Exception("MAIN::NO_INPUT_FILE"));
+        std::vector<Object> objects = parseObjFile(argv[1]);
+        GLFWwindow* window = initGLFW();
+        if (window == NULL)
+            throw(Utils::Exception("MAIN::WINDOW_NOT_CREATED"));
+        start(window, objects);
+        glfwTerminate();
+        return (0);
+    }
+    catch(const Utils::Exception& e)
+    {
+        std::cerr << std::endl << e.what() << std::endl;
         return (-1);
     }
-    std::vector<Object> objects = parseObjFile(argv[1]);
-    GLFWwindow* window = initGLFW();
-    if (window == NULL)
-        return (-1);
-    start(window, objects);
-    glfwTerminate();
-    return (0);
 }

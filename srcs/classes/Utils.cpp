@@ -16,3 +16,13 @@ std::vector<std::string> Utils::splitLine(std::string line)
     }
     return words;
 }
+
+Utils::Exception::Exception(const std::string &errorMessage)
+{
+    this->errorMessage = errorMessage;
+}
+
+const char *Utils::Exception::what(void) const throw()
+{
+    return (errorMessage.c_str());
+}

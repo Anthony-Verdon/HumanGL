@@ -134,22 +134,17 @@ void Object::defineVertex(std::string line)
     Vertex vertex;
     std::vector<std::string> words;
 
-    #ifdef DEBUG
-        std::cout << "definition of a vertex: " << line << std::endl;
-    #endif
-
     words = Utils::splitLine(line);
     if (words.size() < 4 || words.size() > 5)
-        std::cerr << "number of parameter invalid" << std::endl;
+        throw(Utils::Exception("OBJECT::DEFINE_VERTEX::INVALID_NUMBER_OF_ARGUMENTS"
+        "\nLINE => " + line + "\n"
+        "LINE INDEX => NEED TO ADD PARAM"));
+
     for (size_t i = 1; i < words.size(); i++)
         vertex.push_back(std::stof(words[i]));
     if (words.size() == 4)
         vertex.push_back(1.0f);
 
-    #ifdef DEBUG
-        for (size_t i = 0; i < vertex.size(); i++)
-            std::cout << vertex[i] << std::endl;
-    #endif
     vertices.push_back(vertex);
 }
 
@@ -240,65 +235,56 @@ void Object::defineFace(std::string line)
     const int nbVertices = static_cast<int>(vertices.size());
     std::vector<std::string> words;
 
-    #ifdef DEBUG
-        std::cout << "definition of a face: " << line << std::endl;
-    #endif
-
     words = Utils::splitLine(line);
     if (words.size() < 4)
-        std::cerr << "number of parameter invalid" << std::endl;
+        throw(Utils::Exception("OBJECT::DEFINE_FACE::INVALID_NUMBER_OF_ARGUMENTS"
+        "\nLINE => " + line + "\n"
+        "LINE INDEX => NEED TO ADD PARAM"));
+
     for (size_t i = 1; i < words.size(); i++)
     {
         vertexID = std::stoi(words[i]);
         if (vertexID < -nbVertices || vertexID > nbVertices)
-            std::cerr << "vertex ID invalid" << std::endl;
+            throw(Utils::Exception("OBJECT::DEFINE_FACE::INVALID_VERTEX_INDEX"
+            "\nLINE => " + line + "\n"
+            "LINE INDEX => NEED TO ADD PARAM"));
+
         if (vertexID < 0)
             vertexID = nbVertices + 1 + vertexID;
         face.push_back(vertexID - 1);
     }
-    #ifdef DEBUG
-        for (size_t i = 0; i < face.size(); i++)
-            std::cout << face[i] << std::endl;
-    #endif
     triangulate(face);
-}
-
-void Object::defineObject(std::string line)
-{
-    std::cout << "definition of an object: " << line << std::endl;
 }
 
 void Object::defineSmoothShading(std::string line)
 {
     std::vector<std::string> words;
 
-    #ifdef DEBUG
-        std::cout << "definition of a smooth parameter: " << line << std::endl;
-    #endif
-
     words = Utils::splitLine(line);
     if (words.size() != 2)
-        std::cerr << "number of parameter invalid" << std::endl;
+        throw(Utils::Exception("OBJECT::DEFINE_SMOOTH_SHADING::INVALID_NUMBER_OF_ARGUMENTS"
+        "\nLINE => " + line + "\n"
+        "LINE INDEX => NEED TO ADD PARAM"));
 
     if (words[1] == "on" || words[1] == "1")
         smoothShading = true;
     else if (words[1] == "off" || words[1] == "0")
         smoothShading = false;
     else
-        std::cerr << "parameter value invalid" << std::endl;
+        throw(Utils::Exception("OBJECT::DEFINE_SMOOTH_SHADING::INVALID_ARGUMENT"
+        "\nLINE => " + line + "\n"
+        "LINE INDEX => NEED TO ADD PARAM"));
 }
 
 void Object::defineMTL(std::string line)
 {
     std::vector<std::string> words;
 
-    #ifdef DEBUG
-        std::cout << "definition of a mtllib to use: " << line << std::endl;
-    #endif
-
     words = Utils::splitLine(line);
     if (words.size() != 2)
-        std::cerr << "number of parameter invalid" << std::endl;
+        throw(Utils::Exception("OBJECT::DEFINE_MTL::INVALID_NUMBER_OF_ARGUMENTS"
+        "\nLINE => " + line + "\n"
+        "LINE INDEX => NEED TO ADD PARAM"));
     
     //if file exist and is valid
         //add to material array
@@ -309,13 +295,11 @@ void Object::useMTL(std::string line)
 {
     std::vector<std::string> words;
 
-    #ifdef DEBUG
-        std::cout << "definition of a material to use: " << line << std::endl;
-    #endif
-
     words = Utils::splitLine(line);
     if (words.size() != 2)
-        std::cerr << "number of parameter invalid" << std::endl;
+        throw(Utils::Exception("OBJECT::USE_MTL::INVALID_NUMBER_OF_ARGUMENTS"
+        "\nLINE => " + line + "\n"
+        "LINE INDEX => NEED TO ADD PARAM"));
     
     //if material exist
         //define it for the object

@@ -20,6 +20,11 @@ class Time
         static void updateTime();
         static float getDeltaTime();
         static float getTime();
+
+    class Exception : public std::exception
+	{
+		const char *what(void) const throw();
+	};
 };
 
 #endif

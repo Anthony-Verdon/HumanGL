@@ -1,4 +1,5 @@
 #include "Shader.hpp"
+#include "Utils.hpp"
 
 Shader::Shader()
 {
@@ -21,7 +22,8 @@ Shader& Shader::operator=(const Shader& copy)
 
 Shader::~Shader()
 {
-    glDeleteProgram(ID);
+    if (ID != 0)
+        glDeleteProgram(ID);
 }
 
 const std::string Shader::readShaderFile(const std::string& shaderPath)
@@ -42,7 +44,8 @@ const std::string Shader::readShaderFile(const std::string& shaderPath)
 unsigned int Shader::compileShader(const char *shaderCode, const GLenum &shaderType)
 {
     int success;
-    char infoLog[512];
+    char infoLogChar[512];
+    std::string infoLogString;
 
     unsigned int shader = glCreateShader(shaderType);
     glShaderSource(shader, 1, &shaderCode, NULL);
@@ -51,9 +54,10 @@ unsigned int Shader::compileShader(const char *shaderCode, const GLenum &shaderT
     glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
     if (!success)
     {
-        glGetShaderInfoLog(shader, 512, NULL, infoLog);
-        std::cerr << "ERROR::SHADER::COMPILATION_FAILED" << std::endl;
-        std::cerr << infoLog << std::endl;
+        glGetShaderInfoLog(shader, 512, NULL, infoLogChar);
+        infoLogString = infoLogChar;
+        throw(Utils::Exception("SHADER::COMPILATION FAILED\n"
+        "LOG => " + infoLogString));
     }
     return (shader);
 }
@@ -61,43 +65,35 @@ unsigned int Shader::compileShader(const char *shaderCode, const GLenum &shaderT
 void Shader::compileProgram(const unsigned int &vertex, const unsigned int &fragment)
 {
     int success;
-    char infoLog[512];
+    char infoLogChar[512];
+    std::string infoLogString;
 
     ID = glCreateProgram();
     glAttachShader(ID, vertex);
     glAttachShader(ID, fragment);
     glLinkProgram(ID);
 
+    glDeleteShader(vertex);
+    glDeleteShader(fragment);
+
     glGetProgramiv(ID, GL_LINK_STATUS, &success);
     if (!success)
     {
-        glGetProgramInfoLog(ID, 512, NULL, infoLog);
-        std::cerr <<  "ERROR::SHADER::PROGRAM::LINKING_FAILED" << std::endl;
-        std::cerr << infoLog << std::endl;
-        ID = 0;
-        return ;
+        glGetProgramInfoLog(ID, 512, NULL, infoLogChar);
+        infoLogString = infoLogChar;
+        throw(Utils::Exception("SHADER::PROGRAM::LINKING FAILED\n"
+        "LOG => " + infoLogString));
     }
-
-    glDeleteShader(vertex);
-    glDeleteShader(fragment);
 }
 
 Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)
 {
-    try
-    {
-        const std::string vertexCode = readShaderFile(vertexPath);
-        const std::string fragmentCode = readShaderFile(fragmentPath);
-        const unsigned int vertex = compileShader(vertexCode.c_str(), GL_VERTEX_SHADER);
-        const unsigned int fragment = compileShader(fragmentCode.c_str(), GL_FRAGMENT_SHADER);
-        compileProgram(vertex, fragment);
-    }
-    catch(const std::exception& e)
-    {
-        std::cerr << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
-        std::cerr << e.what() << std::endl;
-        ID = 0;
-    }
+
+     const std::string vertexCode = readShaderFile(vertexPath);
+    const std::string fragmentCode = readShaderFile(fragmentPath);
+    const unsigned int vertex = compileShader(vertexCode.c_str(), GL_VERTEX_SHADER);
+    const unsigned int fragment = compileShader(fragmentCode.c_str(), GL_FRAGMENT_SHADER);
+    compileProgram(vertex, fragment);
 }
 
 void Shader::use()
