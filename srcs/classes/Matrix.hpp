@@ -39,6 +39,7 @@ public:
     void setData(float *values, unsigned int size);
 
     static Matrix rotate(const Matrix &instance, float angle, const Matrix &vector);
+    static Matrix perspective(float fov, float aspect, float near, float far);
 };
 
 std::ostream &operator << (std::ostream &os, const Matrix &instance);

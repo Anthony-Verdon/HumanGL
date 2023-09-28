@@ -17,6 +17,10 @@ std::vector<std::string> Utils::splitLine(std::string line)
     return words;
 }
 
+float Utils::DegToRad(float angle)
+{
+    return (angle * (M_PI / 180));
+}
 Utils::Exception::Exception(const std::string &errorMessage)
 {
     this->errorMessage = errorMessage;

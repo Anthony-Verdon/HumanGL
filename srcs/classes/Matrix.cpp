@@ -265,18 +265,68 @@ Matrix Matrix::rotate(const Matrix &instance, float angle, const Matrix &vector)
         vector.getX() * vector.getY() * (1 - cosAngle) - vector.getZ() * sinAngle,
         vector.getX() * vector.getZ() * (1 - cosAngle) + vector.getY() * sinAngle,
         0,
+        //new line
         vector.getY() * vector.getX() * (1 - cosAngle) + vector.getZ() * sinAngle,
         cosAngle + powf(vector.getY(), 2) * (1 - cosAngle),
         vector.getY() * vector.getZ() * (1 - cosAngle) - vector.getX() * sinAngle,
         0,
+        //new line
         vector.getZ() * vector.getX() * (1 - cosAngle) - vector.getY() * sinAngle,
         vector.getZ() * vector.getY() * (1 - cosAngle) + vector.getX() * sinAngle,
         cosAngle + powf(vector.getZ(), 2) * (1 - cosAngle),
         0,
-        0, 0, 0, 1
+        //new line
+        0,
+        0,
+        0,
+        1
 
     };
     result.setData(rotationMatrixValues, 16);
+    return (result);    
+}
+
+Matrix Matrix::perspective(float fov, float aspect, float near, float far)
+{
+    Matrix result(4, 4);
+
+    float tangent = tanf(Utils::DegToRad(fov / 2));
+    float halfHeight = near * tangent;
+    float halfWidth = halfHeight * aspect;
+
+    float left = halfWidth;
+    float right = -halfWidth;
+    float top = halfHeight;
+    float bottom = -halfHeight;
+
+    /*
+    modification : 
+    add a minus for (0, 0)
+    swap (2, 3) and (3, 2)
+    */
+    float perspectiveMatrixValues[] = {
+        -((2 * near) / (right - left)),
+        0,
+        (right + left) / (right - left),
+        0,
+        //new line
+        0,
+        (2 * near) / (top - bottom),
+        (top + bottom) / (top - bottom),
+        0,
+        //new line
+        0,
+        0,
+        (-(far + near)) / (far - near),
+        -1, 
+        //new line
+        0,
+        0,
+       (-2 * far * near) / (far - near),
+        0
+
+    };
+    result.setData(perspectiveMatrixValues, 16);
     return (result);    
 }
 

@@ -61,14 +61,13 @@ void updateLoop(GLFWwindow* window, const Object &object, unsigned int texture)
         };
         vector.setData(values, 3);
         rotation.uniform(1.0f);
-        rotation = Matrix::rotate(rotation, Time::getTime() * 90.0f * (M_PI / 180), vector);
+        rotation = Matrix::rotate(rotation, Time::getTime() * Utils::DegToRad(90.0f), vector);
         ourShader.setMat4("model", rotation);
-        
+        Matrix projection = Matrix::perspective(camera.getFov(), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
+        ourShader.setMat4("projection", projection);
+
         glm::mat4 view = glm::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(), camera.getUpDirection());
         ourShader.setMat4("view", view);
-        //glm::mat4 projection = glm::mat4(1.0f);
-        glm::mat4 projection = glm::perspective(glm::radians(camera.getFov()), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
-        ourShader.setMat4("projection", projection);
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture);
