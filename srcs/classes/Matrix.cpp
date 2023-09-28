@@ -249,6 +249,7 @@ void Matrix::identity()
 Matrix Matrix::rotate(const Matrix &instance, float angle, const Matrix &vector)
 {
     Matrix result(instance);
+    Matrix vectorNormalized(Matrix::normalize(vector));
 
     if (instance.getRows() != 4 || instance.getColumns() != 4)
         throw(Utils::Exception("MATRIX::ROTATE::MATRIX_INVALID_SIZE\n"
@@ -258,22 +259,23 @@ Matrix Matrix::rotate(const Matrix &instance, float angle, const Matrix &vector)
         throw(Utils::Exception("MATRIX::ROTATE::VECTOR_INVALID_SIZE\n"
         "VECTOR SIZE => " + std::to_string(vector.getRows()) + " * " + std::to_string(vector.getColumns())));
     
+
     float cosAngle = cosf(angle);
     float sinAngle = sinf(angle);
     float rotationMatrixValues[] = {
-        cosAngle + powf(vector.getX(), 2) * (1 - cosAngle),
-        vector.getX() * vector.getY() * (1 - cosAngle) - vector.getZ() * sinAngle,
-        vector.getX() * vector.getZ() * (1 - cosAngle) + vector.getY() * sinAngle,
+        cosAngle + powf(vectorNormalized.getX(), 2) * (1 - cosAngle),
+        vectorNormalized.getX() * vectorNormalized.getY() * (1 - cosAngle) - vectorNormalized.getZ() * sinAngle,
+        vectorNormalized.getX() * vectorNormalized.getZ() * (1 - cosAngle) + vectorNormalized.getY() * sinAngle,
         0,
         //new line
-        vector.getY() * vector.getX() * (1 - cosAngle) + vector.getZ() * sinAngle,
-        cosAngle + powf(vector.getY(), 2) * (1 - cosAngle),
-        vector.getY() * vector.getZ() * (1 - cosAngle) - vector.getX() * sinAngle,
+        vectorNormalized.getY() * vectorNormalized.getX() * (1 - cosAngle) + vectorNormalized.getZ() * sinAngle,
+        cosAngle + powf(vectorNormalized.getY(), 2) * (1 - cosAngle),
+        vectorNormalized.getY() * vectorNormalized.getZ() * (1 - cosAngle) - vectorNormalized.getX() * sinAngle,
         0,
         //new line
-        vector.getZ() * vector.getX() * (1 - cosAngle) - vector.getY() * sinAngle,
-        vector.getZ() * vector.getY() * (1 - cosAngle) + vector.getX() * sinAngle,
-        cosAngle + powf(vector.getZ(), 2) * (1 - cosAngle),
+        vectorNormalized.getZ() * vectorNormalized.getX() * (1 - cosAngle) - vectorNormalized.getY() * sinAngle,
+        vectorNormalized.getZ() * vectorNormalized.getY() * (1 - cosAngle) + vectorNormalized.getX() * sinAngle,
+        cosAngle + powf(vectorNormalized.getZ(), 2) * (1 - cosAngle),
         0,
         //new line
         0,
@@ -322,12 +324,27 @@ Matrix Matrix::perspective(float fov, float aspect, float near, float far)
         //new line
         0,
         0,
-       (-2 * far * near) / (far - near),
+        (-2 * far * near) / (far - near),
         0
-
     };
     result.setData(perspectiveMatrixValues, 16);
     return (result);    
+}
+
+Matrix Matrix::normalize(const Matrix &vector)
+{
+    Matrix result(vector);
+    float length;
+
+    if (vector.getRows() != 3 || vector.getColumns() != 1)
+        throw(Utils::Exception("MATRIX::ROTATE::VECTOR_INVALID_SIZE\n"
+        "VECTOR SIZE => " + std::to_string(vector.getRows()) + " * " + std::to_string(vector.getColumns())));
+
+    length = sqrt(powf(vector.getX(), 2) + powf(vector.getY(), 2) + powf(vector.getZ(), 2));
+    result.setData(0, 0, vector.getX() / length);
+    result.setData(1, 0, vector.getY() / length);
+    result.setData(2, 0, vector.getZ() / length);
+    return (result);
 }
 
 std::ostream& operator << (std::ostream &os, const Matrix &instance)
