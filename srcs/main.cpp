@@ -89,7 +89,7 @@ void updateLoop(GLFWwindow* window, const Object &object, unsigned int texture)
         rotation.uniform(1.0f);
         rotation = Matrix::rotate(rotation, Time::getTime() * Utils::DegToRad(90.0f), Matrix::normalize(vector));
         ourShader.setMat4("model", rotation);
-        Matrix projection = Matrix::perspective(45.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
+        Matrix projection = Matrix::perspective(camera.getFov(), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
         ourShader.setMat4("projection", projection);
         Matrix view = Matrix::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(), camera.getUpDirection());
         ourShader.setMat4("view", view);

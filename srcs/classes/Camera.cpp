@@ -199,11 +199,11 @@ void mouse_callback(GLFWwindow* window, double xPos, double yPos)
 void scroll_callback(GLFWwindow *window, double xOffset, double yOffset)
 {
     (void)xOffset;
-
+    
     Camera *camera = reinterpret_cast<Camera *>(glfwGetWindowUserPointer(window));
     camera->addToFov((float)-yOffset);
-    if (camera->getFov() > 1.0f)
+    if (camera->getFov() < 1.0f)
         camera->setFov(1.0f);
-    else if (camera->getFov() < -45.0f)
-        camera->setFov(-45.0f);
+    else if (camera->getFov() > 45.0f)
+        camera->setFov(45.0f);
 }
