@@ -36,9 +36,9 @@ void updateCamera(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         camera->addToPosition(camera->getFrontDirection() * camera->getSpeed() * Time::getDeltaTime());
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera->addToPosition(-camera->getFrontDirection() * camera->getSpeed() * Time::getDeltaTime());
+        camera->addToPosition(-1 * camera->getFrontDirection() * camera->getSpeed() * Time::getDeltaTime());
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera->addToPosition(-camera->getRightDirection() * camera->getSpeed() * Time::getDeltaTime());
+        camera->addToPosition(-1 * camera->getRightDirection() * camera->getSpeed() * Time::getDeltaTime());
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera->addToPosition(camera->getRightDirection() * camera->getSpeed() * Time::getDeltaTime());
 }

@@ -58,6 +58,7 @@ void updateLoop(GLFWwindow* window, const Object &object, unsigned int texture)
     glfwSetWindowUserPointer(window, &camera);
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
+
     while(!glfwWindowShouldClose(window))
     {
         Time::updateTime();
@@ -66,13 +67,13 @@ void updateLoop(GLFWwindow* window, const Object &object, unsigned int texture)
         
         Matrix direction(3, 1);
         float directionValues[] = {
-            cos(Utils::DegToRad(camera.getYaw())) * cos(Utils::DegToRad(camera.getPitch())),
-            sin(Utils::DegToRad(camera.getPitch())),
-            sin(Utils::DegToRad(camera.getYaw())) * cos(Utils::DegToRad(camera.getPitch()))
+            cosf(Utils::DegToRad(camera.getYaw())) * cosf(Utils::DegToRad(camera.getPitch())),
+            sinf(Utils::DegToRad(camera.getPitch())),
+            sinf(Utils::DegToRad(camera.getYaw())) * cosf(Utils::DegToRad(camera.getPitch()))
         };
         direction.setData(directionValues, 3);
         camera.setFrontDirection(Matrix::normalize(direction));
-        camera.setRightDirection(glm::normalize(glm::cross(camera.getFrontDirection(), camera.getUpDirection())));
+        camera.setRightDirection(Matrix::normalize(Matrix::crossProduct(camera.getFrontDirection(), camera.getUpDirection())));
 
         ourShader.use();
         ourShader.setInt("texture1", 0);
@@ -90,7 +91,7 @@ void updateLoop(GLFWwindow* window, const Object &object, unsigned int texture)
         ourShader.setMat4("model", rotation);
         Matrix projection = Matrix::perspective(45.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
         ourShader.setMat4("projection", projection);
-        glm::mat4 view = glm::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(), camera.getUpDirection());
+        Matrix view = Matrix::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(), camera.getUpDirection());
         ourShader.setMat4("view", view);
 
         glActiveTexture(GL_TEXTURE0);

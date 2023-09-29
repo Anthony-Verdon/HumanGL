@@ -44,7 +44,7 @@ Matrix::~Matrix()
 Matrix Matrix::operator+(const Matrix &instance) const
 {
     Matrix result(rows, columns);
-    int value;
+    float value;
 
     if (rows != instance.getRows() || columns != instance.getColumns())
         throw(Utils::Exception("MATRIX::OPERATOR +::MATRIX_INCOMPATIBLE\n"
@@ -65,7 +65,7 @@ Matrix Matrix::operator+(const Matrix &instance) const
 Matrix Matrix::operator-(const Matrix &instance) const
 {
     Matrix result(rows, columns);
-    int value;
+    float value;
 
     if (rows != instance.getRows() || columns != instance.getColumns())
         throw(Utils::Exception("MATRIX::OPERATOR -::MATRIX_INCOMPATIBLE\n"
@@ -87,7 +87,7 @@ Matrix Matrix::operator-(const Matrix &instance) const
 Matrix Matrix::operator*(const Matrix &instance) const
 {
     Matrix result(rows, instance.getColumns());
-    int value;
+    float value;
 
     if (columns != instance.getRows())
         throw(Utils::Exception("MATRIX::OPERATOR *::MATRIX_INCOMPATIBLE\n"
@@ -111,7 +111,7 @@ Matrix Matrix::operator*(const Matrix &instance) const
 Matrix Matrix::operator*(float number) const
 {
     Matrix result(rows, columns);
-    double value;
+    float value;
 
     for (size_t y = 0; y < result.getRows(); y++)
     {
@@ -124,10 +124,10 @@ Matrix Matrix::operator*(float number) const
     return (result);
 }
 
-Matrix operator*(int number, const Matrix &instance)
+Matrix operator*(float number, const Matrix &instance)
 {
     Matrix result(instance.getRows(), instance.getColumns());
-    double value;
+    float value;
 
     for (size_t y = 0; y < result.getRows(); y++)
     {
@@ -241,7 +241,7 @@ void Matrix::identity()
         throw(Utils::Exception("MATRIX::IDENTITY::INVALID_SIZE\n"
         "MATRIX SIZE => " + std::to_string(rows) + " * " + std::to_string(columns)));
     
-    uniform(1);
+    uniform(0);
     for (size_t i = 0; i < rows; i++)
         setData(i, i, 1);
 }
@@ -341,9 +341,88 @@ Matrix Matrix::normalize(const Matrix &vector)
         "VECTOR SIZE => " + std::to_string(vector.getRows()) + " * " + std::to_string(vector.getColumns())));
 
     length = sqrt(powf(vector.getX(), 2) + powf(vector.getY(), 2) + powf(vector.getZ(), 2));
-    result.setData(0, 0, vector.getX() / length);
-    result.setData(1, 0, vector.getY() / length);
-    result.setData(2, 0, vector.getZ() / length);
+    if (length != 0)
+    {
+        result.setData(0, 0, vector.getX() / length);
+        result.setData(1, 0, vector.getY() / length);
+        result.setData(2, 0, vector.getZ() / length);
+    }
+    return (result);
+}
+
+Matrix Matrix::crossProduct(const Matrix &vectorA, const Matrix &vectorB)
+{
+    Matrix result(3, 1);
+    
+
+    if (vectorA.getRows() != 3 || vectorA.getColumns() != 1)
+        throw(Utils::Exception("MATRIX::CROSS_PRODUCT::VECTOR_A_INVALID_SIZE\n"
+        "VECTOR SIZE => " + std::to_string(vectorA.getRows()) + " * " + std::to_string(vectorA.getColumns())));
+    if (vectorB.getRows() != 3 || vectorB.getColumns() != 1)
+        throw(Utils::Exception("MATRIX::CROSS_PRODUCT::VECTOR_B_INVALID_SIZE\n"
+        "VECTOR SIZE => " + std::to_string(vectorB.getRows()) + " * " + std::to_string(vectorB.getColumns())));
+    
+    float pointI[] = {
+        vectorA.getX(),
+        vectorA.getY(),
+        vectorA.getZ()
+    };
+
+    float pointJ[] = {
+        vectorB.getX(),
+        vectorB.getY(),
+        vectorB.getZ()
+    };
+
+    float vectorIJ[] = {
+        pointJ[0] - pointI[0],
+        pointJ[1] - pointI[1],
+        pointJ[2] - pointI[2]
+    };
+
+    float crossValues[] = {
+        vectorA.getY() * vectorIJ[2] - vectorA.getZ() * vectorIJ[1],
+        vectorA.getZ() * vectorIJ[0] - vectorA.getX() * vectorIJ[2],
+        vectorA.getX() * vectorIJ[1] - vectorA.getY() * vectorIJ[0]
+    };
+    result.setData(crossValues, 3);
+    return (result);
+}
+
+float Matrix::dotProduct(const Matrix &vectorA, const Matrix &vectorB)
+{
+    float dotProduct;
+    
+    if (vectorA.getRows() != 3 || vectorA.getColumns() != 1)
+        throw(Utils::Exception("MATRIX::DOT_PRODUCT::VECTOR_A_INVALID_SIZE\n"
+        "VECTOR SIZE => " + std::to_string(vectorA.getRows()) + " * " + std::to_string(vectorA.getColumns())));
+    if (vectorB.getRows() != 3 || vectorB.getColumns() != 1)
+        throw(Utils::Exception("MATRIX::DOT_PRODUCT::VECTOR_B_INVALID_SIZE\n"
+        "VECTOR SIZE => " + std::to_string(vectorB.getRows()) + " * " + std::to_string(vectorB.getColumns())));
+    
+    dotProduct = vectorA.getX() * vectorB.getX() + vectorA.getY() * vectorB.getY() + vectorA.getZ() * vectorB.getZ();
+    return (dotProduct);
+}
+
+Matrix Matrix::lookAt(const Matrix &position, const Matrix &target, const Matrix &initialUpVector)
+{
+    Matrix front(Matrix::normalize(position - target));
+    Matrix right(Matrix::normalize(Matrix::crossProduct(initialUpVector, front)));
+    Matrix up(Matrix::normalize(Matrix::crossProduct(front, right)));
+    Matrix translation(3, 1);
+    Matrix result(4, 4);
+
+    translation.setData(0, 0, Matrix::dotProduct(position, right));
+    translation.setData(1, 0, Matrix::dotProduct(position, up));
+    translation.setData(2, 0, Matrix::dotProduct(position, front));
+
+    float values[] = {
+        right.getX(), up.getX(), front.getX(), 0,
+        right.getY(), up.getY(), front.getY(), 0,
+        right.getZ(), up.getZ(), front.getZ(), 0,
+        -translation.getX(), -translation.getY(), -translation.getZ(), 1
+    };
+    result.setData(values, 16);
     return (result);
 }
 
