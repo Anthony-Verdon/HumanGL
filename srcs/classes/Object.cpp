@@ -1,13 +1,15 @@
 #include "Object.hpp"
 #include "Utils.hpp"
 
-ParsingFunctions Object::parsingFunctions = {
+ObjectParsingFunctions Object::parsingFunctions = {
         {"s", &Object::defineSmoothShading},
         {"v", &Object::defineVertex},
         {"f", &Object::defineFace},
         {"mtllib", &Object::defineMTL},
         {"usemtl", &Object::useMTL}
 };
+
+std::vector<Material> Object::materials;
 
 Object::Object()
 {
@@ -129,7 +131,7 @@ void Object::setSmoothShading(bool smoothShading)
     this->smoothShading = smoothShading;
 }
 
-void Object::defineVertex(std::string line)
+void Object::defineVertex(std::string line, unsigned int lineIndex)
 {
     Vertex vertex;
     std::vector<std::string> words;
@@ -138,7 +140,7 @@ void Object::defineVertex(std::string line)
     if (words.size() < 4 || words.size() > 5)
         throw(Utils::Exception("OBJECT::DEFINE_VERTEX::INVALID_NUMBER_OF_ARGUMENTS"
         "\nLINE => " + line + "\n"
-        "LINE INDEX => NEED TO ADD PARAM"));
+        "LINE INDEX => " + std::to_string(lineIndex)));
 
     for (size_t i = 1; i < words.size(); i++)
         vertex.push_back(std::stof(words[i]));
@@ -228,7 +230,7 @@ void Object::triangulate(Face &face)
     faces.push_back(face);
 }
 
-void Object::defineFace(std::string line)
+void Object::defineFace(std::string line, unsigned int lineIndex)
 {
     Face face;
     int vertexID;
@@ -239,7 +241,7 @@ void Object::defineFace(std::string line)
     if (words.size() < 4)
         throw(Utils::Exception("OBJECT::DEFINE_FACE::INVALID_NUMBER_OF_ARGUMENTS"
         "\nLINE => " + line + "\n"
-        "LINE INDEX => NEED TO ADD PARAM"));
+        "LINE INDEX => " + std::to_string(lineIndex)));
 
     for (size_t i = 1; i < words.size(); i++)
     {
@@ -247,7 +249,7 @@ void Object::defineFace(std::string line)
         if (vertexID < -nbVertices || vertexID > nbVertices)
             throw(Utils::Exception("OBJECT::DEFINE_FACE::INVALID_VERTEX_INDEX"
             "\nLINE => " + line + "\n"
-            "LINE INDEX => NEED TO ADD PARAM"));
+            "LINE INDEX => " + std::to_string(lineIndex)));
 
         if (vertexID < 0)
             vertexID = nbVertices + 1 + vertexID;
@@ -256,7 +258,7 @@ void Object::defineFace(std::string line)
     triangulate(face);
 }
 
-void Object::defineSmoothShading(std::string line)
+void Object::defineSmoothShading(std::string line, unsigned int lineIndex)
 {
     std::vector<std::string> words;
 
@@ -264,7 +266,7 @@ void Object::defineSmoothShading(std::string line)
     if (words.size() != 2)
         throw(Utils::Exception("OBJECT::DEFINE_SMOOTH_SHADING::INVALID_NUMBER_OF_ARGUMENTS"
         "\nLINE => " + line + "\n"
-        "LINE INDEX => NEED TO ADD PARAM"));
+        "LINE INDEX => " + std::to_string(lineIndex)));
 
     if (words[1] == "on" || words[1] == "1")
         smoothShading = true;
@@ -273,10 +275,10 @@ void Object::defineSmoothShading(std::string line)
     else
         throw(Utils::Exception("OBJECT::DEFINE_SMOOTH_SHADING::INVALID_ARGUMENT"
         "\nLINE => " + line + "\n"
-        "LINE INDEX => NEED TO ADD PARAM"));
+        "LINE INDEX => " + std::to_string(lineIndex)));
 }
 
-void Object::defineMTL(std::string line)
+void Object::defineMTL(std::string line, unsigned int lineIndex)
 {
     std::vector<std::string> words;
 
@@ -284,14 +286,19 @@ void Object::defineMTL(std::string line)
     if (words.size() != 2)
         throw(Utils::Exception("OBJECT::DEFINE_MTL::INVALID_NUMBER_OF_ARGUMENTS"
         "\nLINE => " + line + "\n"
-        "LINE INDEX => NEED TO ADD PARAM"));
+        "LINE INDEX => " + std::to_string(lineIndex)));
     
-    //if file exist and is valid
-        //add to material array
-
+    Material material(words[1]);
+    for (size_t i = 0; i < materials.size(); i++)
+    {
+        if (materials[i].getName() == words[1])
+        throw(Utils::Exception("OBJECT::DEFINE_MTL::REDEFINITION_OF_MATERIAL"
+        "\nMATERIAL NAME => " + words[1]));
+    }
+    materials.push_back(material);
 }
 
-void Object::useMTL(std::string line)
+void Object::useMTL(std::string line, unsigned int lineIndex)
 {
     std::vector<std::string> words;
 
@@ -299,10 +306,18 @@ void Object::useMTL(std::string line)
     if (words.size() != 2)
         throw(Utils::Exception("OBJECT::USE_MTL::INVALID_NUMBER_OF_ARGUMENTS"
         "\nLINE => " + line + "\n"
-        "LINE INDEX => NEED TO ADD PARAM"));
+        "LINE INDEX => " + std::to_string(lineIndex)));
     
-    //if material exist
-        //define it for the object
+    for (size_t i = 0; i < materials.size(); i++)
+    {
+        if (materials[i].getName() == words[1])
+        {
+            materialIndex = i;
+            return ;
+        }
+    }
+    throw(Utils::Exception("OBJECT::USE_MTL::UNKNOWN_MATERIAL"
+    "\nMATERIAL NAME => " + words[1]));
 }
 
 void Object::initVAO()

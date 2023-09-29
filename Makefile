@@ -9,7 +9,8 @@ SRCS := srcs/main.cpp \
 		srcs/classes/Time.cpp \
 		srcs/classes/Object.cpp \
 		srcs/classes/Utils.cpp \
-		srcs/classes/Matrix.cpp
+		srcs/classes/Matrix.cpp \
+		srcs/classes/Material.cpp
 
 OBJS := $(SRCS:.cpp=.o)
 

@@ -185,4 +185,9 @@ int main(int argc, char **argv)
         std::cerr << std::endl << e.what() << std::endl;
         return (-1);
     }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << std::endl;
+        return (-1);
+    }
 }

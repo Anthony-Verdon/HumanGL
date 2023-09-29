@@ -10,14 +10,15 @@
 #include <map>
 #include <cmath>
 #include "../../includes/glad/glad.h"
+#include "Material.hpp"
 
 class Object;
 
 typedef std::vector<float> Vertex;
 typedef std::vector<Vertex> Vertices;
 typedef std::vector<int> Face;
-typedef std::map<std::string, void (Object::*)(std::string)> ParsingFunctions;
-typedef std::map<std::string, void (Object::*)(std::string)>::iterator ParsingFunctionsIterator;
+typedef std::map<std::string, void (Object::*)(std::string, unsigned int)> ObjectParsingFunctions;
+typedef std::map<std::string, void (Object::*)(std::string, unsigned int)>::iterator ObjectParsingFunctionsIterator;
 
 class Object
 {
@@ -27,22 +28,24 @@ class Object
         bool insideTriangle(const Vertex &p, const Vertex &a, const Vertex &b, const Vertex &c) const;
         void triangulate(Face &face);
 
+        void defineVertex(std::string line, unsigned int lineIndex);
+        void defineFace(std::string line, unsigned int lineIndex);
+        void defineSmoothShading(std::string line, unsigned int lineIndex);
+        void defineMTL(std::string line, unsigned int lineIndex);
+        void useMTL(std::string line, unsigned int lineIndex);
+
         std::string name;
         Vertices vertices;
         std::vector<Face> faces;
         bool smoothShading;
-
+        unsigned int materialIndex;
+        
         bool VAOInit;
         unsigned int VAO;
         unsigned int VBO;
         unsigned int EBO;
 
-        //Material array
-
-        //position
-        //rotation
-        //scale ?
-        // ... (everything link to matrices)
+        static std::vector<Material> materials;
 
     public:
         Object(const std::string &name);
@@ -63,15 +66,9 @@ class Object
         void setFaces(const std::vector<Face> &faces);
         void setSmoothShading(bool smoothShading);
 
-        void defineVertex(std::string line);
-        void defineFace(std::string line);
-        void defineSmoothShading(std::string line);
-        void defineMTL(std::string line);
-        void useMTL(std::string line);
-
         void initVAO();
 
-        static ParsingFunctions parsingFunctions;
+        static ObjectParsingFunctions parsingFunctions;
 };
 
 std::ostream& operator << (std::ostream &os, const Object &instance);
