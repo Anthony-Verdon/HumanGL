@@ -3,9 +3,6 @@
 
 #include "../../includes/glad/glad.h"
 #include <GLFW/glfw3.h>
-#include "../../includes/glm/glm/glm.hpp"
-#include "../../includes/glm/glm/gtc/matrix_transform.hpp"
-#include "../../includes/glm/glm/gtc/type_ptr.hpp"
 
 #include "Matrix.hpp"
 

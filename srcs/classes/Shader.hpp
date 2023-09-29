@@ -3,9 +3,6 @@
 
 #include "../../includes/glad/glad.h"
 #include <GLFW/glfw3.h>
-#include "../../includes/glm/glm/glm.hpp"
-#include "../../includes/glm/glm/gtc/matrix_transform.hpp"
-#include "../../includes/glm/glm/gtc/type_ptr.hpp"
 
 #include <iostream>
 #include <string>
@@ -43,7 +40,6 @@ class Shader
         void setMat2(const std::string &name, const Matrix &mat) const;
         void setMat3(const std::string &name, const Matrix &mat) const;
         void setMat4(const std::string &name, const Matrix &mat) const;
-        void setMat4(const std::string &name, const glm::mat4 &mat) const;
 
         unsigned int getID() const;
 };
