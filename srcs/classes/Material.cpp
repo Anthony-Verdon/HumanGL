@@ -1,43 +1,17 @@
 #include "Material.hpp"
 
 MaterialParsingFunctions Material::parsingFunctions = {
-        {"newmtl", &Material::ignore},
-        {"Ka", &Material::ignore},
-        {"Ks", &Material::ignore},
-        {"Kd", &Material::ignore},
-        {"Ns", &Material::ignore},
-        {"Ni", &Material::ignore},
-        {"d", &Material::ignore},
-        {"illum", &Material::ignore},
+        {"Ka", &Material::defineAmbiantColor},
+        {"Ks", &Material::defineSpecularColor},
+        {"Kd", &Material::defineDiffuseColor},
+        {"Ns", &Material::defineSpecularExponent},
+        {"Ni", &Material::defineRefractionIndex},
+        {"d", &Material::defineOpacity},
+        {"illum", &Material::defineIllum},
 };
 
 Material::Material()
 {
-}
-
-void Material::parseFile()
-{
-    std::stringstream fileStream;
-    MaterialParsingFunctionsIterator it;
-    std::string line;
-    std::string word;
-    unsigned int lineIndex;
-
-    fileStream = Utils::readFile(name);
-    lineIndex = 0;
-    while (std::getline(fileStream, line))
-    {
-        line = line.substr(0, line.find("#"));
-        word = line.substr(0, line.find(" "));
-        it = Material::parsingFunctions.find(word);
-        if (it != Material::parsingFunctions.end())
-            (this->*it->second)(line, lineIndex);
-        else if (line.length() != 0)
-            throw(Utils::Exception("MATERIAL::PARSE_FILE::UNKNOWN_DESCRIPTOR"
-            "\nLINE => " + line + "\n"
-            "LINE INDEX => " + std::to_string(lineIndex)));
-        lineIndex++;
-    }
 }
 
 Material::Material(const std::string &name)
@@ -46,9 +20,9 @@ Material::Material(const std::string &name)
     for (size_t i = 0; i < 3; i++)
         colors[i] = 0;
     specularExponent = 0;
+    refractionIndex = 0;
     opacity = 1;
     illum = 1;
-    parseFile();
 }
 
 Material::Material(const Material &copy)
@@ -146,8 +120,10 @@ void Material::use()
     std::cout << "use material " << name << std::endl;
 }
 
-void Material::ignore(std::string line, unsigned int lineIndex)
-{
-    (void)line, (void)lineIndex;
-    std::cout << "ignored" << std::endl;
-}
+void Material::defineAmbiantColor(std::string line, unsigned int lineIndex) {(void)line, (void)lineIndex;}
+void Material::defineSpecularColor(std::string line, unsigned int lineIndex) {(void)line, (void)lineIndex;}
+void Material::defineDiffuseColor(std::string line, unsigned int lineIndex) {(void)line, (void)lineIndex;}
+void Material::defineSpecularExponent(std::string line, unsigned int lineIndex) {(void)line, (void)lineIndex;}
+void Material::defineRefractionIndex(std::string line, unsigned int lineIndex) {(void)line, (void)lineIndex;}
+void Material::defineOpacity(std::string line, unsigned int lineIndex) {(void)line, (void)lineIndex;}
+void Material::defineIllum(std::string line, unsigned int lineIndex) {(void)line, (void)lineIndex;}

@@ -18,16 +18,20 @@ class Material
 {
 private:
     Material();
-    void parseFile();
+    void defineAmbiantColor(std::string line, unsigned int lineIndex);
+    void defineSpecularColor(std::string line, unsigned int lineIndex);
+    void defineDiffuseColor(std::string line, unsigned int lineIndex);
+    void defineSpecularExponent(std::string line, unsigned int lineIndex);
+    void defineRefractionIndex(std::string line, unsigned int lineIndex);
+    void defineOpacity(std::string line, unsigned int lineIndex);
+    void defineIllum(std::string line, unsigned int lineIndex);
 
     std::string name;
     unsigned int colors[3];
     float specularExponent;
+    float refractionIndex;
     float opacity;
     unsigned int illum;
-
-    void ignore(std::string line, unsigned int lineIndex);
-    static MaterialParsingFunctions parsingFunctions;
 
 public:
     Material(const std::string &name);
@@ -39,6 +43,7 @@ public:
     const unsigned int *getColors() const;
     unsigned int getColor(unsigned int index) const;
     float getSpecularExponent() const;
+    float getRefractionIndex() const;
     float getOpacity() const;
     float getIllum() const;
 
@@ -46,10 +51,12 @@ public:
     void setColors(unsigned int colors[3]);
     void setColor(unsigned int color, unsigned int index);
     void setSpecularExponent(float specularExponent);
+    void setRefractionIndex(float refractionIndex);
     void setOpacity(float opacity);
     void setIllum(float illum);
 
     void use();
+    static MaterialParsingFunctions parsingFunctions;
 };
 
 #endif

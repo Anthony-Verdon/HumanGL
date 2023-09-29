@@ -2,6 +2,7 @@ SRCS := srcs/main.cpp \
 		srcs/setupGLFW.cpp \
 		srcs/input.cpp \
 		srcs/parsing/parseObjFile.cpp \
+		srcs/parsing/parseMtlFile.cpp \
 		includes/glad/glad.cpp \
 		srcs/classes/Camera.cpp \
 		srcs/classes/Shader.cpp \

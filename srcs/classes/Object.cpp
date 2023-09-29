@@ -374,3 +374,8 @@ std::ostream& operator << (std::ostream &os, const Object &instance)
     }
     return (os);
 }
+
+void Object::addMaterial(Material material)
+{
+    materials.push_back(material);
+}

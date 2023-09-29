@@ -68,6 +68,7 @@ class Object
 
         void initVAO();
 
+        static void addMaterial(Material material);
         static ObjectParsingFunctions parsingFunctions;
 };
 
