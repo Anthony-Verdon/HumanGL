@@ -13,7 +13,7 @@ class Utils
         static std::vector<std::string> splitLine(std::string line);
         static float DegToRad(float angle);
         static std::stringstream readFile(const std::string &path);
-        static unsigned int convertRGBtoNum(float R,float G, float B);
+        static unsigned int convertRGBtoNum(unsigned char R, unsigned char G, unsigned char B);
         static Matrix convertNumToRGB(unsigned int number);
 
         class Exception : public std::exception

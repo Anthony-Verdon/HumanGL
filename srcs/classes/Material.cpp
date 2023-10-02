@@ -12,13 +12,21 @@ MaterialParsingFunctions Material::parsingFunctions = {
 
 Material::Material()
 {
+    for (size_t j = 0; j < 3; j++)
+        delete []colors[j];
+    delete []colors;
 }
 
 Material::Material(const std::string &name)
 {
     this->name = name;
+    colors = new float*[3];
     for (size_t i = 0; i < 3; i++)
-        colors[i] = 0;
+    {
+        colors[i] = new float[3];
+        for (size_t j = 0; j < 3; j++)
+            colors[i][j] = 0;
+    }
     specularExponent = 0;
     refractionIndex = 0;
     opacity = 1;
@@ -27,6 +35,9 @@ Material::Material(const std::string &name)
 
 Material::Material(const Material &copy)
 {
+    colors = new float*[3];
+    for (size_t j = 0; j < 3; j++)
+        colors[j] = new float[3];
     *this = copy;
 }
 
@@ -36,7 +47,10 @@ Material &Material::operator=(const Material &copy)
     {
         name = copy.getName();
         for (size_t i = 0; i < 3; i++)
-            this->colors[i] = copy.getColor(i);
+        {
+            for (size_t j = 0; j < 3; j++)
+                colors[i][j] = copy.getColor(i)[j];
+        }
         specularExponent = copy.getSpecularExponent();
         opacity = copy.getOpacity();
         illum = copy.getIllum();
@@ -53,12 +67,12 @@ std::string Material::getName() const
     return (name);
 }
 
-const unsigned int *Material::getColors() const
+float **Material::getColors() const
 {
-    return (&colors[0]);
+    return (colors);
 }
 
-unsigned int Material::getColor(unsigned int index) const
+float *Material::getColor(unsigned int index) const
 {
     if (index >= 3)
         throw(Utils::Exception("MATERIAL::GET_COLOR::INVALID_INDEX"
@@ -86,18 +100,22 @@ void Material::setName(const std::string &name)
     this->name = name;
 }
 
-void Material::setColors(unsigned int colors[3])
+void Material::setColors(float colors[3][3])
 {
     for (size_t i = 0; i < 3; i++)
-        this->colors[i] = colors[i];
+    {
+        for (size_t j = 0; j < 3; j++)
+            this->colors[i][j] = colors[i][j];
+    }
 }
 
-void Material::setColor(unsigned int color, unsigned int index)
+void Material::setColor(float color[3], unsigned int index)
 {
     if (index >= 3)
         throw(Utils::Exception("MATERIAL::SET_COLOR::INVALID_INDEX"
         "\nINDEX => " + std::to_string(index)));
-    this->colors[index] = color;
+    for (size_t j = 0; j < 3; j++)
+        this->colors[index][j] = color[j];
 }
 void Material::setSpecularExponent(float specularExponent)
 {
@@ -130,7 +148,14 @@ void Material::defineAmbiantColor(std::string line, unsigned int lineIndex)
         "\nLINE => " + line + "\n"
         "LINE INDEX => " + std::to_string(lineIndex)));
 
-    colors[AMBIANT_COLOR] = Utils::convertRGBtoNum(std::stof(words[1]), std::stof(words[2]), std::stof(words[3]));
+    for (size_t i = 0; i < 3; i++)
+    {
+        colors[AMBIANT_COLOR][i] = std::stof(words[i + 1]);
+        if (colors[AMBIANT_COLOR][i] < 0 || colors[AMBIANT_COLOR][i] > 1)
+            throw(Utils::Exception("MATERIAL::DEFINE_AMBIANT_COLOR::INVALID_ARGUMENT"
+            "\nLINE => " + line + "\n"
+            "LINE INDEX => " + std::to_string(lineIndex)));
+    }
 }
 
 void Material::defineSpecularColor(std::string line, unsigned int lineIndex)
@@ -143,7 +168,14 @@ void Material::defineSpecularColor(std::string line, unsigned int lineIndex)
         "\nLINE => " + line + "\n"
         "LINE INDEX => " + std::to_string(lineIndex)));
 
-    colors[SPECULAR_COLOR] = Utils::convertRGBtoNum(std::stof(words[1]), std::stof(words[2]), std::stof(words[3]));
+    for (size_t i = 0; i < 3; i++)
+    {
+        colors[SPECULAR_COLOR][i] = std::stof(words[i + 1]);
+        if (colors[SPECULAR_COLOR][i] < 0 || colors[SPECULAR_COLOR][i] > 1)
+            throw(Utils::Exception("MATERIAL::DEFINE_SPECULAR_COLOR::INVALID_ARGUMENT"
+            "\nLINE => " + line + "\n"
+            "LINE INDEX => " + std::to_string(lineIndex)));
+    }
 }
 
 void Material::defineDiffuseColor(std::string line, unsigned int lineIndex)
@@ -156,7 +188,14 @@ void Material::defineDiffuseColor(std::string line, unsigned int lineIndex)
         "\nLINE => " + line + "\n"
         "LINE INDEX => " + std::to_string(lineIndex)));
 
-    colors[DIFFUSE_COLOR] = Utils::convertRGBtoNum(std::stof(words[1]), std::stof(words[2]), std::stof(words[3]));
+    for (size_t i = 0; i < 3; i++)
+    {
+        colors[DIFFUSE_COLOR][i] = std::stof(words[i + 1]);
+        if (colors[DIFFUSE_COLOR][i] < 0 || colors[DIFFUSE_COLOR][i] > 1)
+            throw(Utils::Exception("MATERIAL::DEFINE_DIFFUSE_COLOR::INVALID_ARGUMENT"
+            "\nLINE => " + line + "\n"
+            "LINE INDEX => " + std::to_string(lineIndex)));
+    }
 }
 
 void Material::defineSpecularExponent(std::string line, unsigned int lineIndex)

@@ -27,7 +27,7 @@ private:
     void defineIllum(std::string line, unsigned int lineIndex);
 
     std::string name;
-    unsigned int colors[3];
+    float **colors;
     float specularExponent;
     float refractionIndex;
     float opacity;
@@ -40,16 +40,16 @@ public:
     ~Material();
 
     std::string getName() const;
-    const unsigned int *getColors() const;
-    unsigned int getColor(unsigned int index) const;
+    float **getColors() const;
+    float *getColor(unsigned int index) const;
     float getSpecularExponent() const;
     float getRefractionIndex() const;
     float getOpacity() const;
     float getIllum() const;
 
     void setName(const std::string &name);
-    void setColors(unsigned int colors[3]);
-    void setColor(unsigned int color, unsigned int index);
+    void setColors(float colors[3][3]);
+    void setColor(float color[3], unsigned int index);
     void setSpecularExponent(float specularExponent);
     void setRefractionIndex(float refractionIndex);
     void setOpacity(float opacity);
