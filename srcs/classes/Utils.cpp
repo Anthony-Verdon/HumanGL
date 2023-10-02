@@ -37,9 +37,18 @@ std::stringstream Utils::readFile(const std::string &path)
 
 unsigned int Utils::convertRGBtoNum(unsigned char R, unsigned char G, unsigned char B)
 {
-    return ((R << 16) | (G <<  8) | B);
+    return (((R * 255) << 16) | ((G * 255) <<  8) | (B * 255));
 }
 
+Matrix Utils::convertNumToRGB(unsigned int number)
+{
+    Matrix color(3, 1);
+
+    color.setData(0, 0, number & 0xff0000);
+    color.setData(1, 0, number & 0x00ff00);
+    color.setData(2, 0, number & 0x0000ff);
+    return (color);
+}
 Utils::Exception::Exception(const std::string &errorMessage)
 {
     this->errorMessage = errorMessage;

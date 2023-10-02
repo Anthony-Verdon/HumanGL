@@ -6,4 +6,5 @@
 #include <string>
 
 std::vector<Object> parseObjFile(const std::string &objPath);
+void parseMtlFile(std::string path);
 #endif

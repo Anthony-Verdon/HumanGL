@@ -77,6 +77,7 @@ void updateLoop(GLFWwindow* window, const Object &object, unsigned int texture)
 
         ourShader.use();
         ourShader.setInt("texture1", 0);
+        ourShader.setVec3("color", Utils::convertNumToRGB(Object::getMaterial(object.getMaterialIndex()).getColor(AMBIANT_COLOR)));
 
         Matrix rotation(4, 4);
         Matrix vector(3, 1);

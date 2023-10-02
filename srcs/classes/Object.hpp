@@ -59,16 +59,20 @@ class Object
         std::vector<Face> getFaces() const;
         unsigned int *getFacesIntoArray() const;
         bool getSmoothShading() const;
-
+        unsigned int getMaterialIndex() const;
         unsigned int getVAO() const;
+
         void setName(const std::string &name);
         void setVertices(const Vertices &vertices);
         void setFaces(const std::vector<Face> &faces);
         void setSmoothShading(bool smoothShading);
+        void setMaterialIndex(unsigned int index);
 
         void initVAO();
 
         static void addMaterial(Material material);
+        static std::vector<Material> getMaterials();
+        static Material getMaterial(unsigned int index);
         static ObjectParsingFunctions parsingFunctions;
 };
 

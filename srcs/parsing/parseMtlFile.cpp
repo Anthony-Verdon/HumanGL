@@ -27,6 +27,7 @@ void parseMtlFile(std::string path)
                 throw(Utils::Exception("PARSING::DEFINE_OBJECT::INVALID_NUMBER_OF_ARGUMENTS"
                 "\nLINE => " + line + "\n"
                 "LINE INDEX => " + std::to_string(lineIndex)));
+
             Object::addMaterial(material);
             Material new_material(words[1]);
             material = new_material;
@@ -37,4 +38,5 @@ void parseMtlFile(std::string path)
             "LINE INDEX => " + std::to_string(lineIndex)));
         lineIndex++;
     }
+    Object::addMaterial(material);
 }

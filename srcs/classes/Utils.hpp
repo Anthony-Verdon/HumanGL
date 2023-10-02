@@ -6,7 +6,7 @@
 #include <cmath>
 #include <fstream>
 #include <sstream>
-
+#include "Matrix.hpp"
 class Utils
 {
     public:
@@ -14,6 +14,7 @@ class Utils
         static float DegToRad(float angle);
         static std::stringstream readFile(const std::string &path);
         static unsigned int convertRGBtoNum(unsigned char R, unsigned char G, unsigned char B);
+        static Matrix convertNumToRGB(unsigned int number);
 
         class Exception : public std::exception
         {

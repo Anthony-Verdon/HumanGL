@@ -1,5 +1,6 @@
 #include "Object.hpp"
 #include "Utils.hpp"
+#include "../parsing/parsing.hpp"
 
 ObjectParsingFunctions Object::parsingFunctions = {
         {"s", &Object::defineSmoothShading},
@@ -36,6 +37,7 @@ Object &Object::operator=(const Object &copy)
         faces = copy.getFaces();
         name = copy.getName();
         smoothShading = copy.getSmoothShading();
+        materialIndex = copy.getMaterialIndex();
     }
     return (*this);
 }
@@ -288,14 +290,7 @@ void Object::defineMTL(std::string line, unsigned int lineIndex)
         "\nLINE => " + line + "\n"
         "LINE INDEX => " + std::to_string(lineIndex)));
     
-    Material material(words[1]);
-    for (size_t i = 0; i < materials.size(); i++)
-    {
-        if (materials[i].getName() == words[1])
-        throw(Utils::Exception("OBJECT::DEFINE_MTL::REDEFINITION_OF_MATERIAL"
-        "\nMATERIAL NAME => " + words[1]));
-    }
-    materials.push_back(material);
+    parseMtlFile(words[1]);
 }
 
 void Object::useMTL(std::string line, unsigned int lineIndex)
@@ -308,6 +303,7 @@ void Object::useMTL(std::string line, unsigned int lineIndex)
         "\nLINE => " + line + "\n"
         "LINE INDEX => " + std::to_string(lineIndex)));
     
+    std::cout << words[1] << std::endl;
     for (size_t i = 0; i < materials.size(); i++)
     {
         if (materials[i].getName() == words[1])
@@ -315,6 +311,7 @@ void Object::useMTL(std::string line, unsigned int lineIndex)
             materialIndex = i;
             return ;
         }
+        std::cout << materials[i].getName() << std::endl;
     }
     throw(Utils::Exception("OBJECT::USE_MTL::UNKNOWN_MATERIAL"
     "\nMATERIAL NAME => " + words[1]));
@@ -375,7 +372,29 @@ std::ostream& operator << (std::ostream &os, const Object &instance)
     return (os);
 }
 
+void Object::setMaterialIndex(unsigned int index)
+{
+    materialIndex = index;
+}
+
+unsigned int Object::getMaterialIndex() const
+{
+    return (materialIndex);
+}
+
 void Object::addMaterial(Material material)
 {
     materials.push_back(material);
+}
+
+std::vector<Material> Object::getMaterials()
+{
+    return (materials);
+}
+
+Material  Object::getMaterial(unsigned int index)
+{
+    if (index >= materials.size())
+        throw("OBJECT::GET_MATERIAL::INVALID_INDEX");
+    return (materials[index]);
 }
