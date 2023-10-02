@@ -303,7 +303,6 @@ void Object::useMTL(std::string line, unsigned int lineIndex)
         "\nLINE => " + line + "\n"
         "LINE INDEX => " + std::to_string(lineIndex)));
     
-    std::cout << words[1] << std::endl;
     for (size_t i = 0; i < materials.size(); i++)
     {
         if (materials[i].getName() == words[1])
@@ -311,7 +310,6 @@ void Object::useMTL(std::string line, unsigned int lineIndex)
             materialIndex = i;
             return ;
         }
-        std::cout << materials[i].getName() << std::endl;
     }
     throw(Utils::Exception("OBJECT::USE_MTL::UNKNOWN_MATERIAL"
     "\nMATERIAL NAME => " + words[1]));

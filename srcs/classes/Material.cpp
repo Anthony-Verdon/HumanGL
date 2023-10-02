@@ -130,7 +130,7 @@ void Material::defineAmbiantColor(std::string line, unsigned int lineIndex)
         "\nLINE => " + line + "\n"
         "LINE INDEX => " + std::to_string(lineIndex)));
 
-    colors[AMBIANT_COLOR] = Utils::convertRGBtoNum(std::stoi(words[1]), std::stoi(words[2]), std::stoi(words[3]));
+    colors[AMBIANT_COLOR] = Utils::convertRGBtoNum(std::stof(words[1]), std::stof(words[2]), std::stof(words[3]));
 }
 
 void Material::defineSpecularColor(std::string line, unsigned int lineIndex)
@@ -143,7 +143,7 @@ void Material::defineSpecularColor(std::string line, unsigned int lineIndex)
         "\nLINE => " + line + "\n"
         "LINE INDEX => " + std::to_string(lineIndex)));
 
-    colors[SPECULAR_COLOR] = Utils::convertRGBtoNum(std::stoi(words[1]), std::stoi(words[2]), std::stoi(words[3]));
+    colors[SPECULAR_COLOR] = Utils::convertRGBtoNum(std::stof(words[1]), std::stof(words[2]), std::stof(words[3]));
 }
 
 void Material::defineDiffuseColor(std::string line, unsigned int lineIndex)
@@ -156,7 +156,7 @@ void Material::defineDiffuseColor(std::string line, unsigned int lineIndex)
         "\nLINE => " + line + "\n"
         "LINE INDEX => " + std::to_string(lineIndex)));
 
-    colors[DIFFUSE_COLOR] = Utils::convertRGBtoNum(std::stoi(words[1]), std::stoi(words[2]), std::stoi(words[3]));
+    colors[DIFFUSE_COLOR] = Utils::convertRGBtoNum(std::stof(words[1]), std::stof(words[2]), std::stof(words[3]));
 }
 
 void Material::defineSpecularExponent(std::string line, unsigned int lineIndex)
