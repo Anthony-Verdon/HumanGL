@@ -11,10 +11,16 @@
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
 
+#define X_AXIS 0
+#define Y_AXIS 1
+#define Z_AXIS 2
+
 typedef struct s_scene {
     Camera *camera;
     bool displayColor;
     float mixValue;
+    float move[3];
+    float rotation[3];
 } t_scene;
 
 

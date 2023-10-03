@@ -438,3 +438,30 @@ std::ostream& operator << (std::ostream &os, const Matrix &instance)
 
     return (os);
 }
+
+bool Matrix::operator!=(const Matrix &instance)
+{
+    if (rows != instance.getRows() || columns != instance.getColumns())
+        return (true);
+    for (size_t i = 0; i < rows * columns; i++)
+    {
+        if (data[i] != instance.getData()[i])
+            return (true);
+    }
+    return (false);
+}
+
+bool Matrix::operator==(const Matrix &instance)
+{
+    if (*this != instance)
+        return (false);
+    return (true);
+}
+
+Matrix Matrix::Zero(const Matrix &instance)
+{
+    Matrix result(instance);
+
+    result.uniform(0);
+    return (result);
+}

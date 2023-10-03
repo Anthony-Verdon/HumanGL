@@ -54,6 +54,11 @@ void updateLoop(GLFWwindow* window, const Object &object, unsigned int texture)
     scene.camera = &camera;
     scene.displayColor = true;
     scene.mixValue = 0;
+    for (size_t i = 0; i < 3; i++)
+    {
+        scene.move[i] = 0;
+        scene.rotation[i] = 0;
+    }
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     
     glEnable(GL_DEPTH_TEST);
@@ -63,6 +68,9 @@ void updateLoop(GLFWwindow* window, const Object &object, unsigned int texture)
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
 
+    float angleX = 0;
+    float angleY = 0;
+    float angleZ = 0;
     while(!glfwWindowShouldClose(window))
     {
         Time::updateTime();
@@ -85,17 +93,35 @@ void updateLoop(GLFWwindow* window, const Object &object, unsigned int texture)
         float *color = Object::getMaterial(object.getMaterialIndex()).getColor(AMBIANT_COLOR);
         ourShader.setVec3("aColor", color[0], color[1], color[2]);
     
-        Matrix rotation(4, 4);
-        Matrix vector(3, 1);
-        float values[] = {
+        Matrix rotationYVector(3, 1);
+        float rotationYVectorValues[] = {
             0.0f,
             1.0f,
             0.0f
         };
-        vector.setData(values, 3);
-        rotation.uniform(1.0f);
-        rotation = Matrix::rotate(rotation, Time::getTime() * Utils::DegToRad(90.0f), Matrix::normalize(vector));
+        rotationYVector.setData(rotationYVectorValues, 3);
+        Matrix rotationXVector(3, 1);
+        float rotationXVectorValues[] = {
+            1.0f,
+            0.0f,
+            0.0f
+        };
+        rotationXVector.setData(rotationXVectorValues, 3);
+        Matrix rotationZVector(3, 1);
+        float rotationZVectorValues[] = {
+            0.0f,
+            0.0f,
+            1.0f
+        };
+        rotationZVector.setData(rotationZVectorValues, 3);
+        Matrix rotation(4, 4);
+        rotation.uniform(1);
+        angleX += scene.move[X_AXIS] * Time::getDeltaTime();
+        angleY += scene.move[Y_AXIS] * Time::getDeltaTime();
+        angleZ += scene.move[Z_AXIS] * Time::getDeltaTime();
+        rotation = Matrix::rotate(rotation, angleX, Matrix::normalize(rotationXVector)) * Matrix::rotate(rotation, angleY, Matrix::normalize(rotationYVector)) * Matrix::rotate(rotation, angleZ, Matrix::normalize(rotationZVector));
         ourShader.setMat4("model", rotation);
+
         Matrix projection = Matrix::perspective(camera.getFov(), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
         ourShader.setMat4("projection", projection);
         Matrix view = Matrix::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(), camera.getUpDirection());

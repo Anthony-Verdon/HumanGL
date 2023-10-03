@@ -19,6 +19,8 @@ public:
     Matrix &operator=(const Matrix &copy);
     ~Matrix();
 
+    bool operator==(const Matrix &copy);
+    bool operator!=(const Matrix &copy);
     Matrix operator+(const Matrix &instance) const;
     Matrix operator-(const Matrix &instance) const;
     Matrix operator*(const Matrix &instance) const;
@@ -44,6 +46,7 @@ public:
     static Matrix crossProduct(const Matrix &vectorA, const Matrix &vectorB);
     static float dotProduct(const Matrix &vectorA, const Matrix &vectorB);
     static Matrix lookAt(const Matrix &position, const Matrix &target, const Matrix &initialUpVector);
+    static Matrix Zero(const Matrix &instance);
 };
 
 std::ostream &operator << (std::ostream &os, const Matrix &instance);

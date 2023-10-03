@@ -74,6 +74,25 @@ void updateTexture(GLFWwindow *window)
     }
 
 }
+
+void updateAxis(GLFWwindow *window, int firstKey, int secondKey, int Axis)
+{
+    t_scene *scene = reinterpret_cast<t_scene *>(glfwGetWindowUserPointer(window));
+    if ((glfwGetKey(window, firstKey) != GLFW_PRESS && glfwGetKey(window, secondKey) != GLFW_PRESS)
+        || (glfwGetKey(window, firstKey) == GLFW_PRESS && glfwGetKey(window, secondKey) == GLFW_PRESS))
+        scene->move[Axis] = 0.0f;
+    else if (glfwGetKey(window, firstKey) == GLFW_PRESS)
+        scene->move[Axis] = -1.0f;
+    else if (glfwGetKey(window, secondKey) == GLFW_PRESS)
+        scene->move[Axis] = 1.0f;
+}
+
+void updateOrientation(GLFWwindow *window)
+{
+    updateAxis(window, GLFW_KEY_T, GLFW_KEY_Y, X_AXIS);
+    updateAxis(window, GLFW_KEY_H, GLFW_KEY_J, Y_AXIS);
+    updateAxis(window, GLFW_KEY_N, GLFW_KEY_M, Z_AXIS);
+}
 /**
  * main function to check any input of the user.
 */
@@ -85,8 +104,8 @@ void processInput(GLFWwindow *window)
     updateTextureMode(window);
     updateCamera(window);
     updateTexture(window);
+    updateOrientation(window);
 }
-
 
 void mouse_callback(GLFWwindow* window, double xPos, double yPos)
 {
