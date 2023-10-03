@@ -6,7 +6,7 @@
 #include <cmath>
 #include <fstream>
 #include <sstream>
-#include "Matrix.hpp"
+#include "../Matrix/Matrix.hpp"
 class Utils
 {
     public:

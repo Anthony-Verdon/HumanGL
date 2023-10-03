@@ -1,6 +1,6 @@
-#include "../classes/Utils.hpp"
-#include "../classes/Material.hpp"
-#include "../classes/Object.hpp"
+#include "../classes/Utils/Utils.hpp"
+#include "../classes/Material/Material.hpp"
+#include "../classes/Object/Object.hpp"
 
 void parseMtlFile(std::string path)
 {

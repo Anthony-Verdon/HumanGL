@@ -1,5 +1,5 @@
 #include "Matrix.hpp"
-#include "Utils.hpp"
+#include "../Utils/Utils.hpp"
 
 Matrix::Matrix()
 {

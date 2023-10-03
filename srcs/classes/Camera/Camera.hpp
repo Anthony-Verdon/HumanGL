@@ -1,10 +1,11 @@
 #ifndef CAMERA_HPP
 #define CAMERA_HPP
 
-#include "../../includes/glad/glad.h"
+#include "../../../includes/glad/glad.h"
 #include <GLFW/glfw3.h>
 
-#include "Matrix.hpp"
+#include "../Matrix/Matrix.hpp"
+#include "../Utils/Utils.hpp"
 
 class Camera
 {

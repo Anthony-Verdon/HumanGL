@@ -1,5 +1,5 @@
 #include "parsing.hpp"
-#include "../classes/Utils.hpp"
+#include "../classes/Utils/Utils.hpp"
 
 std::vector<Object> parseObjFile(const std::string &path)
 {

@@ -3,7 +3,7 @@
 
 #include <string>
 #include <map>
-#include "Utils.hpp"
+#include "../Utils/Utils.hpp"
 
 #define AMBIANT_COLOR 0
 #define SPECULAR_COLOR 1

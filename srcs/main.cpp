@@ -1,12 +1,12 @@
 #include "main.hpp"
 #include "parsing/parsing.hpp"
-#include "classes/Shader.hpp"
-#include "classes/Texture.hpp"
-#include "classes/Camera.hpp"
-#include "classes/Time.hpp"
-#include "classes/Object.hpp"
-#include "classes/Matrix.hpp"
-#include "classes/Utils.hpp"
+#include "classes/Shader/Shader.hpp"
+#include "classes/Texture/Texture.hpp"
+#include "classes/Camera/Camera.hpp"
+#include "classes/Time/Time.hpp"
+#include "classes/Object/Object.hpp"
+#include "classes/Matrix/Matrix.hpp"
+#include "classes/Utils/Utils.hpp"
 
 Camera initCamera()
 {
@@ -48,14 +48,18 @@ Camera initCamera()
 */
 void updateLoop(GLFWwindow* window, const Object &object, unsigned int texture)
 {
-    Shader ourShader("shaders/shader.vs", "shaders/shader.fs");
+    Shader ourShader("srcs/shaders/shader.vs", "srcs/shaders/shader.fs");
     Camera camera(initCamera());
+    t_scene scene;
+    scene.camera = &camera;
+    scene.displayColor = true;
+    scene.mixValue = 0;
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     
     glEnable(GL_DEPTH_TEST);
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    glfwSetWindowUserPointer(window, &camera);
+    glfwSetWindowUserPointer(window, &scene);
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
 
@@ -77,8 +81,9 @@ void updateLoop(GLFWwindow* window, const Object &object, unsigned int texture)
 
         ourShader.use();
         ourShader.setInt("texture1", 0);
+        ourShader.setFloat("aMixValue", scene.mixValue);
         float *color = Object::getMaterial(object.getMaterialIndex()).getColor(AMBIANT_COLOR);
-        ourShader.setVec3("color", color[0], color[1], color[2]);
+        ourShader.setVec3("aColor", color[0], color[1], color[2]);
     
         Matrix rotation(4, 4);
         Matrix vector(3, 1);
@@ -138,22 +143,6 @@ void start(GLFWwindow* window, std::vector<Object> objects)
 {
     if (objects.size() == 0)
         return ;
-    #ifdef DEBUG
-        for (size_t i = 0; i < objects[1].getVertices().size() * 4; i++)
-        {
-            if (i % 4 == 0)
-                std::cout << std::endl;
-            std::cout << vertices[i] << " ";
-        }
-        std::cout << std::endl;
-        for (size_t i = 0; i < 6; i++)
-        {
-            if (i % 3 == 0)
-                std::cout << std::endl;
-            std::cout << indices[i] << " ";
-        }
-        std::cout << std::endl;
-    #endif
     
     objects[0].initVAO();
     Texture::initTexParameter();
@@ -175,9 +164,9 @@ int main(int argc, char **argv)
         if (argc != 2)
             throw(Utils::Exception("MAIN::NO_INPUT_FILE"));
         std::vector<Object> objects = parseObjFile(argv[1]);
-        GLFWwindow* window = initGLFW();
-        if (window == NULL)
-            throw(Utils::Exception("MAIN::WINDOW_NOT_CREATED"));
+        initGLFW();
+        GLFWwindow* window = initWindow();
+        initOpenGL();
         start(window, objects);
         glfwTerminate();
         return (0);
@@ -185,11 +174,13 @@ int main(int argc, char **argv)
     catch(const Utils::Exception& e)
     {
         std::cerr << std::endl << e.what() << std::endl;
+        glfwTerminate();
         return (-1);
     }
     catch(const std::exception& e)
     {
         std::cerr << e.what() << std::endl;
+        glfwTerminate();
         return (-1);
     }
 }

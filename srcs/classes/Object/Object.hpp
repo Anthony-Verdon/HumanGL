@@ -9,8 +9,8 @@
 #include <vector>
 #include <map>
 #include <cmath>
-#include "../../includes/glad/glad.h"
-#include "Material.hpp"
+#include "../../../includes/glad/glad.h"
+#include "../Material/Material.hpp"
 
 class Object;
 

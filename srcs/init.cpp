@@ -21,15 +21,9 @@ GLFWwindow* initWindow()
 {
     GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "LearnOpenGL", NULL, NULL);
     if (!window)
-    {
-        std::cerr << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
-        return (NULL);
-    }
+        throw(Utils::Exception("INIT_WINDOW::INITIALIZATION_FAILED"));
     glfwMakeContextCurrent(window);
-
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
     return (window);
 }
 
@@ -39,21 +33,18 @@ GLFWwindow* initWindow()
  * call initWindow(),
  * and initialize functions pointers for OpenGL
 */
-GLFWwindow* initGLFW()
+void initGLFW()
 {
-    glfwInit(); //check for GL_TRUE or GL_FALSE
+    if (glfwInit() == GL_FALSE)
+        throw(Utils::Exception("INIT_GLFW::INITIALIZATION_FAILED"));
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+}
 
-    GLFWwindow* window = initWindow();
-    
+void initOpenGL()
+{
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        std::cerr << "Failed to initialize GLAD" << std::endl;
-        return (NULL);
-    }
-
-    return (window);
+        throw(Utils::Exception("INIT_OPENGL::INITIALIZATION_FAILED"));
 }

@@ -1,17 +1,17 @@
 SRCS := srcs/main.cpp \
-		srcs/setupGLFW.cpp \
+		srcs/init.cpp \
 		srcs/input.cpp \
 		srcs/parsing/parseObjFile.cpp \
 		srcs/parsing/parseMtlFile.cpp \
 		includes/glad/glad.cpp \
-		srcs/classes/Camera.cpp \
-		srcs/classes/Shader.cpp \
-		srcs/classes/Texture.cpp \
-		srcs/classes/Time.cpp \
-		srcs/classes/Object.cpp \
-		srcs/classes/Utils.cpp \
-		srcs/classes/Matrix.cpp \
-		srcs/classes/Material.cpp
+		srcs/classes/Camera/Camera.cpp \
+		srcs/classes/Shader/Shader.cpp \
+		srcs/classes/Texture/Texture.cpp \
+		srcs/classes/Time/Time.cpp \
+		srcs/classes/Object/Object.cpp \
+		srcs/classes/Utils/Utils.cpp \
+		srcs/classes/Matrix/Matrix.cpp \
+		srcs/classes/Material/Material.cpp
 
 OBJS := $(SRCS:.cpp=.o)
 

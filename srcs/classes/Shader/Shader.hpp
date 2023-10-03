@@ -1,14 +1,15 @@
 #ifndef SHADER_HPP
 #define SHADER_HPP
 
-#include "../../includes/glad/glad.h"
+#include "../../../includes/glad/glad.h"
 #include <GLFW/glfw3.h>
 
 #include <iostream>
 #include <string>
 #include <fstream>
 #include <sstream>
-#include "Matrix.hpp"
+#include "../Matrix/Matrix.hpp"
+#include "../Utils/Utils.hpp"
 
 class Shader
 {

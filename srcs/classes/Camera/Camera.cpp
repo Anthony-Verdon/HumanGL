@@ -1,6 +1,5 @@
 #include "Camera.hpp"
 #include <iostream>
-#include "Utils.hpp"
 
 Camera::Camera(const Matrix &position, const Matrix &upDirection, float yaw, float pitch, float roll, float fov, float speed): position(position), frontDirection(Matrix(3, 1)), rightDirection(Matrix(3, 1)), upDirection(upDirection)
 {
@@ -164,46 +163,4 @@ void Camera::addToPitch(float pitch)
 void Camera::addToFov(float fov)
 {
     this->fov += fov;
-}
-
-void mouse_callback(GLFWwindow* window, double xPos, double yPos)
-{
-    const float sensitivity = 0.1f;
-
-    static float lastX = 400;
-    static float lastY = 300;
-    static bool firstIteration = true;
-
-    float xOffset;
-    float yOffset;
-
-    Camera *camera = reinterpret_cast<Camera *>(glfwGetWindowUserPointer(window));
-    if (firstIteration)
-    {
-        lastX = xPos;
-        lastY = yPos;
-        firstIteration = false;
-    }
-    xOffset = (xPos - lastX) * sensitivity;
-    yOffset = (lastY - yPos) * sensitivity;
-    lastX = xPos;
-    lastY = yPos;
-    camera->addToYaw(xOffset);
-   camera->addToPitch(yOffset);
-    if (camera->getPitch() > 89.0f)
-        camera->setPitch(89.0f);
-    else if (camera->getPitch() < -89.0f)
-        camera->setPitch(-89.0f);
-}
-
-void scroll_callback(GLFWwindow *window, double xOffset, double yOffset)
-{
-    (void)xOffset;
-    
-    Camera *camera = reinterpret_cast<Camera *>(glfwGetWindowUserPointer(window));
-    camera->addToFov((float)-yOffset);
-    if (camera->getFov() < 1.0f)
-        camera->setFov(1.0f);
-    else if (camera->getFov() > 45.0f)
-        camera->setFov(45.0f);
 }

@@ -1,7 +1,7 @@
 #ifndef TEXTURE_HPP
 #define TEXTURE_HPP
 
-#include "../../includes/glad/glad.h"
+#include "../../../includes/glad/glad.h"
 #include <GLFW/glfw3.h>
 
 #include <iostream>
@@ -9,6 +9,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include "../Utils/Utils.hpp"
 
 class Texture
 {

@@ -1,5 +1,4 @@
 #include "Texture.hpp"
-#include "Utils.hpp"
 
 Texture::Texture()
 {
