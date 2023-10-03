@@ -22,7 +22,6 @@ float Utils::DegToRad(float angle)
     return (angle * (M_PI / 180));
 }
 
-#include <iostream>
 std::stringstream Utils::readFile(const std::string &path)
 {
     std::ifstream file;
@@ -48,6 +47,19 @@ Matrix Utils::convertNumToRGB(unsigned int number)
     color.setData(1, 0, (number & 0x00ff00) % 255);
     color.setData(2, 0, (number & 0x0000ff) % 255);
     return (color);
+}
+
+bool Utils::checkExtension(const std::string &path, const std::string &extension)
+{
+    unsigned int extensionLength;
+    unsigned int pathLength;
+
+    extensionLength = extension.length();
+    pathLength = path.length();
+    if (pathLength > extensionLength && path.compare(pathLength - extensionLength, extensionLength, extension) == 0)
+        return (true);
+    else
+        return (false);
 }
 
 Utils::Exception::Exception(const std::string &errorMessage)

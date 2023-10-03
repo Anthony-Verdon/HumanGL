@@ -1,10 +1,33 @@
 #include "Camera.hpp"
-#include <iostream>
 
-Camera::Camera(const Matrix &position, const Matrix &upDirection, float yaw, float pitch, float roll, float fov, float speed): position(position), frontDirection(Matrix(3, 1)), rightDirection(Matrix(3, 1)), upDirection(upDirection)
+Camera::Camera()
 {
+    position = Matrix(3, 1);
+    frontDirection = Matrix(3, 1);
+    rightDirection = Matrix(3, 1);
+    upDirection = Matrix(3, 1);
+
+    float values[] = { 0, 0, 0 };
+    position.setData(values, 3);
     frontDirection.uniform(1.0f);
     rightDirection.uniform(1.0f);
+    upDirection.setData(1, 0, 1);
+
+    yaw = -90.0f;
+    pitch = 0.0f;
+    roll = 0.0f;
+    fov = 45.0f;
+    speed = 2.5f;
+}
+
+Camera::Camera(const Matrix &position, const Matrix &upDirection, float yaw, float pitch, float roll, float fov, float speed)
+{
+    this->position = position;
+    frontDirection = Matrix(3, 1);
+    frontDirection.uniform(1.0f);
+    rightDirection = Matrix(3, 1);
+    rightDirection.uniform(1.0f);
+    this->upDirection = upDirection;
     this->yaw = yaw;
     this->pitch = pitch;
     this->roll = roll;
@@ -12,7 +35,7 @@ Camera::Camera(const Matrix &position, const Matrix &upDirection, float yaw, flo
     this->speed = speed;
 }
 
-Camera::Camera(const Camera &copy): position(copy.getPosition()), frontDirection(copy.getFrontDirection()), rightDirection(copy.getRightDirection()), upDirection(copy.getUpDirection())
+Camera::Camera(const Camera &copy)
 {
     *this = copy;
 }

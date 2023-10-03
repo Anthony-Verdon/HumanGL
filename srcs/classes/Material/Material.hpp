@@ -55,7 +55,6 @@ public:
     void setOpacity(float opacity);
     void setIllum(float illum);
 
-    void use();
     static MaterialParsingFunctions parsingFunctions;
 };
 

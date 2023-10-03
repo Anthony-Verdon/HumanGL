@@ -7,13 +7,12 @@
 class Matrix
 {
 private:
-    Matrix();
-
     float *data;
     unsigned int rows;
     unsigned int columns;
 
 public:
+    Matrix();
     Matrix(unsigned int rows, unsigned int columns);
     Matrix(const Matrix &copy);
     Matrix &operator=(const Matrix &copy);
@@ -35,10 +34,10 @@ public:
     unsigned int getRows() const;
     unsigned int getColumns() const;
 
-    void uniform(float value);
-    void identity();
     void setData(unsigned int rowIndex, unsigned int columnIndex, float value);
     void setData(float *values, unsigned int size);
+    void uniform(float value);
+    void identity();
 
     static Matrix rotate(const Matrix &instance, float angle, const Matrix &vector);
     static Matrix perspective(float fov, float aspect, float near, float far);

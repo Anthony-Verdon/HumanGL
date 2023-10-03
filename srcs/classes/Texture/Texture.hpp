@@ -15,7 +15,7 @@ class Texture
 {
 private:
     Texture();
-    bool textureExtension(const std::string &texturePath, const std::string &extension) const;
+    void checkHeader(const std::string &line, unsigned int nbLine);
     void loadImage(const std::string &texturePath);
 
     unsigned int ID;

@@ -15,6 +15,7 @@ class Utils
         static std::stringstream readFile(const std::string &path);
         static unsigned int convertRGBtoNum(unsigned char R, unsigned char G, unsigned char B);
         static Matrix convertNumToRGB(unsigned int number);
+        static bool checkExtension(const std::string &path, const std::string &extension);
 
         class Exception : public std::exception
         {

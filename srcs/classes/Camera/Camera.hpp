@@ -10,7 +10,6 @@
 class Camera
 {
     private:
-        Camera();
 
         Matrix position;
         Matrix frontDirection;
@@ -23,6 +22,7 @@ class Camera
         float speed;
 
     public:
+        Camera();
         Camera(const Matrix &position, const Matrix &upDirection, float yaw, float pitch, float roll, float fov,float speed);
         Camera(const Camera &copy);
         Camera &operator=(const Camera &copy);
@@ -53,8 +53,5 @@ class Camera
         void addToPitch(float pitch);
         void addToFov(float fov);
 };
-
-void mouse_callback(GLFWwindow* window, double xPos, double yPos);
-void scroll_callback(GLFWwindow *window, double xOffset, double yOffset);
 
 #endif

@@ -12,9 +12,6 @@ MaterialParsingFunctions Material::parsingFunctions = {
 
 Material::Material()
 {
-    for (size_t j = 0; j < 3; j++)
-        delete []colors[j];
-    delete []colors;
 }
 
 Material::Material(const std::string &name)
@@ -60,6 +57,11 @@ Material &Material::operator=(const Material &copy)
 
 Material::~Material()
 {
+    /*
+    for (size_t j = 0; j < 3; j++)
+        delete []colors[j];
+    delete []colors;
+    */
 }
 
 std::string Material::getName() const
@@ -117,9 +119,15 @@ void Material::setColor(float color[3], unsigned int index)
     for (size_t j = 0; j < 3; j++)
         this->colors[index][j] = color[j];
 }
+
 void Material::setSpecularExponent(float specularExponent)
 {
     this->specularExponent = specularExponent;
+}
+
+void Material::setRefractionIndex(float refractionIndex)
+{
+    this->refractionIndex = refractionIndex;
 }
 
 void Material::setOpacity(float opacity)
@@ -130,12 +138,6 @@ void Material::setOpacity(float opacity)
 void Material::setIllum(float illum)
 {
     this->illum = illum;
-}
-
-#include <iostream>
-void Material::use()
-{
-    std::cout << "use material " << name << std::endl;
 }
 
 void Material::defineAmbiantColor(std::string line, unsigned int lineIndex)

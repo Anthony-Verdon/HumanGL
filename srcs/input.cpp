@@ -1,6 +1,4 @@
-#include "main.hpp"
-#include "classes/Camera/Camera.hpp"
-#include "classes/Time/Time.hpp"
+#include "input.hpp"
 
 /**
  * update the display mode of the drawing.
@@ -12,7 +10,7 @@
  * if the playe release the key
  * then it enable the key
 */
-void updateDisplayMode(GLFWwindow *window)
+static void updateDisplayMode(GLFWwindow *window)
 {
     static bool wireFrameMode = false;
     static bool keyEnable = true;
@@ -30,7 +28,7 @@ void updateDisplayMode(GLFWwindow *window)
         keyEnable = true;
 }
 
-void updateCamera(GLFWwindow *window)
+static void updateCamera(GLFWwindow *window)
 {
     t_scene *scene = reinterpret_cast<t_scene *>(glfwGetWindowUserPointer(window));
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -43,7 +41,7 @@ void updateCamera(GLFWwindow *window)
         scene->camera->addToPosition(scene->camera->getRightDirection() * scene->camera->getSpeed() * Time::getDeltaTime());
 }
 
-void updateTextureMode(GLFWwindow *window)
+static void updateTextureMode(GLFWwindow *window)
 {
     static bool keyEnable = true;
 
@@ -57,7 +55,7 @@ void updateTextureMode(GLFWwindow *window)
         keyEnable = true;
 }
 
-void updateTexture(GLFWwindow *window)
+static void updateTexture(GLFWwindow *window)
 {
     t_scene *scene = reinterpret_cast<t_scene *>(glfwGetWindowUserPointer(window));
     if (scene->displayColor == true && scene->mixValue > 0)
@@ -75,21 +73,21 @@ void updateTexture(GLFWwindow *window)
 
 }
 
-void updateAxis(GLFWwindow *window, int firstKey, int secondKey, int Axis)
+static void updateAxis(GLFWwindow *window, int firstKey, int secondKey, int Axis)
 {
     t_scene *scene = reinterpret_cast<t_scene *>(glfwGetWindowUserPointer(window));
     if ((glfwGetKey(window, firstKey) != GLFW_PRESS && glfwGetKey(window, secondKey) != GLFW_PRESS)
         || (glfwGetKey(window, firstKey) == GLFW_PRESS && glfwGetKey(window, secondKey) == GLFW_PRESS))
-        scene->move[Axis] = 0.0f;
+        scene->rotation[Axis] = 0.0f;
     else if (glfwGetKey(window, firstKey) == GLFW_PRESS)
-        scene->move[Axis] = -1.0f;
+        scene->rotation[Axis] = -1.0f;
     else if (glfwGetKey(window, secondKey) == GLFW_PRESS)
-        scene->move[Axis] = 1.0f;
+        scene->rotation[Axis] = 1.0f;
 }
 
-void updateOrientation(GLFWwindow *window)
+static void updateOrientation(GLFWwindow *window)
 {
-    updateAxis(window, GLFW_KEY_T, GLFW_KEY_Y, X_AXIS);
+    updateAxis(window, GLFW_KEY_Y, GLFW_KEY_U, X_AXIS);
     updateAxis(window, GLFW_KEY_H, GLFW_KEY_J, Y_AXIS);
     updateAxis(window, GLFW_KEY_N, GLFW_KEY_M, Z_AXIS);
 }
@@ -111,20 +109,13 @@ void mouse_callback(GLFWwindow* window, double xPos, double yPos)
 {
     const float sensitivity = 0.1f;
 
-    static float lastX = 400;
-    static float lastY = 300;
-    static bool firstIteration = true;
+    static float lastX = xPos;
+    static float lastY = yPos;
 
     float xOffset;
     float yOffset;
 
     t_scene *scene = reinterpret_cast<t_scene *>(glfwGetWindowUserPointer(window));
-    if (firstIteration)
-    {
-        lastX = xPos;
-        lastY = yPos;
-        firstIteration = false;
-    }
     xOffset = (xPos - lastX) * sensitivity;
     yOffset = (lastY - yPos) * sensitivity;
     lastX = xPos;

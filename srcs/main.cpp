@@ -1,4 +1,3 @@
-#include "main.hpp"
 #include "parsing/parsing.hpp"
 #include "classes/Shader/Shader.hpp"
 #include "classes/Texture/Texture.hpp"
@@ -7,8 +6,12 @@
 #include "classes/Object/Object.hpp"
 #include "classes/Matrix/Matrix.hpp"
 #include "classes/Utils/Utils.hpp"
+#include "input.hpp"
+#include "scene.hpp"
+#include "init.hpp"
+#include <iostream>
 
-Camera initCamera()
+static Camera initCamera()
 {
     Matrix position(3, 1);
     Matrix upDirection(3, 1);
@@ -30,6 +33,30 @@ Camera initCamera()
     Camera camera(position, upDirection, -90.0f, 0.0f, 0.0f, 45.0f, 2.5f);
     return (camera);
 }
+
+static Matrix initAxisVector(float X, float Y, float Z)
+{
+    Matrix axisVector(3, 1);
+    float axisVectorValues[] = {
+        X, Y, Z
+    };
+    axisVector.setData(axisVectorValues, 3);
+    return (axisVector);
+}
+
+static void updateCamera(Camera &camera)
+{
+    Matrix direction(3, 1);
+    float directionValues[] = {
+        cosf(Utils::DegToRad(camera.getYaw())) * cosf(Utils::DegToRad(camera.getPitch())),
+        sinf(Utils::DegToRad(camera.getPitch())),
+        sinf(Utils::DegToRad(camera.getYaw())) * cosf(Utils::DegToRad(camera.getPitch()))
+    };
+    direction.setData(directionValues, 3);
+    camera.setFrontDirection(Matrix::normalize(direction));
+    camera.setRightDirection(Matrix::normalize(Matrix::crossProduct(camera.getFrontDirection(), camera.getUpDirection())));
+}
+
 /**
  * update loop of the window.
  * 
@@ -46,7 +73,7 @@ Camera initCamera()
  * meaning the one which is displayed is replaced by the one we drew,
  * and update event like input or callback function
 */
-void updateLoop(GLFWwindow* window, const Object &object, unsigned int texture)
+static void updateLoop(GLFWwindow* window, const Object &object, unsigned int texture)
 {
     Shader ourShader("srcs/shaders/shader.vs", "srcs/shaders/shader.fs");
     Camera camera(initCamera());
@@ -55,10 +82,7 @@ void updateLoop(GLFWwindow* window, const Object &object, unsigned int texture)
     scene.displayColor = true;
     scene.mixValue = 0;
     for (size_t i = 0; i < 3; i++)
-    {
-        scene.move[i] = 0;
         scene.rotation[i] = 0;
-    }
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     
     glEnable(GL_DEPTH_TEST);
@@ -71,65 +95,38 @@ void updateLoop(GLFWwindow* window, const Object &object, unsigned int texture)
     float angleX = 0;
     float angleY = 0;
     float angleZ = 0;
+    Matrix axisX = initAxisVector(1.0f, 0.0f, 0.0f);
+    Matrix axisY = initAxisVector(0.0f, 1.0f, 0.0f);
+    Matrix axisZ = initAxisVector(0.0f, 0.0f, 1.0f);
     while(!glfwWindowShouldClose(window))
     {
         Time::updateTime();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         processInput(window);
-        
-        Matrix direction(3, 1);
-        float directionValues[] = {
-            cosf(Utils::DegToRad(camera.getYaw())) * cosf(Utils::DegToRad(camera.getPitch())),
-            sinf(Utils::DegToRad(camera.getPitch())),
-            sinf(Utils::DegToRad(camera.getYaw())) * cosf(Utils::DegToRad(camera.getPitch()))
-        };
-        direction.setData(directionValues, 3);
-        camera.setFrontDirection(Matrix::normalize(direction));
-        camera.setRightDirection(Matrix::normalize(Matrix::crossProduct(camera.getFrontDirection(), camera.getUpDirection())));
+        updateCamera(camera);
 
         ourShader.use();
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture);
         ourShader.setInt("texture1", 0);
-        ourShader.setFloat("aMixValue", scene.mixValue);
         float *color = Object::getMaterial(object.getMaterialIndex()).getColor(AMBIANT_COLOR);
         ourShader.setVec3("aColor", color[0], color[1], color[2]);
-    
-        Matrix rotationYVector(3, 1);
-        float rotationYVectorValues[] = {
-            0.0f,
-            1.0f,
-            0.0f
-        };
-        rotationYVector.setData(rotationYVectorValues, 3);
-        Matrix rotationXVector(3, 1);
-        float rotationXVectorValues[] = {
-            1.0f,
-            0.0f,
-            0.0f
-        };
-        rotationXVector.setData(rotationXVectorValues, 3);
-        Matrix rotationZVector(3, 1);
-        float rotationZVectorValues[] = {
-            0.0f,
-            0.0f,
-            1.0f
-        };
-        rotationZVector.setData(rotationZVectorValues, 3);
+        ourShader.setFloat("aMixValue", scene.mixValue);
+
         Matrix rotation(4, 4);
         rotation.uniform(1);
-        angleX += scene.move[X_AXIS] * Time::getDeltaTime();
-        angleY += scene.move[Y_AXIS] * Time::getDeltaTime();
-        angleZ += scene.move[Z_AXIS] * Time::getDeltaTime();
-        rotation = Matrix::rotate(rotation, angleX, Matrix::normalize(rotationXVector)) * Matrix::rotate(rotation, angleY, Matrix::normalize(rotationYVector)) * Matrix::rotate(rotation, angleZ, Matrix::normalize(rotationZVector));
-        ourShader.setMat4("model", rotation);
+        angleX += scene.rotation[X_AXIS] * Time::getDeltaTime();
+        angleY += scene.rotation[Y_AXIS] * Time::getDeltaTime();
+        angleZ += scene.rotation[Z_AXIS] * Time::getDeltaTime();
+        rotation = Matrix::rotate(rotation, angleX, Matrix::normalize(axisX)) * Matrix::rotate(rotation, angleY, Matrix::normalize(axisY)) * Matrix::rotate(rotation, angleZ, Matrix::normalize(axisZ));
+        ourShader.setMat4("rotation", rotation);
 
         Matrix projection = Matrix::perspective(camera.getFov(), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
         ourShader.setMat4("projection", projection);
         Matrix view = Matrix::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(), camera.getUpDirection());
         ourShader.setMat4("view", view);
 
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture);
-    
         glBindVertexArray(object.getVAO());
         glDrawElements(GL_TRIANGLES, object.getFaces().size() * 3, GL_UNSIGNED_INT, 0);
         
@@ -165,7 +162,7 @@ void updateLoop(GLFWwindow* window, const Object &object, unsigned int texture)
  * and end the program when the loop end. 
 */
 
-void start(GLFWwindow* window, std::vector<Object> objects)
+static void start(GLFWwindow* window, std::vector<Object> objects)
 {
     if (objects.size() == 0)
         return ;

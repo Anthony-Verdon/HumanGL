@@ -5,6 +5,16 @@ Shader::Shader()
     ID = 0;
 }
 
+Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath)
+{
+
+     const std::string vertexCode = readShaderFile(vertexPath);
+    const std::string fragmentCode = readShaderFile(fragmentPath);
+    const unsigned int vertex = compileShader(vertexCode.c_str(), GL_VERTEX_SHADER);
+    const unsigned int fragment = compileShader(fragmentCode.c_str(), GL_FRAGMENT_SHADER);
+    compileProgram(vertex, fragment);
+}
+
 Shader::Shader(const Shader& copy)
 {
     *this = copy;
@@ -83,16 +93,6 @@ void Shader::compileProgram(unsigned int vertex, unsigned int fragment)
         throw(Utils::Exception("SHADER::PROGRAM::LINKING FAILED\n"
         "LOG => " + infoLogString));
     }
-}
-
-Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath)
-{
-
-     const std::string vertexCode = readShaderFile(vertexPath);
-    const std::string fragmentCode = readShaderFile(fragmentPath);
-    const unsigned int vertex = compileShader(vertexCode.c_str(), GL_VERTEX_SHADER);
-    const unsigned int fragment = compileShader(fragmentCode.c_str(), GL_FRAGMENT_SHADER);
-    compileProgram(vertex, fragment);
 }
 
 void Shader::use()

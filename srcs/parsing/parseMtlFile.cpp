@@ -2,7 +2,7 @@
 #include "../classes/Material/Material.hpp"
 #include "../classes/Object/Object.hpp"
 
-void parseMtlFile(std::string path)
+void parseMtlFile(const std::string &path)
 {
     std::string word;
     std::string line;
