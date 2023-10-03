@@ -255,3 +255,14 @@ void Material::defineIllum(std::string line, unsigned int lineIndex)
 {
     (void)line, (void)lineIndex;
 }
+
+std::ostream &operator << (std::ostream &os, const Material &instance)
+{
+    os << "name: " << instance.getName() << std::endl;
+    os << "ambiant color: ";
+    float *color = instance.getColor(AMBIANT_COLOR);
+    for (size_t i = 0; i < 3; i++)
+        os << color[i] << " ";
+    os << std::endl;
+    return (os);
+}

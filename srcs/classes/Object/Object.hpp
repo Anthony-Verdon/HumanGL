@@ -2,17 +2,16 @@
 #define OBJECT_HPP
 
 #include <string>
-#include <fstream>
 #include <iostream>
-#include <sstream>
-#include <array>
 #include <vector>
 #include <map>
-#include <cmath>
-#include "../../../includes/glad/glad.h"
-#include "../Material/Material.hpp"
 
 class Object;
+
+#include "../../../includes/glad/glad.h"
+#include "../Material/Material.hpp"
+#include "../Utils/Utils.hpp"
+#include "../../parsing/parsing.hpp"
 
 typedef std::vector<float> Vertex;
 typedef std::vector<Vertex> Vertices;

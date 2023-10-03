@@ -8,8 +8,8 @@ Shader::Shader()
 Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath)
 {
 
-     const std::string vertexCode = readShaderFile(vertexPath);
-    const std::string fragmentCode = readShaderFile(fragmentPath);
+     const std::string vertexCode = Utils::readFile(vertexPath).str();
+    const std::string fragmentCode = Utils::readFile(fragmentPath).str();
     const unsigned int vertex = compileShader(vertexCode.c_str(), GL_VERTEX_SHADER);
     const unsigned int fragment = compileShader(fragmentCode.c_str(), GL_FRAGMENT_SHADER);
     compileProgram(vertex, fragment);
@@ -33,21 +33,6 @@ Shader::~Shader()
 {
     if (ID != 0)
         glDeleteProgram(ID);
-}
-
-const std::string Shader::readShaderFile(const std::string& shaderPath)
-{
-    std::ifstream shaderFile;
-    std::stringstream shaderStream;
-    std::string shaderCode;
-
-    shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-    shaderFile.open(shaderPath);
-    shaderStream << shaderFile.rdbuf();
-    shaderFile.close();
-    shaderCode = shaderStream.str();
-
-    return (shaderCode);
 }
 
 unsigned int Shader::compileShader(const char *shaderCode, const GLenum &shaderType)

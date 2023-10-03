@@ -1,7 +1,9 @@
 #ifndef PARSING_HPP
 #define PARSING_HPP
 
+#include "../classes/Utils/Utils.hpp"
 #include "../classes/Object/Object.hpp"
+#include "../classes/Material/Material.hpp"
 #include <vector>
 #include <string>
 

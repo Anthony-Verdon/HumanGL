@@ -58,4 +58,6 @@ public:
     static MaterialParsingFunctions parsingFunctions;
 };
 
+std::ostream &operator << (std::ostream &os, const Material &instance);
+
 #endif

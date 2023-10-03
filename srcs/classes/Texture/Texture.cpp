@@ -67,7 +67,6 @@ void Texture::checkHeader(const std::string &line, unsigned int nbLine)
 
 void Texture::loadImage(const std::string &texturePath)
 {
-    std::ifstream textureFile;
     std::stringstream textureStream;
     std::string line;
     std::vector<std::string> words;
@@ -76,10 +75,7 @@ void Texture::loadImage(const std::string &texturePath)
     
     nbLine = 0;
     pixel = 0;
-    textureFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-    textureFile.open(texturePath);
-    textureStream << textureFile.rdbuf();
-    textureFile.close();
+    textureStream = Utils::readFile(texturePath);
     while (std::getline(textureStream, line))
     {
         line = line.substr(0, line.find("#"));

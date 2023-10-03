@@ -1,6 +1,4 @@
 #include "Object.hpp"
-#include "../Utils/Utils.hpp"
-#include "../../parsing/parsing.hpp"
 
 ObjectParsingFunctions Object::parsingFunctions = {
         {"s", &Object::defineSmoothShading},

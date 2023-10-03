@@ -1,7 +1,6 @@
 #ifndef TIME_HPP
 #define TIME_HPP
 
-#include "../../../includes/glad/glad.h"
 #include <GLFW/glfw3.h>
 
 class Time
