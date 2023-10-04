@@ -128,7 +128,9 @@ static void updateLoop(GLFWwindow* window, const Object &object, unsigned int te
         ourShader.setMat4("view", view);
 
         glBindVertexArray(object.getVAO());
-        glDrawElements(GL_TRIANGLES, object.getFaces().size() * 3, GL_UNSIGNED_INT, 0);
+        for (size_t i = 0; i < object.getFaces().size(); i++)
+          glDrawArrays(GL_TRIANGLES, i * 3, 3);
+        //glDrawElements(GL_TRIANGLES, object.getFaces().size() * 3, GL_UNSIGNED_INT, 0);
         
         glfwSwapBuffers(window);
         glfwPollEvents();

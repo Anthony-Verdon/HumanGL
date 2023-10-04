@@ -313,14 +313,28 @@ void Object::useMTL(std::string line, unsigned int lineIndex)
     "\nMATERIAL NAME => " + words[1]));
 }
 
+std::unique_ptr<float []> Object::convertEBOintoVBO()
+{
+    std::unique_ptr<float []> verticesArray;
+
+    verticesArray = std::make_unique<float[]>(faces.size() * 3 * 4);
+    size_t j = 0;
+    for (size_t i = 0; i < faces.size(); i++)
+    {
+        for (size_t x = 0; x < 3; x++)
+        {
+            verticesArray[j] = vertices[faces[i][x]][0];
+            verticesArray[j + 1] = vertices[faces[i][x]][1];
+            verticesArray[j + 2] = vertices[faces[i][x]][2];
+            verticesArray[j + 3] = vertices[faces[i][x]][3];
+            j += 4;
+        }
+    }
+    return (verticesArray);
+}
+
 void Object::initVAO()
 {
-    std::unique_ptr<float[]> verticesArray;
-    std::unique_ptr<unsigned int[]> facesArray;
-
-    verticesArray = getVerticesIntoArray();
-    facesArray = getFacesIntoArray();
-
     glGenVertexArrays(1, &VAO); 
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
@@ -329,8 +343,24 @@ void Object::initVAO()
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size() * 4, &verticesArray[0], GL_STATIC_DRAW);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * faces.size() * 3, &facesArray[0], GL_STATIC_DRAW); 
+    /*
+    if we want to draw with EBO
+
+        std::unique_ptr<float[]> verticesArray;
+        std::unique_ptr<unsigned int[]> facesArray;
+
+        verticesArray = getVerticesIntoArray();
+        facesArray = getFacesIntoArray();
+
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size() * 4, &verticesArray[0], GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * faces.size() * 3, &facesArray[0], GL_STATIC_DRAW); 
+    */
+
+    //if we want to draw face by face
+    std::unique_ptr<float []> verticesArray;
+
+    verticesArray = convertEBOintoVBO();
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * faces.size() * 3 * 4, &verticesArray[0], GL_STATIC_DRAW);
     
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);

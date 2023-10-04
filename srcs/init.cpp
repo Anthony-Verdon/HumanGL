@@ -1,5 +1,4 @@
 #include "init.hpp"
-#include "classes/Utils/Utils.hpp"
 
 /**
  * callback function when the window is resized.

@@ -68,6 +68,7 @@ class Object
         void setSmoothShading(bool smoothShading);
         void setMaterialIndex(unsigned int index);
 
+        std::unique_ptr<float []> convertEBOintoVBO();
         void initVAO();
 
         static void addMaterial(const std::unique_ptr<Material> &material);
