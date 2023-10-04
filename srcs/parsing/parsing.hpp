@@ -7,6 +7,6 @@
 #include <vector>
 #include <string>
 
-std::vector<Object> parseObjFile(const std::string &objPath);
+std::vector<std::unique_ptr<Object>> parseObjFile(const std::string &objPath);
 void parseMtlFile(const std::string &path);
 #endif

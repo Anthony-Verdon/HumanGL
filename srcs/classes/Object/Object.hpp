@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <memory>
 
 class Object;
 
@@ -44,7 +45,7 @@ class Object
         unsigned int VBO;
         unsigned int EBO;
 
-        static std::vector<Material> materials;
+        static std::vector<std::unique_ptr<Material> > materials;
 
     public:
         Object(const std::string &name);
@@ -54,9 +55,9 @@ class Object
 
         std::string getName() const;
         Vertices getVertices() const;
-        float *getVerticesIntoArray() const;
+        std::unique_ptr<float[]> getVerticesIntoArray() const;
         std::vector<Face> getFaces() const;
-        unsigned int *getFacesIntoArray() const;
+        std::unique_ptr<unsigned int[]> getFacesIntoArray() const;
         bool getSmoothShading() const;
         unsigned int getMaterialIndex() const;
         unsigned int getVAO() const;
@@ -69,9 +70,9 @@ class Object
 
         void initVAO();
 
-        static void addMaterial(Material material);
-        static std::vector<Material> getMaterials();
-        static Material getMaterial(unsigned int index);
+        static void addMaterial(const std::unique_ptr<Material> &material);
+        static const std::vector<std::unique_ptr<Material>> &getMaterials();
+        static const std::unique_ptr<Material> &getMaterial(unsigned int index);
         static ObjectParsingFunctions parsingFunctions;
 };
 

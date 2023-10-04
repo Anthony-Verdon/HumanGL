@@ -110,7 +110,7 @@ static void updateLoop(GLFWwindow* window, const Object &object, unsigned int te
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture);
         ourShader.setInt("texture1", 0);
-        float *color = Object::getMaterial(object.getMaterialIndex()).getColor(AMBIANT_COLOR);
+        std::array<float, 3> color = Object::getMaterial(object.getMaterialIndex())->getColor(AMBIANT_COLOR);
         ourShader.setVec3("aColor", color[0], color[1], color[2]);
         ourShader.setFloat("aMixValue", scene.mixValue);
 
@@ -162,16 +162,16 @@ static void updateLoop(GLFWwindow* window, const Object &object, unsigned int te
  * and end the program when the loop end. 
 */
 
-static void start(GLFWwindow* window, std::vector<Object> objects)
+static void start(GLFWwindow* window, const std::vector<std::unique_ptr<Object>> &objects)
 {
     if (objects.size() == 0)
         return ;
     
-    objects[0].initVAO();
+    objects[0]->initVAO();
     Texture::initTexParameter();
     Texture wall("textures/wall.ppm");
     
-    updateLoop(window, objects[0], wall.getID());
+    updateLoop(window, *objects[0], wall.getID());
 }
 
 /**
@@ -186,7 +186,7 @@ int main(int argc, char **argv)
     {
         if (argc != 2)
             throw(Utils::Exception("MAIN::NO_INPUT_FILE"));
-        std::vector<Object> objects = parseObjFile(argv[1]);
+        std::vector<std::unique_ptr<Object>> objects = parseObjFile(argv[1]);
         initGLFW();
         GLFWwindow* window = initWindow();
         initOpenGL();

@@ -4,7 +4,7 @@ Matrix::Matrix()
 {
     rows = 1;
     columns = 1;
-    data = new float[rows * columns];
+    data = std::make_unique<float[]>(rows * columns);
 }
 
 Matrix::Matrix(unsigned int rows, unsigned int columns)
@@ -12,14 +12,13 @@ Matrix::Matrix(unsigned int rows, unsigned int columns)
     if (rows == 0 || columns == 0)
         throw(Utils::Exception("MATRIX::OPERATOR *::INVALID_SIZE\n"
         "MATRIX SIZE => " + std::to_string(rows) + " * " + std::to_string(columns)));
-    this->data = new float[rows * columns];
+    this->data = std::make_unique<float[]>(rows * columns);
     this->rows = rows;
     this->columns = columns;
 }
 
 Matrix::Matrix(const Matrix &copy)
 {
-    data = NULL;
     *this = copy;
 }
 
@@ -29,8 +28,7 @@ Matrix & Matrix::operator=(const Matrix &copy)
     {
         rows = copy.getRows();
         columns = copy.getColumns();
-        delete []data;
-        data = new float[rows * columns];
+        data = std::make_unique<float[]>(rows * columns);
         setData(copy.getData(), rows * columns);
     }
     return (*this);
@@ -38,7 +36,6 @@ Matrix & Matrix::operator=(const Matrix &copy)
 
 Matrix::~Matrix()
 {
-    delete []data;
 }
 
 bool Matrix::operator!=(const Matrix &instance)
@@ -159,9 +156,9 @@ Matrix operator*(float number, const Matrix &instance)
     return (result);
 }
 
-float * Matrix::getData() const
+float *Matrix::getData() const
 {
-    return (data);
+    return (&data[0]);
 }
 
 

@@ -2,6 +2,7 @@
 #define TEXTURE_HPP
 
 #include <string>
+#include <memory>
 
 #include "../Utils/Utils.hpp"
 #include "../../../includes/glad/glad.h"
@@ -17,7 +18,7 @@ private:
     int width;
     int height;
     unsigned int valueMax;
-    unsigned char *data;
+    std::unique_ptr<unsigned char[]> data;
 
 public:
     Texture(const std::string &texturePath);

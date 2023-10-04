@@ -8,7 +8,7 @@ ObjectParsingFunctions Object::parsingFunctions = {
         {"usemtl", &Object::useMTL}
 };
 
-std::vector<Material> Object::materials;
+std::vector<std::unique_ptr<Material> > Object::materials;
 
 Object::Object()
 {
@@ -55,13 +55,13 @@ std::vector<std::vector<float> >Object::getVertices() const
     return (vertices);
 }
 
-float *Object::getVerticesIntoArray() const
+std::unique_ptr<float[]> Object::getVerticesIntoArray() const
 {
     size_t j;
-    float *array;
+    std::unique_ptr<float[]> array;
 
     j = 0;
-    array = new float[vertices.size() * 4 * sizeof(float)];
+    array = std::make_unique<float[]>(vertices.size() * 4);
     for (size_t i = 0; i < vertices.size(); i++)
     {
         array[j] = vertices[i][0];
@@ -73,13 +73,13 @@ float *Object::getVerticesIntoArray() const
     return (array);
 }
 
-unsigned int *Object::getFacesIntoArray() const
+std::unique_ptr<unsigned int[]> Object::getFacesIntoArray() const
 {
     size_t j;
-    unsigned int *array;
+    std::unique_ptr<unsigned int[]> array;
 
     j = 0;
-    array = new unsigned int[faces.size() * 3 * sizeof(unsigned int)];
+    array = std::make_unique<unsigned int[]>(faces.size() * 3);
     for (size_t i = 0; i < faces.size(); i++)
     {
         array[j] = faces[i][0];
@@ -303,7 +303,7 @@ void Object::useMTL(std::string line, unsigned int lineIndex)
     
     for (size_t i = 0; i < materials.size(); i++)
     {
-        if (materials[i].getName() == words[1])
+        if (materials[i]->getName() == words[1])
         {
             materialIndex = i;
             return ;
@@ -315,8 +315,8 @@ void Object::useMTL(std::string line, unsigned int lineIndex)
 
 void Object::initVAO()
 {
-    float *verticesArray;
-    unsigned int *facesArray;
+    std::unique_ptr<float[]> verticesArray;
+    std::unique_ptr<unsigned int[]> facesArray;
 
     verticesArray = getVerticesIntoArray();
     facesArray = getFacesIntoArray();
@@ -329,11 +329,8 @@ void Object::initVAO()
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size() * 4, verticesArray, GL_STATIC_DRAW);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * faces.size() * 3, facesArray, GL_STATIC_DRAW); 
-    
-    delete []verticesArray;
-    delete []facesArray;
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size() * 4, &verticesArray[0], GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * faces.size() * 3, &facesArray[0], GL_STATIC_DRAW); 
     
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -378,17 +375,17 @@ unsigned int Object::getMaterialIndex() const
     return (materialIndex);
 }
 
-void Object::addMaterial(Material material)
+void Object::addMaterial(const std::unique_ptr<Material> &material)
 {
-    materials.push_back(material);
+    materials.push_back(std::make_unique<Material>(*material));
 }
 
-std::vector<Material> Object::getMaterials()
+const std::vector<std::unique_ptr<Material> > &Object::getMaterials()
 {
     return (materials);
 }
 
-Material  Object::getMaterial(unsigned int index)
+const std::unique_ptr<Material> &Object::getMaterial(unsigned int index)
 {
     if (index >= materials.size())
         throw("OBJECT::GET_MATERIAL::INVALID_INDEX");

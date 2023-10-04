@@ -12,9 +12,8 @@ Texture::Texture(const std::string &texturePath)
     
     glGenTextures(1, &ID);
     glBindTexture(GL_TEXTURE_2D, ID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, &data[0]);
     glGenerateMipmap(GL_TEXTURE_2D);
-    delete []data;
 }
 
 Texture::Texture(const Texture &copy)
@@ -52,7 +51,7 @@ void Texture::checkHeader(const std::string &line, unsigned int nbLine)
             "LINE INDEX => NEED TO ADD PARAM"));
         width = std::stoi(words[0]);
         height = std::stoi(words[1]);
-        data = new unsigned char[width * height * 3];
+        data = std::make_unique<unsigned char[]>(width * height * 3);
     }
     else if (nbLine == 2)
     {

@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <cmath>
-
+#include <memory>
 class Matrix;
 
 #include "../Utils/Utils.hpp"
@@ -11,7 +11,7 @@ class Matrix;
 class Matrix
 {
     private:
-        float *data;
+        std::unique_ptr<float[]> data;
         unsigned int rows;
         unsigned int columns;
 

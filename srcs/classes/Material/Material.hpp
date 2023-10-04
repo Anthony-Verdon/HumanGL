@@ -3,6 +3,7 @@
 
 #include <string>
 #include <map>
+#include <array>
 #include "../Utils/Utils.hpp"
 
 #define AMBIANT_COLOR 0
@@ -27,7 +28,7 @@ private:
     void defineIllum(std::string line, unsigned int lineIndex);
 
     std::string name;
-    float **colors;
+    std::array< std::array<float, 3>, 3> colors;
     float specularExponent;
     float refractionIndex;
     float opacity;
@@ -40,16 +41,16 @@ public:
     ~Material();
 
     std::string getName() const;
-    float **getColors() const;
-    float *getColor(unsigned int index) const;
+    std::array< std::array<float, 3>, 3> getColors() const;
+    std::array<float, 3> getColor(unsigned int index) const;
     float getSpecularExponent() const;
     float getRefractionIndex() const;
     float getOpacity() const;
     float getIllum() const;
 
     void setName(const std::string &name);
-    void setColors(float colors[3][3]);
-    void setColor(float color[3], unsigned int index);
+    void setColors(const std::array< std::array<float, 3>, 3> &colors);
+    void setColor(const std::array<float, 3> &color, unsigned int index);
     void setSpecularExponent(float specularExponent);
     void setRefractionIndex(float refractionIndex);
     void setOpacity(float opacity);

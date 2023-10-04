@@ -17,10 +17,8 @@ Material::Material()
 Material::Material(const std::string &name)
 {
     this->name = name;
-    colors = new float*[3];
     for (size_t i = 0; i < 3; i++)
     {
-        colors[i] = new float[3];
         for (size_t j = 0; j < 3; j++)
             colors[i][j] = 0;
     }
@@ -32,9 +30,6 @@ Material::Material(const std::string &name)
 
 Material::Material(const Material &copy)
 {
-    colors = new float*[3];
-    for (size_t j = 0; j < 3; j++)
-        colors[j] = new float[3];
     *this = copy;
 }
 
@@ -57,11 +52,6 @@ Material &Material::operator=(const Material &copy)
 
 Material::~Material()
 {
-    /*
-    for (size_t j = 0; j < 3; j++)
-        delete []colors[j];
-    delete []colors;
-    */
 }
 
 std::string Material::getName() const
@@ -69,12 +59,12 @@ std::string Material::getName() const
     return (name);
 }
 
-float **Material::getColors() const
+std::array<std::array<float, 3>, 3> Material::getColors() const
 {
     return (colors);
 }
 
-float *Material::getColor(unsigned int index) const
+std::array<float, 3> Material::getColor(unsigned int index) const
 {
     if (index >= 3)
         throw(Utils::Exception("MATERIAL::GET_COLOR::INVALID_INDEX"
@@ -102,16 +92,12 @@ void Material::setName(const std::string &name)
     this->name = name;
 }
 
-void Material::setColors(float colors[3][3])
+void Material::setColors(const std::array<std::array<float, 3>, 3> &colors)
 {
-    for (size_t i = 0; i < 3; i++)
-    {
-        for (size_t j = 0; j < 3; j++)
-            this->colors[i][j] = colors[i][j];
-    }
+    this->colors = colors;
 }
 
-void Material::setColor(float color[3], unsigned int index)
+void Material::setColor(const std::array<float, 3> &color, unsigned int index)
 {
     if (index >= 3)
         throw(Utils::Exception("MATERIAL::SET_COLOR::INVALID_INDEX"
@@ -260,7 +246,7 @@ std::ostream &operator << (std::ostream &os, const Material &instance)
 {
     os << "name: " << instance.getName() << std::endl;
     os << "ambiant color: ";
-    float *color = instance.getColor(AMBIANT_COLOR);
+    std::array<float, 3> color = instance.getColor(AMBIANT_COLOR);
     for (size_t i = 0; i < 3; i++)
         os << color[i] << " ";
     os << std::endl;
