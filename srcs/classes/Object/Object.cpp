@@ -17,6 +17,7 @@ Object::Object()
 Object::Object(const std::string &name)
 {
     this->name = name;
+    actualMaterial = "none";
     smoothShading = false;
     VAOInit = false;
 }
@@ -35,7 +36,7 @@ Object &Object::operator=(const Object &copy)
         faces = copy.getFaces();
         name = copy.getName();
         smoothShading = copy.getSmoothShading();
-        materialIndex = copy.getMaterialIndex();
+        materialDictionnary = copy.getMaterialDictionnary();
     }
     return (*this);
 }
@@ -222,11 +223,15 @@ void Object::triangulate(Face &face)
                         break;
                     }
                 }
+                if (actualMaterial != "none")
+                    materialDictionnary[actualMaterial].push_back(newFace);
                 faces.push_back(newFace);
                 break ;
             }
         }
     }
+    if (actualMaterial != "none")
+        materialDictionnary[actualMaterial].push_back(face);
     faces.push_back(face);
 }
 
@@ -305,7 +310,7 @@ void Object::useMTL(std::string line, unsigned int lineIndex)
     {
         if (materials[i]->getName() == words[1])
         {
-            materialIndex = i;
+            actualMaterial = words[1];
             return ;
         }
     }
@@ -395,14 +400,14 @@ std::ostream& operator << (std::ostream &os, const Object &instance)
     return (os);
 }
 
-void Object::setMaterialIndex(unsigned int index)
+void Object::setMaterialDictionnary(std::map<std::string,std::vector<Face>> materialDictionnary)
 {
-    materialIndex = index;
+    this->materialDictionnary = materialDictionnary;
 }
 
-unsigned int Object::getMaterialIndex() const
+std::map<std::string,std::vector<Face>> Object::getMaterialDictionnary() const
 {
-    return (materialIndex);
+    return (materialDictionnary);
 }
 
 void Object::addMaterial(const std::unique_ptr<Material> &material)
@@ -415,9 +420,26 @@ const std::vector<std::unique_ptr<Material> > &Object::getMaterials()
     return (materials);
 }
 
-const std::unique_ptr<Material> &Object::getMaterial(unsigned int index)
+Material Object::getMaterial(const std::string &name)
 {
-    if (index >= materials.size())
-        throw("OBJECT::GET_MATERIAL::INVALID_INDEX");
-    return (materials[index]);
+    Material material("default");
+
+    for (auto it = materials.begin(); it != materials.end(); it++)
+    {
+            if ((*it)->getName() == name)
+                material = **it;
+    }
+    return (material);
+}
+
+Material Object::getMaterial(unsigned int i) const
+{
+    Material material("default");
+
+    for (auto it = materialDictionnary.begin(); it != materialDictionnary.end(); it++)
+    {
+        if (std::find(it->second.begin(), it->second.end(), faces[i]) != it->second.end())
+            material = Object::getMaterial(it->first);
+    }
+    return (material);
 }

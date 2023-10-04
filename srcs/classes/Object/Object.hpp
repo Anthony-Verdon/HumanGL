@@ -6,6 +6,7 @@
 #include <vector>
 #include <map>
 #include <memory>
+#include <algorithm>
 
 class Object;
 
@@ -38,8 +39,10 @@ class Object
         Vertices vertices;
         std::vector<Face> faces;
         bool smoothShading;
-        unsigned int materialIndex;
-        
+        std::string actualMaterial;
+        //index of the material, faces with this material
+        std::map<std::string,std::vector<Face>> materialDictionnary;
+
         bool VAOInit;
         unsigned int VAO;
         unsigned int VBO;
@@ -59,21 +62,22 @@ class Object
         std::vector<Face> getFaces() const;
         std::unique_ptr<unsigned int[]> getFacesIntoArray() const;
         bool getSmoothShading() const;
-        unsigned int getMaterialIndex() const;
+        std::map<std::string,std::vector<Face>> getMaterialDictionnary() const;
         unsigned int getVAO() const;
+        Material getMaterial(unsigned int i) const;
 
         void setName(const std::string &name);
         void setVertices(const Vertices &vertices);
         void setFaces(const std::vector<Face> &faces);
         void setSmoothShading(bool smoothShading);
-        void setMaterialIndex(unsigned int index);
+        void setMaterialDictionnary(std::map<std::string ,std::vector<Face>> materialDictionnary);
 
         std::unique_ptr<float []> convertEBOintoVBO();
         void initVAO();
 
         static void addMaterial(const std::unique_ptr<Material> &material);
         static const std::vector<std::unique_ptr<Material>> &getMaterials();
-        static const std::unique_ptr<Material> &getMaterial(unsigned int index);
+        static Material getMaterial(const std::string &name);
         static ObjectParsingFunctions parsingFunctions;
 };
 

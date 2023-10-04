@@ -110,8 +110,6 @@ static void updateLoop(GLFWwindow* window, const Object &object, unsigned int te
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture);
         ourShader.setInt("texture1", 0);
-        std::array<float, 3> color = Object::getMaterial(object.getMaterialIndex())->getColor(AMBIANT_COLOR);
-        ourShader.setVec3("aColor", color[0], color[1], color[2]);
         ourShader.setFloat("aMixValue", scene.mixValue);
 
         Matrix rotation(4, 4);
@@ -129,7 +127,11 @@ static void updateLoop(GLFWwindow* window, const Object &object, unsigned int te
 
         glBindVertexArray(object.getVAO());
         for (size_t i = 0; i < object.getFaces().size(); i++)
-          glDrawArrays(GL_TRIANGLES, i * 3, 3);
+        {
+            std::array<float, 3> color = object.getMaterial(i).getColor(AMBIANT_COLOR);
+            ourShader.setVec3("aColor", color[0], color[1], color[2]);
+            glDrawArrays(GL_TRIANGLES, i * 3, 3);
+        }
         //glDrawElements(GL_TRIANGLES, object.getFaces().size() * 3, GL_UNSIGNED_INT, 0);
         
         glfwSwapBuffers(window);
