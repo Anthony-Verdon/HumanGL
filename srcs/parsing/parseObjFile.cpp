@@ -21,7 +21,8 @@ std::vector<std::unique_ptr<Object>> parseObjFile(const std::string &path)
         it = Object::parsingFunctions.find(word);
         if (it != Object::parsingFunctions.end())
         {
-            ((*object).*it->second)(line, lineIndex);
+            if (object != NULL)
+                ((*object).*it->second)(line, lineIndex);
         }
         else if (word == "o")
         {

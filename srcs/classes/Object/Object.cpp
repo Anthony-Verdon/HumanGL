@@ -292,7 +292,7 @@ void Object::defineMTL(std::string line, unsigned int lineIndex)
         throw(Utils::Exception("OBJECT::DEFINE_MTL::INVALID_NUMBER_OF_ARGUMENTS"
         "\nLINE => " + line + "\n"
         "LINE INDEX => " + std::to_string(lineIndex)));
-    
+
     parseMtlFile(words[1]);
 }
 
@@ -305,7 +305,7 @@ void Object::useMTL(std::string line, unsigned int lineIndex)
         throw(Utils::Exception("OBJECT::USE_MTL::INVALID_NUMBER_OF_ARGUMENTS"
         "\nLINE => " + line + "\n"
         "LINE INDEX => " + std::to_string(lineIndex)));
-    
+
     for (size_t i = 0; i < materials.size(); i++)
     {
         if (materials[i]->getName() == words[1])
@@ -348,25 +348,25 @@ void Object::initVAO()
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
+    //if we want to draw with EBO
+    
+    std::unique_ptr<float[]> verticesArray;
+    std::unique_ptr<unsigned int[]> facesArray;
+
+    verticesArray = getVerticesIntoArray();
+    facesArray = getFacesIntoArray();
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size() * 4, &verticesArray[0], GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * faces.size() * 3, &facesArray[0], GL_STATIC_DRAW);
+    
     /*
-    if we want to draw with EBO
-
-        std::unique_ptr<float[]> verticesArray;
-        std::unique_ptr<unsigned int[]> facesArray;
-
-        verticesArray = getVerticesIntoArray();
-        facesArray = getFacesIntoArray();
-
-        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size() * 4, &verticesArray[0], GL_STATIC_DRAW);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * faces.size() * 3, &facesArray[0], GL_STATIC_DRAW); 
-    */
-
-    //if we want to draw face by face
+    //if we want to draw face by face for multiples materials
     std::unique_ptr<float []> verticesArray;
 
     verticesArray = convertEBOintoVBO();
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * faces.size() * 3 * 4, &verticesArray[0], GL_STATIC_DRAW);
-    
+    */
+
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
@@ -427,7 +427,10 @@ Material Object::getMaterial(const std::string &name)
     for (auto it = materials.begin(); it != materials.end(); it++)
     {
             if ((*it)->getName() == name)
+            {
                 material = **it;
+                break ;
+            }
     }
     return (material);
 }
@@ -439,7 +442,10 @@ Material Object::getMaterial(unsigned int i) const
     for (auto it = materialDictionnary.begin(); it != materialDictionnary.end(); it++)
     {
         if (std::find(it->second.begin(), it->second.end(), faces[i]) != it->second.end())
+        {
             material = Object::getMaterial(it->first);
+            break ;
+        }
     }
     return (material);
 }
