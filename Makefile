@@ -28,6 +28,7 @@ SRCS_BONUS := srcs_bonus/main.cpp \
 		srcs_bonus/classes/Matrix/Matrix.cpp \
 		srcs_bonus/classes/Material/Material.cpp
 
+
 OBJS := $(SRCS:.cpp=.o)
 
 OBJS_BONUS := $(SRCS_BONUS:.cpp=.o)
@@ -57,6 +58,9 @@ bonus: 		${NAME_BONUS}
 ${NAME_BONUS}:	${OBJS_BONUS}
 			${COMPILER} ${OBJS_BONUS} -o ${NAME_BONUS} ${LIBRARIES}
 
+tester:
+			make -C tester
+
 clean:
 			${RM} ${OBJS} ${OBJS_BONUS} 
 
@@ -67,4 +71,4 @@ re:
 			make fclean
 			make
 
-.PHONY: 	all clean fclean re
+.PHONY: 	all clean fclean re bonus tester
