@@ -1,0 +1,27 @@
+"#" :
+comment
+
+"v {x, y, z, [w]}" : 
+vertex line, starting with letter v
+and followed by x, y and z coordinates.
+w is optional (default value is equal to 1.0).
+(w explained : https://stackoverflow.com/questions/2422750/in-opengl-vertex-shaders-what-is-w-and-why-do-i-divide-by-it)
+
+"f {v1 v2 v3 ...}" :
+vertex indices, starting with letter f
+and followed by 3 vertices or more.
+v1 correspond to the first vertex of the vertex list.
+-v1 correspond to the lat vertex of the vertex list.
+the vertex list is previously defined.
+
+"mtllib {external .mtl file}" :
+describe an external file containing one or more materials definitions
+
+"usemtl {material name}" :
+tell to use a material describe in an external .mtl file
+
+"o {name}" :
+give a name to an object
+
+bonuses:
+https://paulbourke.net/dataformats/obj/#:~:text=vp%20is%20the%20parameter%20vertex,required%20for%20a%202D%20curve.

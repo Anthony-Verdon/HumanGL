@@ -13,9 +13,28 @@ SRCS := srcs/main.cpp \
 		srcs/classes/Matrix/Matrix.cpp \
 		srcs/classes/Material/Material.cpp
 
+SRCS_BONUS := srcs_bonus/main.cpp \
+		srcs_bonus/init.cpp \
+		srcs_bonus/input.cpp \
+		srcs_bonus/parsing/parseObjFile.cpp \
+		srcs_bonus/parsing/parseMtlFile.cpp \
+		includes/glad/glad.cpp \
+		srcs_bonus/classes/Camera/Camera.cpp \
+		srcs_bonus/classes/Shader/Shader.cpp \
+		srcs_bonus/classes/Texture/Texture.cpp \
+		srcs_bonus/classes/Time/Time.cpp \
+		srcs_bonus/classes/Object/Object.cpp \
+		srcs_bonus/classes/Utils/Utils.cpp \
+		srcs_bonus/classes/Matrix/Matrix.cpp \
+		srcs_bonus/classes/Material/Material.cpp
+
 OBJS := $(SRCS:.cpp=.o)
 
+OBJS_BONUS := $(SRCS_BONUS:.cpp=.o)
+
 NAME := scop
+
+NAME_BONUS := scop_bonus
 
 COMPILER ?= c++
 
@@ -33,11 +52,16 @@ all: 		${NAME}
 ${NAME}:	${OBJS}
 			${COMPILER} ${OBJS} -o ${NAME} ${LIBRARIES}
 
+bonus: 		${NAME_BONUS}
+
+${NAME_BONUS}:	${OBJS_BONUS}
+			${COMPILER} ${OBJS_BONUS} -o ${NAME_BONUS} ${LIBRARIES}
+
 clean:
-			${RM} ${OBJS}
+			${RM} ${OBJS} ${OBJS_BONUS} 
 
 fclean: 	clean
-			${RM} ${NAME}
+			${RM} ${NAME} ${NAME_BONUS}
 
 re:
 			make fclean
