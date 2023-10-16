@@ -11,28 +11,6 @@
 #include "init.hpp"
 #include <iostream>
 
-static Camera initCamera()
-{
-    Matrix position(3, 1);
-    Matrix upDirection(3, 1);
-
-    float positionValues[] = {
-        0.0f,
-        0.0f,
-        3.0f
-    };
-
-    float upDirectionValues[] = {
-        0.0f,
-        1.0f,
-        0.0f
-    };
-
-    position.setData(positionValues, 3);
-    upDirection.setData(upDirectionValues, 3);
-    Camera camera(position, upDirection, -90.0f, 0.0f, 0.0f, 45.0f, 2.5f);
-    return (camera);
-}
 
 static Matrix initAxisVector(float X, float Y, float Z)
 {
@@ -73,18 +51,28 @@ static void updateCamera(Camera &camera)
  * meaning the one which is displayed is replaced by the one we drew,
  * and update event like input or callback function
 */
-static void updateLoop(GLFWwindow* window, const Object &object, unsigned int texture)
+static void updateLoop(GLFWwindow* window, const std::vector<std::unique_ptr<Object>> &objects)
 {
-    Shader ourShader("srcs/shaders/shader.vs", "srcs/shaders/shader.fs");
-    Camera camera(initCamera());
+    Shader shader("srcs/shaders/shader.vs", "srcs/shaders/shader.fs");
+    Texture::initTexParameter();
+    Texture wall("textures/wall.ppm");
+    Matrix position = initAxisVector(0.0f, 0.0f, 3.0f);
+    Matrix upDirection = initAxisVector(0.0f, 1.0f, 0.0f);
+    Camera camera(position, upDirection, -90.0f, 0.0f, 0.0f, 45.0f, 2.5f);
     t_scene scene;
     scene.camera = &camera;
     scene.displayColor = true;
     scene.mixValue = 0;
     for (size_t i = 0; i < 3; i++)
         scene.rotation[i] = 0;
+    float angleX = 0;
+    float angleY = 0;
+    float angleZ = 0;
+    Matrix axisX = initAxisVector(1.0f, 0.0f, 0.0f);
+    Matrix axisY = initAxisVector(0.0f, 1.0f, 0.0f);
+    Matrix axisZ = initAxisVector(0.0f, 0.0f, 1.0f);
+
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    
     glEnable(GL_DEPTH_TEST);
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -92,12 +80,9 @@ static void updateLoop(GLFWwindow* window, const Object &object, unsigned int te
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
 
-    float angleX = 0;
-    float angleY = 0;
-    float angleZ = 0;
-    Matrix axisX = initAxisVector(1.0f, 0.0f, 0.0f);
-    Matrix axisY = initAxisVector(0.0f, 1.0f, 0.0f);
-    Matrix axisZ = initAxisVector(0.0f, 0.0f, 1.0f);
+    for (size_t i = 0; i < objects.size(); i++)
+        objects[i]->initVAO();
+
     while(!glfwWindowShouldClose(window))
     {
         Time::updateTime();
@@ -105,91 +90,55 @@ static void updateLoop(GLFWwindow* window, const Object &object, unsigned int te
         processInput(window);
         updateCamera(camera);
 
-        ourShader.use();
-
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture);
-        ourShader.setInt("texture1", 0);
-        std::array<float, 3> color = object.getMaterial(0).getColor(AMBIANT_COLOR);
-        ourShader.setVec3("aColor", color[0], color[1], color[2]);
-        ourShader.setFloat("aMixValue", scene.mixValue);
-
-        Matrix rotation(4, 4);
-        rotation.uniform(1);
-        angleX += scene.rotation[X_AXIS] * Time::getDeltaTime();
-        angleY += scene.rotation[Y_AXIS] * Time::getDeltaTime();
-        angleZ += scene.rotation[Z_AXIS] * Time::getDeltaTime();
-        rotation = Matrix::rotate(rotation, angleX, Matrix::normalize(axisX)) * Matrix::rotate(rotation, angleY, Matrix::normalize(axisY)) * Matrix::rotate(rotation, angleZ, Matrix::normalize(axisZ));
-        ourShader.setMat4("rotation", rotation);
-
-        Matrix projection = Matrix::perspective(camera.getFov(), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
-        ourShader.setMat4("projection", projection);
-        Matrix view = Matrix::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(), camera.getUpDirection());
-        ourShader.setMat4("view", view);
-
-        glBindVertexArray(object.getVAO());
-
-        glDrawElements(GL_TRIANGLES, object.getFaces().size() * 3, GL_UNSIGNED_INT, 0);
-
-        /*
-        //if we want to draw face by face for multiples materials
-        for (size_t i = 0; i < object.getFaces().size(); i++)
+        for (size_t i = 0; i < objects.size(); i++)
         {
-            std::array<float, 3> color;
-            if (object.getMaterialDictionnary().size() > 0)
-                color = object.getMaterial(i).getColor(AMBIANT_COLOR);
-            else
+            shader.use();
+
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, wall.getID());
+            shader.setInt("texture1", 0);
+            std::array<float, 3> color = objects[i]->getMaterial(0).getColor(AMBIANT_COLOR);
+            shader.setVec3("aColor", color[0], color[1], color[2]);
+            shader.setFloat("aMixValue", scene.mixValue);
+
+            Matrix rotation(4, 4);
+            rotation.uniform(1);
+            angleX += scene.rotation[X_AXIS] * Time::getDeltaTime();
+            angleY += scene.rotation[Y_AXIS] * Time::getDeltaTime();
+            angleZ += scene.rotation[Z_AXIS] * Time::getDeltaTime();
+            rotation = Matrix::rotate(rotation, angleX, Matrix::normalize(axisX)) * Matrix::rotate(rotation, angleY, Matrix::normalize(axisY)) * Matrix::rotate(rotation, angleZ, Matrix::normalize(axisZ));
+            shader.setMat4("rotation", rotation);
+
+            Matrix projection = Matrix::perspective(camera.getFov(), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
+            shader.setMat4("projection", projection);
+            
+            Matrix view = Matrix::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(), camera.getUpDirection());
+            shader.setMat4("view", view);
+
+            glBindVertexArray(objects[i]->getVAO());
+
+            glDrawElements(GL_TRIANGLES, objects[i]->getFaces().size() * 3, GL_UNSIGNED_INT, 0);
+
+            /*
+            //if we want to draw face by face for multiples materials
+            for (size_t i = 0; i < object.getFaces().size(); i++)
             {
-                for (size_t i = 0; i < 3; i++)
-                    color[i] = 0.5;
+                std::array<float, 3> color;
+                if (object.getMaterialDictionnary().size() > 0)
+                    color = object.getMaterial(i).getColor(AMBIANT_COLOR);
+                else
+                {
+                    for (size_t i = 0; i < 3; i++)
+                        color[i] = 0.5;
+                }
+                ourShader.setVec3("aColor", color[0], color[1], color[2]);
+                glDrawArrays(GL_TRIANGLES, i * 3, 3);
             }
-            ourShader.setVec3("aColor", color[0], color[1], color[2]);
-            glDrawArrays(GL_TRIANGLES, i * 3, 3);
+            */
         }
-        */
-        
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-}
-
-/**
- * initialize everything before the update loop.
- * 
- * initialize vertices of the element we draw.
- * initialize elements we draw with vertex.
- * 
- * create Vertex Array Object (VAO)
- * create Vertex Buffer Object (VBO) and Element Buffer Object (EBO)
- * 
- * create an ID for each one.
- * 
- * bind the VAO so next VBO and EBO created are stored in it.
- * bind a type of buffer for VBO and EBO.
- * 
- * copy data into the buffer bind to the type of buffer specified.
- * 
- * explain to OpenGL how to read the data and enable it.
- * the 0 is the index of your VAO, which we set into the vertex shader.
- * 
- * unbind everything. Remember : always unbind the VAO first
- * (even if unbind isn't really necessary
- * because we will bind everytime before modifying something).
- * 
- * start the update loop
- * and end the program when the loop end. 
-*/
-
-static void start(GLFWwindow* window, const std::vector<std::unique_ptr<Object>> &objects)
-{
-    if (objects.size() == 0)
-        return ;
-    
-    objects[0]->initVAO();
-    Texture::initTexParameter();
-    Texture wall("textures/wall.ppm");
-    
-    updateLoop(window, *objects[0], wall.getID());
 }
 
 /**
@@ -208,7 +157,7 @@ int main(int argc, char **argv)
         initGLFW();
         GLFWwindow* window = initWindow();
         initOpenGL();
-        start(window, objects);
+        updateLoop(window, objects);
         glfwTerminate();
         return (0);
     }

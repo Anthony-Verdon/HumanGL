@@ -273,10 +273,6 @@ int Object::createCombinaison(int vertexID, int textureVertexID)
     for (size_t i = 0; i < 3; i++)
         combinaison.push_back(textureVertex[i]);
 
-    std::cout << "combinaison: ";
-    for (size_t i = 0; i < combinaison.size(); i++)
-        std::cout << combinaison[i] << " ";
-    std::cout << std::endl;
     auto it = std::find(combinedVertices.begin(), combinedVertices.end(), combinaison);
     if (it == combinedVertices.end())
     {
@@ -284,10 +280,7 @@ int Object::createCombinaison(int vertexID, int textureVertexID)
         index = combinedVertices.size() - 1;
     }
     else
-    {
         index = std::distance(combinedVertices.begin(), it);
-    }
-    std::cout << "index: " << index << std::endl;
     return (index);
 }
 
@@ -441,20 +434,6 @@ void Object::initVAO()
     std::unique_ptr<float[]> verticesArray;
     std::unique_ptr<unsigned int[]> facesArray;
 
-    std::cout << "vertices: " << std::endl;
-    for (size_t i = 0; i < vertices.size(); i++)
-    {
-        for (size_t j = 0; j < vertices[i].size(); j++)
-            std::cout << vertices[i][j] << " ";
-        std::cout << std::endl;
-    }
-    std::cout << "faces: " << std::endl;
-    for (size_t i = 0; i < faces.size(); i++)
-    {
-        for (size_t j = 0; j < faces[i].size(); j++)
-            std::cout << faces[i][j] << " ";
-        std::cout << std::endl;
-    }
     verticesArray = getVerticesIntoArray();
     facesArray = getFacesIntoArray();
 

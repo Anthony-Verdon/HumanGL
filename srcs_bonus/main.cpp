@@ -73,7 +73,7 @@ static void updateCamera(Camera &camera)
  * meaning the one which is displayed is replaced by the one we drew,
  * and update event like input or callback function
 */
-static void updateLoop(GLFWwindow* window, const Object &object, unsigned int texture)
+static void updateLoop(GLFWwindow* window, const std::vector<std::unique_ptr<Object>> &objects, unsigned int texture)
 {
     Shader ourShader("srcs_bonus/shaders/shader.vs", "srcs_bonus/shaders/shader.fs");
     Camera camera(initCamera());
@@ -105,49 +105,51 @@ static void updateLoop(GLFWwindow* window, const Object &object, unsigned int te
         processInput(window);
         updateCamera(camera);
 
-        ourShader.use();
-
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture);
-        ourShader.setInt("texture1", 0);
-        std::array<float, 3> color = object.getMaterial(0).getColor(AMBIANT_COLOR);
-        ourShader.setVec3("color", color[0], color[1], color[2]);
-        ourShader.setFloat("mixValue", scene.mixValue);
-
-        Matrix rotation(4, 4);
-        rotation.uniform(1);
-        angleX += scene.rotation[X_AXIS] * Time::getDeltaTime();
-        angleY += scene.rotation[Y_AXIS] * Time::getDeltaTime();
-        angleZ += scene.rotation[Z_AXIS] * Time::getDeltaTime();
-        rotation = Matrix::rotate(rotation, angleX, Matrix::normalize(axisX)) * Matrix::rotate(rotation, angleY, Matrix::normalize(axisY)) * Matrix::rotate(rotation, angleZ, Matrix::normalize(axisZ));
-        ourShader.setMat4("rotation", rotation);
-
-        Matrix projection = Matrix::perspective(camera.getFov(), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
-        ourShader.setMat4("projection", projection);
-        Matrix view = Matrix::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(), camera.getUpDirection());
-        ourShader.setMat4("view", view);
-
-        glBindVertexArray(object.getVAO());
-
-        glDrawElements(GL_TRIANGLES, object.getFaces().size() * 3, GL_UNSIGNED_INT, 0);
-
-        /*
-        //if we want to draw face by face for multiples materials
-        for (size_t i = 0; i < object.getFaces().size(); i++)
+        for (size_t i = 0; i < objects.size(); i++)
         {
-            std::array<float, 3> color;
-            if (object.getMaterialDictionnary().size() > 0)
-                color = object.getMaterial(i).getColor(AMBIANT_COLOR);
-            else
+            ourShader.use();
+
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, texture);
+            ourShader.setInt("texture1", 0);
+            std::array<float, 3> color = objects[i]->getMaterial(0).getColor(AMBIANT_COLOR);
+            ourShader.setVec3("color", color[0], color[1], color[2]);
+            ourShader.setFloat("mixValue", scene.mixValue);
+
+            Matrix rotation(4, 4);
+            rotation.uniform(1);
+            angleX += scene.rotation[X_AXIS] * Time::getDeltaTime();
+            angleY += scene.rotation[Y_AXIS] * Time::getDeltaTime();
+            angleZ += scene.rotation[Z_AXIS] * Time::getDeltaTime();
+            rotation = Matrix::rotate(rotation, angleX, Matrix::normalize(axisX)) * Matrix::rotate(rotation, angleY, Matrix::normalize(axisY)) * Matrix::rotate(rotation, angleZ, Matrix::normalize(axisZ));
+            ourShader.setMat4("rotation", rotation);
+
+            Matrix projection = Matrix::perspective(camera.getFov(), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
+            ourShader.setMat4("projection", projection);
+            Matrix view = Matrix::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(), camera.getUpDirection());
+            ourShader.setMat4("view", view);
+
+            glBindVertexArray(objects[i]->getVAO());
+
+            glDrawElements(GL_TRIANGLES, objects[i]->getFaces().size() * 3, GL_UNSIGNED_INT, 0);
+
+            /*
+            //if we want to draw face by face for multiples materials
+            for (size_t i = 0; i < object.getFaces().size(); i++)
             {
-                for (size_t i = 0; i < 3; i++)
-                    color[i] = 0.5;
+                std::array<float, 3> color;
+                if (object.getMaterialDictionnary().size() > 0)
+                    color = object.getMaterial(i).getColor(AMBIANT_COLOR);
+                else
+                {
+                    for (size_t i = 0; i < 3; i++)
+                        color[i] = 0.5;
+                }
+                ourShader.setVec3("aColor", color[0], color[1], color[2]);
+                glDrawArrays(GL_TRIANGLES, i * 3, 3);
             }
-            ourShader.setVec3("aColor", color[0], color[1], color[2]);
-            glDrawArrays(GL_TRIANGLES, i * 3, 3);
+            */
         }
-        */
-        
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
@@ -185,11 +187,12 @@ static void start(GLFWwindow* window, const std::vector<std::unique_ptr<Object>>
     if (objects.size() == 0)
         return ;
     
-    objects[0]->initVAO();
+    for (size_t i = 0; i < objects.size(); i++)
+        objects[i]->initVAO();
     Texture::initTexParameter();
     Texture wall("textures/wall.ppm");
     
-    updateLoop(window, *objects[0], wall.getID());
+    updateLoop(window, objects, wall.getID());
 }
 
 /**
