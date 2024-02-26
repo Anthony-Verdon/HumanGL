@@ -438,6 +438,31 @@ Matrix Matrix::lookAt(const Matrix &position, const Matrix &target, const Matrix
     return (result);
 }
 
+Matrix::Exception::Exception(const std::string &functionName, const std::string &errorMessage, const Matrix &matrix)
+{
+    this->errorMessage = "MATRIX::" + functionName + "::" + errorMessage;
+    if (errorMessage == "INVALID_SIZE")
+    {
+        this->errorMessage +=
+            "\n|\n| " + std::to_string(matrix.getRows()) + " * " + std::to_string(matrix.getColumns()) + "\n|";
+        this->errorMessage += "\n| should be at least more than 0 on rows and columns length\n|";
+    }
+}
+
+Matrix::Exception::Exception(const std::string &functionName, const std::string &errorMessage, const Matrix &leftMatrix,
+                             const Matrix &rightMatrix)
+{
+    this->errorMessage = "MATRIX::" + functionName + "::" + errorMessage;
+    if (errorMessage == "MATRIX_INCOMPATIBLE")
+    {
+    }
+}
+
+const char *Matrix::Exception::what(void) const throw()
+{
+    return (errorMessage.c_str());
+}
+
 Matrix Matrix::Zero(const Matrix &instance)
 {
     Matrix result(instance);

@@ -15,16 +15,6 @@ class Utils
     static unsigned int convertRGBtoNum(unsigned char R, unsigned char G, unsigned char B);
     static Matrix convertNumToRGB(unsigned int number);
     static bool checkExtension(const std::string &path, const std::string &extension);
-
-    class Exception : public std::exception
-    {
-      public:
-        Exception(const std::string &errorMessage);
-        const char *what(void) const throw();
-
-      private:
-        std::string errorMessage;
-    };
 };
 
 #endif

@@ -287,3 +287,13 @@ std::ostream &operator<<(std::ostream &os, const Material &instance)
     os << std::endl;
     return (os);
 }
+
+Material::Exception::Exception(const std::string &functionName, const std::string &errorMessage)
+{
+    this->errorMessage = "MATERIAL::" + functionName + "::" + errorMessage;
+}
+
+const char *Material::Exception::what(void) const throw()
+{
+    return (errorMessage.c_str());
+}

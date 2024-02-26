@@ -14,6 +14,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <optional>
+#include <stdexcept>
 #include <tuple>
 
 // static Matrix initAxisVector(float X, float Y, float Z)
@@ -155,12 +156,10 @@
 
 int main(int argc, char **argv)
 {
-    (void)argc;
-    (void)argv;
     try
     {
         if (argc != 2)
-            throw(Utils::Exception("MAIN::NO_INPUT_FILE"));
+            throw(std::runtime_error("MAIN::NO_INPUT_FILE"));
         std::tuple<std::vector<Object>, std::vector<Material>> data = ObjectParser::parseObjectFile(argv[1]);
 
         WindowManagement instance;

@@ -56,6 +56,16 @@ class Material
     void setIllum(float illum);
 
     static MaterialParsingFunctions parsingFunctions;
+
+    class Exception : public std::exception
+    {
+      public:
+        Exception(const std::string &functionName, const std::string &errorMessage);
+        const char *what(void) const throw();
+
+      private:
+        std::string errorMessage;
+    };
 };
 
 std::ostream &operator<<(std::ostream &os, const Material &instance);

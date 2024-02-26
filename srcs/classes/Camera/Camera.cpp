@@ -7,7 +7,7 @@ Camera::Camera()
     rightDirection = Matrix(3, 1);
     upDirection = Matrix(3, 1);
 
-    float values[] = { 0, 0, 0 };
+    float values[] = {0, 0, 0};
     position.setData(values, 3);
     frontDirection.uniform(1.0f);
     rightDirection.uniform(1.0f);
@@ -20,7 +20,8 @@ Camera::Camera()
     speed = 2.5f;
 }
 
-Camera::Camera(const Matrix &position, const Matrix &upDirection, float yaw, float pitch, float roll, float fov, float speed)
+Camera::Camera(const Matrix &position, const Matrix &upDirection, float yaw, float pitch, float roll, float fov,
+               float speed)
 {
     this->position = position;
     frontDirection = Matrix(3, 1);
@@ -40,7 +41,7 @@ Camera::Camera(const Camera &copy)
     *this = copy;
 }
 
-Camera& Camera::operator=(const Camera &copy)
+Camera &Camera::operator=(const Camera &copy)
 {
     if (&copy != this)
     {
@@ -104,19 +105,17 @@ float Camera::getSpeed() const
     return (speed);
 }
 
-void Camera::setPosition(const Matrix &position) 
+void Camera::setPosition(const Matrix &position)
 {
     if (position.getRows() != 3 || position.getColumns() != 1)
-        throw(Utils::Exception("CAMERA::SET_POSITION::INVALID_SIZE\n"
-        "VECTOR SIZE => " + std::to_string(position.getRows()) + " * " + std::to_string(position.getColumns())));
+        throw(Exception("SET_POSITION", "INVALID_SIZE", position));
 
     this->position = position;
 }
 void Camera::setFrontDirection(const Matrix &frontDirection)
 {
     if (frontDirection.getRows() != 3 || frontDirection.getColumns() != 1)
-        throw(Utils::Exception("CAMERA::SET_FRONT_DIRECTION::INVALID_SIZE\n"
-        "VECTOR SIZE => " + std::to_string(frontDirection.getRows()) + " * " + std::to_string(frontDirection.getColumns())));
+        throw(Exception("SET_FRONT_DIRECTION", "INVALID_SIZE", frontDirection));
 
     this->frontDirection = frontDirection;
 }
@@ -124,8 +123,7 @@ void Camera::setFrontDirection(const Matrix &frontDirection)
 void Camera::setRightDirection(const Matrix &rightDirection)
 {
     if (rightDirection.getRows() != 3 || rightDirection.getColumns() != 1)
-        throw(Utils::Exception("CAMERA::SET_RIGHT_DIRECTION::INVALID_SIZE\n"
-        "VECTOR SIZE => " + std::to_string(rightDirection.getRows()) + " * " + std::to_string(rightDirection.getColumns())));
+        throw(Exception("SET_RIGHT_DIRECTION", "INVALID_SIZE", rightDirection));
 
     this->rightDirection = rightDirection;
 }
@@ -133,8 +131,7 @@ void Camera::setRightDirection(const Matrix &rightDirection)
 void Camera::setUpDirection(const Matrix &upDirection)
 {
     if (upDirection.getRows() != 3 || upDirection.getColumns() != 1)
-        throw(Utils::Exception("CAMERA::SET_UP_DIRECTION::INVALID_SIZE\n"
-        "VECTOR SIZE => " + std::to_string(upDirection.getRows()) + " * " + std::to_string(upDirection.getColumns())));
+        throw(Exception("SET_UP_DIRECTION", "INVALID_SIZE", upDirection));
 
     this->upDirection = upDirection;
 }
@@ -167,8 +164,7 @@ void Camera::setSpeed(float speed)
 void Camera::addToPosition(const Matrix &position)
 {
     if (position.getRows() != 3 || position.getColumns() != 1)
-        throw(Utils::Exception("CAMERA::ADD_TO_POSITION::INVALID_SIZE\n"
-        "VECTOR SIZE => " + std::to_string(position.getRows()) + " * " + std::to_string(position.getColumns())));
+        throw(Exception("ADD_TO_POSITION", "INVALID_SIZE", position));
 
     this->position = this->position + position;
 }
@@ -186,4 +182,17 @@ void Camera::addToPitch(float pitch)
 void Camera::addToFov(float fov)
 {
     this->fov += fov;
+}
+
+Camera::Exception::Exception(const std::string &functionName, const std::string &errorMessage, const Matrix &position)
+{
+    this->errorMessage = "CAMERA::" + functionName + "::" + errorMessage;
+    this->errorMessage +=
+        "\n|\n| " + std::to_string(position.getRows()) + " * " + std::to_string(position.getColumns()) + "\n|";
+    this->errorMessage += "\n| should be: 3 * 1\n|";
+}
+
+const char *Camera::Exception::what(void) const throw()
+{
+    return (errorMessage.c_str());
 }

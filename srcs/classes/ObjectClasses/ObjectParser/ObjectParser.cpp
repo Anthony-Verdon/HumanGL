@@ -38,7 +38,7 @@ std::tuple<std::vector<Object>, std::vector<Material>> ObjectParser::parseObject
         else if (it != ObjectParser::parsingMethods.end())
             (it->second)(line, lineIndex);
         else if (symbol.length() != 0)
-            throw(ObjectParser::Exception("PARSE_OBJECT_FILE", "INVALID_SYMBOL", line, lineIndex));
+            throw(Exception("PARSE_OBJECT_FILE", "INVALID_SYMBOL", line, lineIndex));
         lineIndex++;
     }
 
@@ -51,7 +51,7 @@ void ObjectParser::defineName(const std::string &line, unsigned int lineIndex)
 
     words = Utils::splitLine(line);
     if (words.size() != 2)
-        throw(ObjectParser::Exception("DEFINE_NAME", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
+        throw(Exception("DEFINE_NAME", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
     objectValue.setName(words[1]);
 }
 
@@ -62,7 +62,7 @@ void ObjectParser::defineVertex(const std::string &line, unsigned int lineIndex)
 
     words = Utils::splitLine(line);
     if (words.size() < 4 || words.size() > 5)
-        throw(ObjectParser::Exception("DEFINE_VERTEX", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
+        throw(Exception("DEFINE_VERTEX", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
     for (size_t i = 1; i < words.size(); i++)
         vertex.push_back(std::stof(words[i]));
@@ -81,13 +81,13 @@ void ObjectParser::defineFace(const std::string &line, unsigned int lineIndex)
 
     words = Utils::splitLine(line);
     if (words.size() < 4)
-        throw(ObjectParser::Exception("DEFINE_FACE", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
+        throw(Exception("DEFINE_FACE", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
     for (size_t i = 1; i < words.size(); i++)
     {
         vertexID = std::stoi(words[i]);
         if (vertexID < -nbVertices || vertexID > nbVertices)
-            throw(ObjectParser::Exception("DEFINE_FACE", "INVALID_VERTEX_INDEX", line, lineIndex));
+            throw(Exception("DEFINE_FACE", "INVALID_VERTEX_INDEX", line, lineIndex));
 
         if (vertexID < 0)
             vertexID = nbVertices + 1 + vertexID;
@@ -181,14 +181,14 @@ void ObjectParser::defineSmoothShading(const std::string &line, unsigned int lin
 
     words = Utils::splitLine(line);
     if (words.size() != 2)
-        throw(ObjectParser::Exception("DEFINE_SMOOTH_SHADING", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
+        throw(Exception("DEFINE_SMOOTH_SHADING", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
     if (words[1] == "on" || words[1] == "1")
         objectValue.setSmoothShading(true);
     else if (words[1] == "off" || words[1] == "0")
         objectValue.setSmoothShading(false);
     else
-        throw(ObjectParser::Exception("DEFINE_SMOOTH_SHADING", "INVALID_ARGUMENT", line, lineIndex));
+        throw(Exception("DEFINE_SMOOTH_SHADING", "INVALID_ARGUMENT", line, lineIndex));
 }
 
 std::vector<Material> ObjectParser::createNewMTL(const std::string &line, unsigned int lineIndex)
@@ -197,7 +197,7 @@ std::vector<Material> ObjectParser::createNewMTL(const std::string &line, unsign
 
     words = Utils::splitLine(line);
     if (words.size() != 2)
-        throw(ObjectParser::Exception("CREATE_NEW_MTL", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
+        throw(Exception("CREATE_NEW_MTL", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
     // parseMtlFile(words[1]);
     std::vector<Material> tmp;
@@ -210,7 +210,7 @@ void ObjectParser::defineMTL(const std::string &line, unsigned int lineIndex)
 
     words = Utils::splitLine(line);
     if (words.size() != 2)
-        throw(ObjectParser::Exception("DEFINE_MTL", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
+        throw(Exception("DEFINE_MTL", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
     // objectValue.material = words[1];
 

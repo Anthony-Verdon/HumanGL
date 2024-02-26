@@ -63,13 +63,3 @@ bool Utils::checkExtension(const std::string &path, const std::string &extension
     else
         return (false);
 }
-
-Utils::Exception::Exception(const std::string &errorMessage)
-{
-    this->errorMessage = errorMessage;
-}
-
-const char *Utils::Exception::what(void) const throw()
-{
-    return (errorMessage.c_str());
-}

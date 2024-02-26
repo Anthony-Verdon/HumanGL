@@ -46,6 +46,18 @@ class Matrix
     static float dotProduct(const Matrix &vectorA, const Matrix &vectorB);
     static Matrix lookAt(const Matrix &position, const Matrix &target, const Matrix &initialUpVector);
     static Matrix Zero(const Matrix &instance);
+
+    class Exception : public std::exception
+    {
+      public:
+        Exception(const std::string &functionName, const std::string &errorMessage, const Matrix &matrix);
+        Exception(const std::string &functionName, const std::string &errorMessage, const Matrix &leftMatrix,
+                  const Matrix &rightMatrix);
+        const char *what(void) const throw();
+
+      private:
+        std::string errorMessage;
+    };
 };
 
 std::ostream &operator<<(std::ostream &os, const Matrix &instance);
