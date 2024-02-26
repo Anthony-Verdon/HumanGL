@@ -1,4 +1,6 @@
 #include "Utils.hpp"
+#include <cmath>
+#include <fstream>
 
 std::vector<std::string> Utils::splitLine(std::string line)
 {
@@ -36,7 +38,7 @@ std::stringstream Utils::readFile(const std::string &path)
 
 unsigned int Utils::convertRGBtoNum(unsigned char R, unsigned char G, unsigned char B)
 {
-    return ((R << 16) | (G <<  8) | B);
+    return ((R << 16) | (G << 8) | B);
 }
 
 Matrix Utils::convertNumToRGB(unsigned int number)

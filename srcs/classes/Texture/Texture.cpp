@@ -1,4 +1,6 @@
 #include "Texture.hpp"
+#include "../../../libs/glad/glad.h"
+#include "../Utils/Utils.hpp"
 
 Texture::Texture()
 {
@@ -9,7 +11,7 @@ Texture::Texture(const std::string &texturePath)
 {
     ID = 0;
     loadImage(texturePath);
-    
+
     glGenTextures(1, &ID);
     glBindTexture(GL_TEXTURE_2D, ID);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, &data[0]);
@@ -21,9 +23,9 @@ Texture::Texture(const Texture &copy)
     *this = copy;
 }
 
-Texture& Texture::operator=(const Texture &copy)
+Texture &Texture::operator=(const Texture &copy)
 {
-     if (&copy != this)
+    if (&copy != this)
     {
         this->ID = copy.getID();
     }
@@ -40,15 +42,19 @@ void Texture::checkHeader(const std::string &line, unsigned int nbLine)
 
     if (nbLine == 0 && line != "P3")
         throw(Utils::Exception("TEXTURE::INVALID_LINE\n"
-        "LINE => " + line + "\n"
-        "LINE INDEX => NEED TO ADD PARAM"));
+                               "LINE => " +
+                               line +
+                               "\n"
+                               "LINE INDEX => NEED TO ADD PARAM"));
     else if (nbLine == 1)
     {
         words = Utils::splitLine(line);
         if (words.size() != 2)
             throw(Utils::Exception("TEXTURE::INVALID_LINE\n"
-            "LINE => " + line + "\n"
-            "LINE INDEX => NEED TO ADD PARAM"));
+                                   "LINE => " +
+                                   line +
+                                   "\n"
+                                   "LINE INDEX => NEED TO ADD PARAM"));
         width = std::stoi(words[0]);
         height = std::stoi(words[1]);
         data = std::make_unique<unsigned char[]>(width * height * 3);
@@ -58,8 +64,10 @@ void Texture::checkHeader(const std::string &line, unsigned int nbLine)
         words = Utils::splitLine(line);
         if (words.size() != 1)
             throw(Utils::Exception("TEXTURE::INVALID_LINE\n"
-            "LINE => " + line + "\n"
-            "LINE INDEX => NEED TO ADD PARAM"));
+                                   "LINE => " +
+                                   line +
+                                   "\n"
+                                   "LINE INDEX => NEED TO ADD PARAM"));
         valueMax = std::stoi(words[0]);
     }
 }
@@ -71,7 +79,7 @@ void Texture::loadImage(const std::string &texturePath)
     std::vector<std::string> words;
     unsigned int nbLine;
     unsigned int pixel;
-    
+
     nbLine = 0;
     pixel = 0;
     textureStream = Utils::readFile(texturePath);
@@ -79,7 +87,7 @@ void Texture::loadImage(const std::string &texturePath)
     {
         line = line.substr(0, line.find("#"));
         if (line.length() == 0)
-            continue ;
+            continue;
         else if (nbLine < 3)
             checkHeader(line, nbLine);
         else
@@ -92,7 +100,7 @@ void Texture::loadImage(const std::string &texturePath)
             }
         }
         nbLine++;
-    } 
+    }
 }
 
 void Texture::initTexParameter()

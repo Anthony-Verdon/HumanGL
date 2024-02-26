@@ -1,24 +1,23 @@
 SRCS := srcs/main.cpp \
-		srcs/init.cpp \
-		srcs/input.cpp \
-		srcs/parsing/parseObjFile.cpp \
-		srcs/parsing/parseMtlFile.cpp \
-		includes/glad/glad.cpp \
+		libs/glad/glad.cpp \
 		srcs/classes/Camera/Camera.cpp \
 		srcs/classes/Shader/Shader.cpp \
 		srcs/classes/Texture/Texture.cpp \
 		srcs/classes/Time/Time.cpp \
-		srcs/classes/Object/Object.cpp \
+		srcs/classes/ObjectClasses/Object/Object.cpp \
+		srcs/classes/ObjectClasses/ObjectData/ObjectData.cpp \
+		srcs/classes/ObjectClasses/ObjectParser/ObjectParser.cpp \
+		srcs/classes/WindowManagement/WindowManagement.cpp \
 		srcs/classes/Utils/Utils.cpp \
 		srcs/classes/Matrix/Matrix.cpp \
-		srcs/classes/Material/Material.cpp
+		srcs/classes/MaterialClasses/Material/Material.cpp
 
 SRCS_BONUS := srcs_bonus/main.cpp \
 		srcs_bonus/init.cpp \
 		srcs_bonus/input.cpp \
 		srcs_bonus/parsing/parseObjFile.cpp \
 		srcs_bonus/parsing/parseMtlFile.cpp \
-		includes/glad/glad.cpp \
+		libs/glad/glad.cpp \
 		srcs_bonus/classes/Camera/Camera.cpp \
 		srcs_bonus/classes/Shader/Shader.cpp \
 		srcs_bonus/classes/Texture/Texture.cpp \
@@ -41,9 +40,9 @@ COMPILER ?= c++
 
 RM		:= rm -f
 
-CFLAGS 	:= -Wall -Werror -Wextra -g
+CFLAGS 	:= -Wall -Werror -Wextra -g -std=c++17
 
-LIBRARIES := -Lincludes/glfw3/build/src -lglfw3 -lGL -lX11 -lpthread -lXrandr -lXi -ldl
+LIBRARIES := -Llibs/glfw3/build/src -lglfw3 -lGL -lX11 -lpthread -lXrandr -lXi -ldl
 
 .cpp.o:
 			${COMPILER} ${CFLAGS} -c $< -o ${<:.cpp=.o}

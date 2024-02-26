@@ -1,10 +1,12 @@
 #include "init.hpp"
+// #include "../libs/glad/glad.h"
+#include "classes/Utils/Utils.hpp"
 
 /**
  * callback function when the window is resized.
  * the viewport is the part of the window where we can draw
-*/
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+ */
+void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
     (void)window;
 
@@ -16,10 +18,10 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
  * defined it as the current context
  * and set the framebuffer_size_callback() function
  * to the callback of the same name
-*/
-GLFWwindow* initWindow()
+ */
+GLFWwindow *initWindow()
 {
-    GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "LearnOpenGL", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "LearnOpenGL", NULL, NULL);
     if (!window)
         throw(Utils::Exception("INIT_WINDOW::INITIALIZATION_FAILED"));
     glfwMakeContextCurrent(window);
@@ -32,7 +34,7 @@ GLFWwindow* initWindow()
  * tell it that we use version 3.3 and core-profile of OpenGL,
  * call initWindow(),
  * and initialize functions pointers for OpenGL
-*/
+ */
 void initGLFW()
 {
     if (glfwInit() == GL_FALSE)
