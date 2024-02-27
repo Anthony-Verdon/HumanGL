@@ -79,7 +79,7 @@ void Shader::compileProgram(unsigned int vertex, unsigned int fragment)
     }
 }
 
-void Shader::use()
+void Shader::use() const
 {
     glUseProgram(ID);
 }

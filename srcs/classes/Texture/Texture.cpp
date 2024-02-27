@@ -2,13 +2,13 @@
 #include "../../../libs/glad/glad.h"
 #include "../Utils/Utils.hpp"
 
-Texture::Texture()
-{
-    ID = 0;
-}
+bool Texture::textureInit = false;
 
 Texture::Texture(const std::string &texturePath)
 {
+    if (!textureInit)
+        initTexParameter();
+
     ID = 0;
     loadImage(texturePath);
 
@@ -108,6 +108,7 @@ void Texture::initTexParameter()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    textureInit = true;
 }
 
 unsigned int Texture::getID() const

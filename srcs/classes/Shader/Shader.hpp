@@ -33,7 +33,7 @@ class Shader
     Shader &operator=(const Shader &copy);
     ~Shader();
 
-    void use();
+    void use() const;
 
     void setInt(const std::string &name, int value) const;
     void setFloat(const std::string &name, float x) const;

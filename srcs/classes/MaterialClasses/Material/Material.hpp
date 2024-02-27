@@ -1,5 +1,4 @@
-#ifndef MATERIAL_HPP
-#define MATERIAL_HPP
+#pragma once
 
 #include "../MaterialData/MaterialData.hpp"
 
@@ -14,5 +13,3 @@ class Material : public MaterialData
 };
 
 std::ostream &operator<<(std::ostream &os, const Material &instance);
-
-#endif

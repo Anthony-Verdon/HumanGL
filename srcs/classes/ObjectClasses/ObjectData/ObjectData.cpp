@@ -1,5 +1,4 @@
 #include "ObjectData.hpp"
-#include <stdexcept>
 
 ObjectData::ObjectData()
 {

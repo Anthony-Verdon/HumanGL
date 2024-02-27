@@ -6,7 +6,7 @@
 class Texture
 {
   private:
-    Texture();
+    Texture() = delete;
     void checkHeader(const std::string &line, unsigned int nbLine);
     void loadImage(const std::string &texturePath);
 
@@ -16,6 +16,7 @@ class Texture
     unsigned int valueMax;
     std::unique_ptr<unsigned char[]> data;
 
+    static bool textureInit;
     class Exception : public std::exception
     {
       public:

@@ -39,7 +39,8 @@ std::vector<Object> ObjectParser::parseObjectFile(const std::string &path)
             throw(Exception("PARSE_OBJECT_FILE", "INVALID_SYMBOL", line, lineIndex));
         lineIndex++;
     }
-
+    Object newObject(objectData);
+    objects.push_back(newObject);
     return (objects);
 }
 

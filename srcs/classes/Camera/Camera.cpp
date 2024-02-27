@@ -7,11 +7,14 @@ Camera::Camera()
     rightDirection = Matrix(3, 1);
     upDirection = Matrix(3, 1);
 
-    float values[] = {0, 0, 0};
-    position.setData(values, 3);
+    float positionValues[] = {0.0f, 0.0f, 3.0f};
+    position.setData(positionValues, 3);
+    frontDirection = Matrix(3, 1);
     frontDirection.uniform(1.0f);
+    rightDirection = Matrix(3, 1);
     rightDirection.uniform(1.0f);
-    upDirection.setData(1, 0, 1);
+    float upDirectionValues[] = {0.0f, 1.0f, 0.0f};
+    upDirection.setData(upDirectionValues, 3);
 
     yaw = -90.0f;
     pitch = 0.0f;
