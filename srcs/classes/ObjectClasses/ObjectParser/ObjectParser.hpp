@@ -3,12 +3,10 @@
 #include "../../MaterialClasses/Material/Material.hpp"
 #include "../Object/Object.hpp"
 #include "../ObjectData/ObjectData.hpp"
-#include <tuple>
+#include <map>
 #include <vector>
 
-class ObjectParser;
-
-typedef std::map<std::string, void (*)(const std::string &, unsigned int)> MapParsingMethods;
+typedef std::map<std::string, void (*)(const std::string &, unsigned int)> MapObjectParsingMethods;
 
 class ObjectParser
 {
@@ -18,15 +16,16 @@ class ObjectParser
     static void triangulate(Face &face);
 
     static void defineName(const std::string &line, unsigned int lineIndex);
-    static std::vector<Material> createNewMTL(const std::string &line, unsigned int lineIndex);
 
     static void defineVertex(const std::string &line, unsigned int lineIndex);
     static void defineFace(const std::string &line, unsigned int lineIndex);
     static void defineSmoothShading(const std::string &line, unsigned int lineIndex);
+    static void saveNewMTL(const std::string &line, unsigned int lineIndex);
     static void defineMTL(const std::string &line, unsigned int lineIndex);
-    static MapParsingMethods parsingMethods;
+    static MapObjectParsingMethods parsingMethods;
 
-    static ObjectData objectValue;
+    static ObjectData objectData;
+    static std::vector<Material> materials;
 
     class Exception : public std::exception
     {
@@ -40,5 +39,5 @@ class ObjectParser
     };
 
   public:
-    static std::tuple<std::vector<Object>, std::vector<Material>> parseObjectFile(const std::string &path);
+    static std::vector<Object> parseObjectFile(const std::string &path);
 };

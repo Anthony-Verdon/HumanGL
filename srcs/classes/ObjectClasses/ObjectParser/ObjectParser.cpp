@@ -1,18 +1,21 @@
 #include "ObjectParser.hpp"
+#include "../../MaterialClasses/MaterialParser/MaterialParser.hpp"
 #include "../../Utils/Utils.hpp"
 #include <cmath>
 #include <string>
 #include <vector>
-MapParsingMethods ObjectParser::parsingMethods = {{"v", &ObjectParser::defineVertex},
-                                                  {"f", &ObjectParser::defineFace},
-                                                  {"s", &ObjectParser::defineSmoothShading},
-                                                  {"usemtl", &ObjectParser::defineMTL}};
+MapObjectParsingMethods ObjectParser::parsingMethods = {{"v", &ObjectParser::defineVertex},
+                                                        {"f", &ObjectParser::defineFace},
+                                                        {"s", &ObjectParser::defineSmoothShading},
+                                                        {"mtllib", &ObjectParser::saveNewMTL},
+                                                        {"usemtl", &ObjectParser::defineMTL}};
 
-ObjectData ObjectParser::objectValue;
+ObjectData ObjectParser::objectData;
+std::vector<Material> ObjectParser::materials;
 
-std::tuple<std::vector<Object>, std::vector<Material>> ObjectParser::parseObjectFile(const std::string &path)
+std::vector<Object> ObjectParser::parseObjectFile(const std::string &path)
 {
-    std::tuple<std::vector<Object>, std::vector<Material>> data;
+    std::vector<Object> objects;
 
     std::stringstream fileStream = Utils::readFile(path);
     fileStream = Utils::readFile(path);
@@ -22,27 +25,22 @@ std::tuple<std::vector<Object>, std::vector<Material>> ObjectParser::parseObject
     {
         line = line.substr(0, line.find("#"));
         std::string symbol = line.substr(0, line.find(" "));
-        auto it = ObjectParser::parsingMethods.find(symbol);
+        auto it = parsingMethods.find(symbol);
         if (symbol == "o")
         {
-            Object newObject(objectValue);
-            std::get<0>(data).push_back(newObject);
-            objectValue.reset();
+            Object newObject(objectData);
+            objects.push_back(newObject);
+            objectData.reset();
             defineName(line, lineIndex);
         }
-        else if (symbol == "mtllib")
-        {
-            std::vector<Material> newMaterials = createNewMTL(line, lineIndex);
-            std::get<1>(data).insert(std::get<1>(data).end(), newMaterials.begin(), newMaterials.end());
-        }
-        else if (it != ObjectParser::parsingMethods.end())
+        else if (it != parsingMethods.end())
             (it->second)(line, lineIndex);
         else if (symbol.length() != 0)
             throw(Exception("PARSE_OBJECT_FILE", "INVALID_SYMBOL", line, lineIndex));
         lineIndex++;
     }
 
-    return (data);
+    return (objects);
 }
 
 void ObjectParser::defineName(const std::string &line, unsigned int lineIndex)
@@ -52,7 +50,7 @@ void ObjectParser::defineName(const std::string &line, unsigned int lineIndex)
     words = Utils::splitLine(line);
     if (words.size() != 2)
         throw(Exception("DEFINE_NAME", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
-    objectValue.setName(words[1]);
+    objectData.setName(words[1]);
 }
 
 void ObjectParser::defineVertex(const std::string &line, unsigned int lineIndex)
@@ -69,14 +67,14 @@ void ObjectParser::defineVertex(const std::string &line, unsigned int lineIndex)
     if (words.size() == 4)
         vertex.push_back(1.0f);
 
-    objectValue.addVertex(vertex);
+    objectData.addVertex(vertex);
 }
 
 void ObjectParser::defineFace(const std::string &line, unsigned int lineIndex)
 {
     Face face;
     int vertexID;
-    const int nbVertices = static_cast<int>(objectValue.getVertices().size());
+    const int nbVertices = static_cast<int>(objectData.getVertices().size());
     std::vector<std::string> words;
 
     words = Utils::splitLine(line);
@@ -102,14 +100,14 @@ void ObjectParser::triangulate(Face &face)
     {
         for (size_t i = 1; i < face.size() - 1; i++)
         {
-            Vertex a = objectValue.getVertices()[face[i]];
-            Vertex b = objectValue.getVertices()[face[i - 1]];
-            Vertex c = objectValue.getVertices()[face[i + 1]];
+            Vertex a = objectData.getVertices()[face[i]];
+            Vertex b = objectData.getVertices()[face[i - 1]];
+            Vertex c = objectData.getVertices()[face[i + 1]];
 
             bool isEar = true;
-            for (size_t j = 0; j < objectValue.getVertices().size(); j++)
+            for (size_t j = 0; j < objectData.getVertices().size(); j++)
             {
-                Vertex p = objectValue.getVertices()[j];
+                Vertex p = objectData.getVertices()[j];
                 if (p == a || p == b || p == c)
                     continue;
                 if (insideTriangle(p, a, b, c))
@@ -133,12 +131,12 @@ void ObjectParser::triangulate(Face &face)
                         break;
                     }
                 }
-                objectValue.addFace(newFace);
+                objectData.addFace(newFace);
                 break;
             }
         }
     }
-    objectValue.addFace(face);
+    objectData.addFace(face);
 }
 
 bool ObjectParser::insideTriangle(const Vertex &p, const Vertex &a, const Vertex &b, const Vertex &c)
@@ -184,14 +182,14 @@ void ObjectParser::defineSmoothShading(const std::string &line, unsigned int lin
         throw(Exception("DEFINE_SMOOTH_SHADING", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
     if (words[1] == "on" || words[1] == "1")
-        objectValue.setSmoothShading(true);
+        objectData.setSmoothShading(true);
     else if (words[1] == "off" || words[1] == "0")
-        objectValue.setSmoothShading(false);
+        objectData.setSmoothShading(false);
     else
         throw(Exception("DEFINE_SMOOTH_SHADING", "INVALID_ARGUMENT", line, lineIndex));
 }
 
-std::vector<Material> ObjectParser::createNewMTL(const std::string &line, unsigned int lineIndex)
+void ObjectParser::saveNewMTL(const std::string &line, unsigned int lineIndex)
 {
     std::vector<std::string> words;
 
@@ -199,9 +197,8 @@ std::vector<Material> ObjectParser::createNewMTL(const std::string &line, unsign
     if (words.size() != 2)
         throw(Exception("CREATE_NEW_MTL", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
-    // parseMtlFile(words[1]);
-    std::vector<Material> tmp;
-    return (tmp); // tmp
+    std::vector<Material> newMaterials = MaterialParser::parseMaterialFile(words[1]);
+    materials.insert(materials.end(), newMaterials.begin(), newMaterials.end());
 }
 
 void ObjectParser::defineMTL(const std::string &line, unsigned int lineIndex)

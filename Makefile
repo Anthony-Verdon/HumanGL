@@ -7,10 +7,12 @@ SRCS := srcs/main.cpp \
 		srcs/classes/ObjectClasses/Object/Object.cpp \
 		srcs/classes/ObjectClasses/ObjectData/ObjectData.cpp \
 		srcs/classes/ObjectClasses/ObjectParser/ObjectParser.cpp \
+		srcs/classes/MaterialClasses/Material/Material.cpp \
+		srcs/classes/MaterialClasses/MaterialData/MaterialData.cpp \
+		srcs/classes/MaterialClasses/MaterialParser/MaterialParser.cpp \
 		srcs/classes/WindowManagement/WindowManagement.cpp \
 		srcs/classes/Utils/Utils.cpp \
 		srcs/classes/Matrix/Matrix.cpp \
-		srcs/classes/MaterialClasses/Material/Material.cpp
 
 SRCS_BONUS := srcs_bonus/main.cpp \
 		srcs_bonus/init.cpp \

@@ -70,9 +70,8 @@ Material ObjectData::getMaterial() const
         return (material.value());
     else
     {
-        return (Material("salut"));
+        return (Material());
     }
-    // need to create a default Material
 }
 bool ObjectData::getSmoothShading() const
 {

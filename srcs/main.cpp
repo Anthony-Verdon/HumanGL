@@ -7,7 +7,6 @@
 #include "classes/Time/Time.hpp"
 #include "classes/Utils/Utils.hpp"
 #include "classes/WindowManagement/WindowManagement.hpp"
-#include "init.hpp"
 #include "input.hpp"
 #include "scene.hpp"
 #include <cmath>
@@ -160,7 +159,7 @@ int main(int argc, char **argv)
     {
         if (argc != 2)
             throw(std::runtime_error("MAIN::NO_INPUT_FILE"));
-        std::tuple<std::vector<Object>, std::vector<Material>> data = ObjectParser::parseObjectFile(argv[1]);
+        std::vector<Object> objects = ObjectParser::parseObjectFile(argv[1]);
 
         WindowManagement instance;
 
