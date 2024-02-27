@@ -51,9 +51,7 @@ unsigned int Shader::compileShader(const char *shaderCode, const GLenum &shaderT
     {
         glGetShaderInfoLog(shader, 512, NULL, infoLogChar);
         infoLogString = infoLogChar;
-        throw(Utils::Exception("SHADER::COMPILATION FAILED\n"
-                               "LOG => " +
-                               infoLogString));
+        throw(Exception("COMPILE_SHADER", "COMPILATION_FAILED", infoLogString));
     }
     return (shader);
 }
@@ -77,9 +75,7 @@ void Shader::compileProgram(unsigned int vertex, unsigned int fragment)
     {
         glGetProgramInfoLog(ID, 512, NULL, infoLogChar);
         infoLogString = infoLogChar;
-        throw(Utils::Exception("SHADER::PROGRAM::LINKING FAILED\n"
-                               "LOG => " +
-                               infoLogString));
+        throw(Exception("COMPILE_PROGRAM", "LINKAGE_FAILED", infoLogString));
     }
 }
 
@@ -98,13 +94,11 @@ void Shader::setFloat(const std::string &name, float value) const
     glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
 }
 
-void Shader::setVec2(const std::string &name, const Matrix &vec) const
+void Shader::setVec2(const std::string &name, const Matrix &vector) const
 {
-    if (vec.getRows() != 2 || vec.getColumns() != 1)
-        throw(Utils::Exception("SHADER::SET_VEC2::INVALID_SIZE\n"
-                               "MATRIX SIZE => " +
-                               std::to_string(vec.getRows()) + " * " + std::to_string(vec.getColumns())));
-    glUniform2fv(glGetUniformLocation(ID, name.c_str()), 1, vec.getData());
+    if (vector.getRows() != 2 || vector.getColumns() != 1)
+        throw(Exception("SET_VEC2", "INVALID_SIZE", vector));
+    glUniform2fv(glGetUniformLocation(ID, name.c_str()), 1, vector.getData());
 }
 
 void Shader::setVec2(const std::string &name, float x, float y) const
@@ -112,13 +106,11 @@ void Shader::setVec2(const std::string &name, float x, float y) const
     glUniform2f(glGetUniformLocation(ID, name.c_str()), x, y);
 }
 
-void Shader::setVec3(const std::string &name, const Matrix &vec) const
+void Shader::setVec3(const std::string &name, const Matrix &vector) const
 {
-    if (vec.getRows() != 3 || vec.getColumns() != 1)
-        throw(Utils::Exception("SHADER::SET_VEC3::INVALID_SIZE\n"
-                               "MATRIX SIZE => " +
-                               std::to_string(vec.getRows()) + " * " + std::to_string(vec.getColumns())));
-    glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, vec.getData());
+    if (vector.getRows() != 3 || vector.getColumns() != 1)
+        throw(Exception("SET_VEC3", "INVALID_SIZE", vector));
+    glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, vector.getData());
 }
 
 void Shader::setVec3(const std::string &name, float x, float y, float z) const
@@ -126,13 +118,11 @@ void Shader::setVec3(const std::string &name, float x, float y, float z) const
     glUniform3f(glGetUniformLocation(ID, name.c_str()), x, y, z);
 }
 
-void Shader::setVec4(const std::string &name, const Matrix &vec) const
+void Shader::setVec4(const std::string &name, const Matrix &vector) const
 {
-    if (vec.getRows() != 4 || vec.getColumns() != 1)
-        throw(Utils::Exception("SHADER::SET_VEC4::INVALID_SIZE\n"
-                               "MATRIX SIZE => " +
-                               std::to_string(vec.getRows()) + " * " + std::to_string(vec.getColumns())));
-    glUniform4fv(glGetUniformLocation(ID, name.c_str()), 1, vec.getData());
+    if (vector.getRows() != 4 || vector.getColumns() != 1)
+        throw(Exception("SET_VEC4", "INVALID_SIZE", vector));
+    glUniform4fv(glGetUniformLocation(ID, name.c_str()), 1, vector.getData());
 }
 
 void Shader::setVec4(const std::string &name, float x, float y, float z, float w) const
@@ -140,34 +130,53 @@ void Shader::setVec4(const std::string &name, float x, float y, float z, float w
     glUniform4f(glGetUniformLocation(ID, name.c_str()), x, y, z, w);
 }
 
-void Shader::setMat2(const std::string &name, const Matrix &mat) const
+void Shader::setMat2(const std::string &name, const Matrix &matrix) const
 {
-    if (mat.getRows() != 2 || mat.getColumns() != 2)
-        throw(Utils::Exception("SHADER::SET_MAT2::INVALID_SIZE\n"
-                               "MATRIX SIZE => " +
-                               std::to_string(mat.getRows()) + " * " + std::to_string(mat.getColumns())));
-    glUniformMatrix2fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, mat.getData());
+    if (matrix.getRows() != 2 || matrix.getColumns() != 2)
+        throw(Exception("SET_MAT2", "INVALID_SIZE", matrix));
+    glUniformMatrix2fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, matrix.getData());
 }
 
-void Shader::setMat3(const std::string &name, const Matrix &mat) const
+void Shader::setMat3(const std::string &name, const Matrix &matrix) const
 {
-    if (mat.getRows() != 3 || mat.getColumns() != 3)
-        throw(Utils::Exception("SHADER::SET_MAT3::INVALID_SIZE\n"
-                               "MATRIX SIZE => " +
-                               std::to_string(mat.getRows()) + " * " + std::to_string(mat.getColumns())));
-    glUniformMatrix3fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, mat.getData());
+    if (matrix.getRows() != 3 || matrix.getColumns() != 3)
+        throw(Exception("SET_MAT3", "INVALID_SIZE", matrix));
+    glUniformMatrix3fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, matrix.getData());
 }
 
-void Shader::setMat4(const std::string &name, const Matrix &mat) const
+void Shader::setMat4(const std::string &name, const Matrix &matrix) const
 {
-    if (mat.getRows() != 4 || mat.getColumns() != 4)
-        throw(Utils::Exception("SHADER::SET_MAT4::INVALID_SIZE\n"
-                               "MATRIX SIZE => " +
-                               std::to_string(mat.getRows()) + " * " + std::to_string(mat.getColumns())));
-    glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, mat.getData());
+    if (matrix.getRows() != 4 || matrix.getColumns() != 4)
+        throw(Exception("SET_MAT4", "INVALID_SIZE", matrix));
+    glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, matrix.getData());
 }
 
 unsigned int Shader::getID() const
 {
     return (ID);
+}
+
+Shader::Exception::Exception(const std::string &functionName, const std::string &errorMessage,
+                             const std::string &infoLog)
+{
+    this->errorMessage = "SHADER::" + functionName + "::" + errorMessage;
+    this->errorMessage += "\n|\n| ";
+    this->errorMessage += "infoLog: " + infoLog;
+    this->errorMessage += "\n|";
+}
+
+Shader::Exception::Exception(const std::string &functionName, const std::string &errorMessage, const Matrix &matrix)
+{
+    this->errorMessage = "SHADER::" + functionName + "::" + errorMessage;
+    this->errorMessage += "\n|\n| ";
+    if (errorMessage.find("VEC"))
+        this->errorMessage += "vector: ";
+    else if (errorMessage.find("MAT"))
+        this->errorMessage += "matrix: ";
+    this->errorMessage += std::to_string(matrix.getRows()) + " * " + std::to_string(matrix.getColumns());
+    this->errorMessage += "\n|";
+}
+const char *Shader::Exception::what(void) const throw()
+{
+    return (errorMessage.c_str());
 }

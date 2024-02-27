@@ -1,8 +1,6 @@
-#ifndef CAMERA_HPP
-#define CAMERA_HPP
+#pragma once
 
 #include "../Matrix/Matrix.hpp"
-#include "../Utils/Utils.hpp"
 
 class Camera
 {
@@ -16,6 +14,16 @@ class Camera
     float roll;  // z-axis by euler
     float fov;
     float speed;
+
+    class Exception : public std::exception
+    {
+      public:
+        Exception(const std::string &functionName, const std::string &errorMessage, const Matrix &position);
+        const char *what(void) const throw();
+
+      private:
+        std::string errorMessage;
+    };
 
   public:
     Camera();
@@ -49,16 +57,4 @@ class Camera
     void addToYaw(float yaw);
     void addToPitch(float pitch);
     void addToFov(float fov);
-
-    class Exception : public std::exception
-    {
-      public:
-        Exception(const std::string &functionName, const std::string &errorMessage, const Matrix &position);
-        const char *what(void) const throw();
-
-      private:
-        std::string errorMessage;
-    };
 };
-
-#endif

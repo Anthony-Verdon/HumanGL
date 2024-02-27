@@ -12,9 +12,7 @@ Matrix::Matrix()
 Matrix::Matrix(unsigned int rows, unsigned int columns)
 {
     if (rows == 0 || columns == 0)
-        throw(Utils::Exception("MATRIX::OPERATOR *::INVALID_SIZE\n"
-                               "MATRIX SIZE => " +
-                               std::to_string(rows) + " * " + std::to_string(columns)));
+        throw(Exception("OPERATOR *", "INVALID_SIZE", rows, columns));
     this->data = std::make_unique<float[]>(rows * columns);
     this->rows = rows;
     this->columns = columns;
@@ -66,12 +64,7 @@ Matrix Matrix::operator+(const Matrix &instance) const
     float value;
 
     if (rows != instance.getRows() || columns != instance.getColumns())
-        throw(Utils::Exception("MATRIX::OPERATOR +::MATRIX_INCOMPATIBLE\n"
-                               "LEFT MATRIX SIZE => " +
-                               std::to_string(rows) + " * " + std::to_string(columns) +
-                               "\n"
-                               "RIGHT MATRIX SIZE => " +
-                               std::to_string(instance.getRows()) + " * " + std::to_string(instance.getColumns())));
+        throw(Exception("OPERATOR +", "MATRIX_INCOMPATIBLE", *this, instance));
 
     for (size_t x = 0; x < rows; x++)
     {
@@ -90,12 +83,7 @@ Matrix Matrix::operator-(const Matrix &instance) const
     float value;
 
     if (rows != instance.getRows() || columns != instance.getColumns())
-        throw(Utils::Exception("MATRIX::OPERATOR -::MATRIX_INCOMPATIBLE\n"
-                               "LEFT MATRIX SIZE => " +
-                               std::to_string(rows) + " * " + std::to_string(columns) +
-                               "\n"
-                               "RIGHT MATRIX SIZE => " +
-                               std::to_string(instance.getRows()) + " * " + std::to_string(instance.getColumns())));
+        throw(Exception("OPERATOR -", "MATRIX_INCOMPATIBLE", *this, instance));
 
     for (size_t x = 0; x < rows; x++)
     {
@@ -115,12 +103,7 @@ Matrix Matrix::operator*(const Matrix &instance) const
     float value;
 
     if (columns != instance.getRows())
-        throw(Utils::Exception("MATRIX::OPERATOR *::MATRIX_INCOMPATIBLE\n"
-                               "LEFT MATRIX SIZE => " +
-                               std::to_string(rows) + " * " + std::to_string(columns) +
-                               "\n"
-                               "RIGHT MATRIX SIZE => " +
-                               std::to_string(instance.getRows()) + " * " + std::to_string(instance.getColumns())));
+        throw(Exception("OPERATOR *", "MATRIX_INCOMPATIBLE", *this, instance));
 
     for (size_t y = 0; y < result.getRows(); y++)
     {
@@ -175,15 +158,7 @@ float *Matrix::getData() const
 float Matrix::getData(unsigned int rowIndex, unsigned int columnIndex) const
 {
     if (rowIndex >= rows || columnIndex >= columns)
-        throw(Utils::Exception("MATRIX::GET_DATA::INVALID_INDEX\n"
-                               "MATRIX SIZE => " +
-                               std::to_string(rows) + " * " + std::to_string(columns) +
-                               "\n"
-                               "ROW INDEX => " +
-                               std::to_string(rowIndex) +
-                               "\n"
-                               "COLUMN INDEX => " +
-                               std::to_string(columnIndex)));
+        throw(Exception("GET_DATA", "INVALID_INDEX", *this, rowIndex, columnIndex));
 
     return (data[rowIndex * columns + columnIndex]);
 }
@@ -192,9 +167,7 @@ float Matrix::getData(unsigned int rowIndex, unsigned int columnIndex) const
 float Matrix::getX() const
 {
     if (rows < 1 || rows > 4 || columns != 1)
-        throw(Utils::Exception("MATRIX::GET_X::INVALID_SIZE\n"
-                               "MATRIX SIZE => " +
-                               std::to_string(rows) + " * " + std::to_string(columns)));
+        throw(Exception("GET_X", "INVALID_SIZE", *this));
 
     return (getData(0, 0));
 }
@@ -203,9 +176,7 @@ float Matrix::getX() const
 float Matrix::getY() const
 {
     if (rows < 2 || rows > 4 || columns != 1)
-        throw(Utils::Exception("MATRIX::GET_X::INVALID_SIZE\n"
-                               "MATRIX SIZE => " +
-                               std::to_string(rows) + " * " + std::to_string(columns)));
+        throw(Exception("GET_Y", "INVALID_SIZE", *this));
 
     return (getData(1, 0));
 }
@@ -214,9 +185,7 @@ float Matrix::getY() const
 float Matrix::getZ() const
 {
     if (rows < 3 || rows > 4 || columns != 1)
-        throw(Utils::Exception("MATRIX::GET_X::INVALID_SIZE\n"
-                               "MATRIX SIZE => " +
-                               std::to_string(rows) + " * " + std::to_string(columns)));
+        throw(Exception("GET_Z", "INVALID_SIZE", *this));
 
     return (getData(2, 0));
 }
@@ -225,9 +194,7 @@ float Matrix::getZ() const
 float Matrix::getW() const
 {
     if (rows != 4 || columns != 1)
-        throw(Utils::Exception("MATRIX::GET_X::INVALID_SIZE\n"
-                               "MATRIX SIZE => " +
-                               std::to_string(rows) + " * " + std::to_string(columns)));
+        throw(Exception("GET_W", "INVALID_SIZE", *this));
 
     return (getData(3, 0));
 }
@@ -245,15 +212,7 @@ unsigned int Matrix::getColumns() const
 void Matrix::setData(unsigned int rowIndex, unsigned int columnIndex, float value)
 {
     if (rowIndex >= rows || columnIndex >= columns)
-        throw(Utils::Exception("MATRIX::SET_DATA::INVALID_INDEX\n"
-                               "MATRIX SIZE => " +
-                               std::to_string(rows) + " * " + std::to_string(columns) +
-                               "\n"
-                               "ROW INDEX => " +
-                               std::to_string(rowIndex) +
-                               "\n"
-                               "COLUMN INDEX => " +
-                               std::to_string(columnIndex)));
+        throw(Exception("SET_DATA", "INVALID_INDEX", *this, rowIndex, columnIndex));
 
     data[rowIndex * columns + columnIndex] = value;
 }
@@ -261,12 +220,7 @@ void Matrix::setData(unsigned int rowIndex, unsigned int columnIndex, float valu
 void Matrix::setData(float *values, unsigned int size)
 {
     if (size != rows * columns)
-        throw(Utils::Exception("MATRIX::SET_DATA::INVALID_SIZE\n"
-                               "MATRIX SIZE => " +
-                               std::to_string(rows) + " * " + std::to_string(columns) +
-                               "\n"
-                               "SIZE => " +
-                               std::to_string(size)));
+        throw(Exception("SET_DATA", "INVALID_SIZE", *this, size));
 
     for (size_t i = 0; i < size; i++)
         data[i] = values[i];
@@ -281,9 +235,7 @@ void Matrix::uniform(float value)
 void Matrix::identity()
 {
     if (rows != columns)
-        throw(Utils::Exception("MATRIX::IDENTITY::INVALID_SIZE\n"
-                               "MATRIX SIZE => " +
-                               std::to_string(rows) + " * " + std::to_string(columns)));
+        throw(Exception("IDENTITY", "INVALID_SIZE", *this));
 
     uniform(0);
     for (size_t i = 0; i < rows; i++)
@@ -296,14 +248,10 @@ Matrix Matrix::rotate(const Matrix &instance, float angle, const Matrix &vector)
     Matrix vectorNormalized(Matrix::normalize(vector));
 
     if (instance.getRows() != 4 || instance.getColumns() != 4)
-        throw(Utils::Exception("MATRIX::ROTATE::MATRIX_INVALID_SIZE\n"
-                               "MATRIX SIZE => " +
-                               std::to_string(instance.getRows()) + " * " + std::to_string(instance.getColumns())));
+        throw(Exception("ROTATE", "MATRIX_INVALID_SIZE", instance));
 
     if (vector.getRows() != 3 || vector.getColumns() != 1)
-        throw(Utils::Exception("MATRIX::ROTATE::VECTOR_INVALID_SIZE\n"
-                               "VECTOR SIZE => " +
-                               std::to_string(vector.getRows()) + " * " + std::to_string(vector.getColumns())));
+        throw(Exception("ROTATE", "VECTOR_INVALID_SIZE", vector));
 
     float cosAngle = cosf(angle);
     float sinAngle = sinf(angle);
@@ -362,9 +310,7 @@ Matrix Matrix::normalize(const Matrix &vector)
     float length;
 
     if (vector.getRows() != 3 || vector.getColumns() != 1)
-        throw(Utils::Exception("MATRIX::ROTATE::VECTOR_INVALID_SIZE\n"
-                               "VECTOR SIZE => " +
-                               std::to_string(vector.getRows()) + " * " + std::to_string(vector.getColumns())));
+        throw(Exception("NORMALIZE", "VECTOR_INVALID_SIZE", vector));
 
     length = sqrt(powf(vector.getX(), 2) + powf(vector.getY(), 2) + powf(vector.getZ(), 2));
     if (length != 0)
@@ -381,13 +327,10 @@ Matrix Matrix::crossProduct(const Matrix &vectorA, const Matrix &vectorB)
     Matrix result(3, 1);
 
     if (vectorA.getRows() != 3 || vectorA.getColumns() != 1)
-        throw(Utils::Exception("MATRIX::CROSS_PRODUCT::VECTOR_A_INVALID_SIZE\n"
-                               "VECTOR SIZE => " +
-                               std::to_string(vectorA.getRows()) + " * " + std::to_string(vectorA.getColumns())));
+        throw(Exception("CROSS_PRODUCT", "VECTOR_A_INVALID_SIZE", vectorA));
+
     if (vectorB.getRows() != 3 || vectorB.getColumns() != 1)
-        throw(Utils::Exception("MATRIX::CROSS_PRODUCT::VECTOR_B_INVALID_SIZE\n"
-                               "VECTOR SIZE => " +
-                               std::to_string(vectorB.getRows()) + " * " + std::to_string(vectorB.getColumns())));
+        throw(Exception("CROSS_PRODUCT", "VECTOR_B_INVALID_SIZE", vectorB));
 
     float pointI[] = {vectorA.getX(), vectorA.getY(), vectorA.getZ()};
 
@@ -407,13 +350,10 @@ float Matrix::dotProduct(const Matrix &vectorA, const Matrix &vectorB)
     float dotProduct;
 
     if (vectorA.getRows() != 3 || vectorA.getColumns() != 1)
-        throw(Utils::Exception("MATRIX::DOT_PRODUCT::VECTOR_A_INVALID_SIZE\n"
-                               "VECTOR SIZE => " +
-                               std::to_string(vectorA.getRows()) + " * " + std::to_string(vectorA.getColumns())));
+        throw(Exception("DOT_PRODUCT", "VECTOR_A_INVALID_SIZE", vectorA));
+
     if (vectorB.getRows() != 3 || vectorB.getColumns() != 1)
-        throw(Utils::Exception("MATRIX::DOT_PRODUCT::VECTOR_B_INVALID_SIZE\n"
-                               "VECTOR SIZE => " +
-                               std::to_string(vectorB.getRows()) + " * " + std::to_string(vectorB.getColumns())));
+        throw(Exception("DOT_PRODUCT", "VECTOR_B_INVALID_SIZE", vectorA));
 
     dotProduct = vectorA.getX() * vectorB.getX() + vectorA.getY() * vectorB.getY() + vectorA.getZ() * vectorB.getZ();
     return (dotProduct);
@@ -438,24 +378,54 @@ Matrix Matrix::lookAt(const Matrix &position, const Matrix &target, const Matrix
     return (result);
 }
 
+Matrix::Exception::Exception(const std::string &functionName, const std::string &errorMessage, unsigned int rows,
+                             unsigned int columns)
+{
+    this->errorMessage = "MATRIX::" + functionName + "::" + errorMessage;
+    this->errorMessage += "\n|\n| ";
+    this->errorMessage += "rows and columns: " + std::to_string(rows) + " * " + std::to_string(columns);
+    this->errorMessage += "\n|";
+}
 Matrix::Exception::Exception(const std::string &functionName, const std::string &errorMessage, const Matrix &matrix)
 {
     this->errorMessage = "MATRIX::" + functionName + "::" + errorMessage;
-    if (errorMessage == "INVALID_SIZE")
-    {
-        this->errorMessage +=
-            "\n|\n| " + std::to_string(matrix.getRows()) + " * " + std::to_string(matrix.getColumns()) + "\n|";
-        this->errorMessage += "\n| should be at least more than 0 on rows and columns length\n|";
-    }
+    this->errorMessage += "\n|\n| ";
+    this->errorMessage += "matrix: " + std::to_string(matrix.getRows()) + " * " + std::to_string(matrix.getColumns());
+    this->errorMessage += "\n|";
+}
+
+Matrix::Exception::Exception(const std::string &functionName, const std::string &errorMessage, const Matrix &matrix,
+                             unsigned int size)
+{
+    this->errorMessage = "MATRIX::" + functionName + "::" + errorMessage;
+    this->errorMessage += "\n|\n| ";
+    this->errorMessage += "matrix: " + std::to_string(matrix.getRows()) + " * " + std::to_string(matrix.getColumns());
+    this->errorMessage += "\n|";
+    this->errorMessage += "size: " + std::to_string(size);
+    this->errorMessage += "\n|";
+}
+Matrix::Exception::Exception(const std::string &functionName, const std::string &errorMessage, const Matrix &matrix,
+                             unsigned int rows, unsigned int columns)
+{
+    this->errorMessage = "MATRIX::" + functionName + "::" + errorMessage;
+    this->errorMessage += "\n|\n| ";
+    this->errorMessage += "matrix: " + std::to_string(matrix.getRows()) + " * " + std::to_string(matrix.getColumns());
+    this->errorMessage += "\n|";
+    this->errorMessage += "rows and columns: " + std::to_string(rows) + " * " + std::to_string(columns);
+    this->errorMessage += "\n|";
 }
 
 Matrix::Exception::Exception(const std::string &functionName, const std::string &errorMessage, const Matrix &leftMatrix,
                              const Matrix &rightMatrix)
 {
     this->errorMessage = "MATRIX::" + functionName + "::" + errorMessage;
-    if (errorMessage == "MATRIX_INCOMPATIBLE")
-    {
-    }
+    this->errorMessage += "\n|\n| ";
+    this->errorMessage +=
+        "left matrix: " + std::to_string(leftMatrix.getRows()) + " * " + std::to_string(leftMatrix.getColumns());
+    this->errorMessage += "\n| ";
+    this->errorMessage +=
+        "right matrix: " + std::to_string(rightMatrix.getRows()) + " * " + std::to_string(rightMatrix.getColumns());
+    this->errorMessage += "\n|";
 }
 
 const char *Matrix::Exception::what(void) const throw()

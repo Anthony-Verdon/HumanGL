@@ -1,5 +1,4 @@
-#ifndef TEXTURE_HPP
-#define TEXTURE_HPP
+#pragma once
 
 #include <memory>
 #include <string>
@@ -17,6 +16,17 @@ class Texture
     unsigned int valueMax;
     std::unique_ptr<unsigned char[]> data;
 
+    class Exception : public std::exception
+    {
+      public:
+        Exception(const std::string &functionName, const std::string &errorMessage, const std::string &line,
+                  unsigned int lineIndex);
+        const char *what(void) const throw();
+
+      private:
+        std::string errorMessage;
+    };
+
   public:
     Texture(const std::string &texturePath);
     Texture(const Texture &copy);
@@ -27,5 +37,3 @@ class Texture
 
     unsigned int getID() const;
 };
-
-#endif

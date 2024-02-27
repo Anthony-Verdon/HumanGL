@@ -1,5 +1,4 @@
-#ifndef UTILS_HPP
-#define UTILS_HPP
+#pragma once
 
 #include "../Matrix/Matrix.hpp"
 #include <sstream>
@@ -16,5 +15,3 @@ class Utils
     static Matrix convertNumToRGB(unsigned int number);
     static bool checkExtension(const std::string &path, const std::string &extension);
 };
-
-#endif

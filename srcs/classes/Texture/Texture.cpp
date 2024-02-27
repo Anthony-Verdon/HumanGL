@@ -40,35 +40,32 @@ void Texture::checkHeader(const std::string &line, unsigned int nbLine)
 {
     std::vector<std::string> words;
 
-    if (nbLine == 0 && line != "P3")
-        throw(Utils::Exception("TEXTURE::INVALID_LINE\n"
-                               "LINE => " +
-                               line +
-                               "\n"
-                               "LINE INDEX => NEED TO ADD PARAM"));
-    else if (nbLine == 1)
+    switch (nbLine)
     {
+    case 0:
+        if (line != "P3")
+            throw(Exception("CHECK_HEADER", "INVALID_LINE", line, nbLine + 1));
+        break;
+    case 1: {
         words = Utils::splitLine(line);
         if (words.size() != 2)
-            throw(Utils::Exception("TEXTURE::INVALID_LINE\n"
-                                   "LINE => " +
-                                   line +
-                                   "\n"
-                                   "LINE INDEX => NEED TO ADD PARAM"));
+            throw(Exception("CHECK_HEADER", "INVALID_LINE", line, nbLine + 1));
+
         width = std::stoi(words[0]);
         height = std::stoi(words[1]);
         data = std::make_unique<unsigned char[]>(width * height * 3);
+        break;
     }
-    else if (nbLine == 2)
-    {
+    case 2: {
         words = Utils::splitLine(line);
         if (words.size() != 1)
-            throw(Utils::Exception("TEXTURE::INVALID_LINE\n"
-                                   "LINE => " +
-                                   line +
-                                   "\n"
-                                   "LINE INDEX => NEED TO ADD PARAM"));
+            throw(Exception("CHECK_HEADER", "INVALID_LINE", line, nbLine + 1));
+
         valueMax = std::stoi(words[0]);
+        break;
+    }
+    default:
+        break;
     }
 }
 
@@ -116,4 +113,16 @@ void Texture::initTexParameter()
 unsigned int Texture::getID() const
 {
     return (ID);
+}
+
+Texture::Exception::Exception(const std::string &functionName, const std::string &errorMessage, const std::string &line,
+                              unsigned int lineIndex)
+{
+    this->errorMessage = "TEXTURE::" + functionName + "::" + errorMessage;
+    this->errorMessage += "\n|\n| " + std::to_string(lineIndex) + ": " + line + "\n|";
+}
+
+const char *Texture::Exception::what(void) const throw()
+{
+    return (errorMessage.c_str());
 }
