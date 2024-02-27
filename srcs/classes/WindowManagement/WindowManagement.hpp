@@ -5,6 +5,8 @@
 
 #include "../Camera/Camera.hpp"
 #include "../ObjectClasses/Object/Object.hpp"
+#include "../Shader/Shader.hpp"
+#include "../Texture/Texture.hpp"
 #include <vector>
 
 #define WINDOW_WIDTH 800
@@ -29,6 +31,10 @@ typedef struct data
     Matrix axis[3];
 } s_data;
 
+void framebuffer_size_callback(GLFWwindow *window, int width, int height);
+void mouse_callback(GLFWwindow *window, double xPos, double yPos);
+void scroll_callback(GLFWwindow *window, double xOffset, double yOffset);
+
 class WindowManagement : public data
 {
   private:
@@ -50,8 +56,11 @@ class WindowManagement : public data
     void updateCameraPosition();
     void updateSceneOrientation();
 
-    void updateScene();
+    void updateScene(const Texture &texture, const Shader &shader);
+    void updateCameraView();
     void updateTexture();
+    void renderObject(const Object &object, const Texture &texture, const Shader &shader);
+    void updateShader(const Object &object, const Texture &texture, const Shader &shader);
 
   public:
     WindowManagement(const std::vector<Object> &objects);

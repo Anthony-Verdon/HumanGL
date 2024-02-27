@@ -5,10 +5,6 @@
 #include "../Utils/Utils.hpp"
 #include <cmath>
 
-void framebuffer_size_callback(GLFWwindow *window, int width, int height);
-void mouse_callback(GLFWwindow *window, double xPos, double yPos);
-void scroll_callback(GLFWwindow *window, double xOffset, double yOffset);
-
 WindowManagement::WindowManagement(const std::vector<Object> &objects)
 {
     start(objects);
@@ -94,44 +90,8 @@ void WindowManagement::updateLoop()
     while (!glfwWindowShouldClose(window))
     {
         Time::updateTime();
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         processInput();
-        updateScene();
-        updateTexture();
-
-        for (size_t i = 0; i < objects.size(); i++)
-        {
-            shader.use();
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, texture.getID());
-            shader.setInt("texture1", 0);
-            std::array<float, 3> color = objects[i].getMaterial().getColor(AMBIANT_COLOR);
-            shader.setVec3("aColor", color[0], color[1], color[2]);
-            shader.setFloat("aMixValue", mixedValue);
-
-            sceneRotation[X_AXIS] += inputRotation[X_AXIS] * Time::getDeltaTime();
-            sceneRotation[Y_AXIS] += inputRotation[Y_AXIS] * Time::getDeltaTime();
-            sceneRotation[Z_AXIS] += inputRotation[Z_AXIS] * Time::getDeltaTime();
-            Matrix rotation(4, 4);
-            rotation.uniform(1);
-            rotation = Matrix::rotate(rotation, sceneRotation[X_AXIS], axis[X_AXIS]) *
-                       Matrix::rotate(rotation, sceneRotation[Y_AXIS], axis[Y_AXIS]) *
-                       Matrix::rotate(rotation, sceneRotation[Z_AXIS], axis[Z_AXIS]);
-            shader.setMat4("rotation", rotation);
-
-            Matrix projection =
-                Matrix::perspective(camera.getFov(), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
-            shader.setMat4("projection", projection);
-
-            Matrix view = Matrix::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(),
-                                         camera.getUpDirection());
-            shader.setMat4("view", view);
-
-            glBindVertexArray(objects[i].getVAO());
-            glDrawElements(GL_TRIANGLES, objects[i].getFaces().size() * 3, GL_UNSIGNED_INT, 0);
-        }
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+        updateScene(texture, shader);
     }
 }
 
@@ -208,7 +168,20 @@ void WindowManagement::updateTextureMode()
         keyEnable = true;
 }
 
-void WindowManagement::updateScene()
+void WindowManagement::updateScene(const Texture &texture, const Shader &shader)
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    updateCameraView();
+    updateTexture();
+
+    for (size_t i = 0; i < objects.size(); i++)
+        renderObject(objects[i], texture, shader);
+
+    glfwSwapBuffers(window);
+    glfwPollEvents();
+}
+
+void WindowManagement::updateCameraView()
 {
     Matrix direction(3, 1);
     float directionValues[] = {cosf(Utils::DegToRad(camera.getYaw())) * cosf(Utils::DegToRad(camera.getPitch())),
@@ -234,6 +207,41 @@ void WindowManagement::updateTexture()
         if (mixedValue > 1)
             mixedValue = 1;
     }
+}
+
+void WindowManagement::renderObject(const Object &object, const Texture &texture, const Shader &shader)
+{
+    updateShader(object, texture, shader);
+    glBindVertexArray(object.getVAO());
+    glDrawElements(GL_TRIANGLES, object.getFaces().size() * 3, GL_UNSIGNED_INT, 0);
+}
+
+void WindowManagement::updateShader(const Object &object, const Texture &texture, const Shader &shader)
+{
+    shader.use();
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture.getID());
+    shader.setInt("texture1", 0);
+    std::array<float, 3> color = object.getMaterial().getColor(AMBIANT_COLOR);
+    shader.setVec3("aColor", color[0], color[1], color[2]);
+    shader.setFloat("aMixValue", mixedValue);
+
+    sceneRotation[X_AXIS] += inputRotation[X_AXIS] * Time::getDeltaTime();
+    sceneRotation[Y_AXIS] += inputRotation[Y_AXIS] * Time::getDeltaTime();
+    sceneRotation[Z_AXIS] += inputRotation[Z_AXIS] * Time::getDeltaTime();
+    Matrix rotation(4, 4);
+    rotation.uniform(1);
+    rotation = Matrix::rotate(rotation, sceneRotation[X_AXIS], axis[X_AXIS]) *
+               Matrix::rotate(rotation, sceneRotation[Y_AXIS], axis[Y_AXIS]) *
+               Matrix::rotate(rotation, sceneRotation[Z_AXIS], axis[Z_AXIS]);
+    shader.setMat4("rotation", rotation);
+
+    Matrix projection = Matrix::perspective(camera.getFov(), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
+    shader.setMat4("projection", projection);
+
+    Matrix view = Matrix::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(),
+                                 camera.getUpDirection());
+    shader.setMat4("view", view);
 }
 
 /**
