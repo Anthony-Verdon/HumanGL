@@ -50,7 +50,7 @@ class WindowManagement : public data
 
     void processInput();
     bool isKeyPressed(int key);
-    void updateDisplayMode(); // texture, color, wireframe
+    void updateDisplayMode();
     void updateWireframeMode();
     void updateTextureMode();
     void updateCameraPosition();

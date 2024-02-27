@@ -155,7 +155,16 @@ void MaterialParser::defineOpacity(MaterialData &materialData, const std::string
 
 void MaterialParser::defineIllum(MaterialData &materialData, const std::string &line, unsigned int lineIndex)
 {
-    (void)materialData, (void)line, (void)lineIndex;
+    std::vector<std::string> words;
+
+    words = Utils::splitLine(line);
+    if (words.size() != 2)
+        throw(Exception("DEFINE_ILLUM", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
+
+    int illum = std::stoi(words[1]);
+    if (illum < 0 || illum > 10)
+        throw(Exception("DEFINE_ILLUM", "INVALID_ARGUMENT", line, lineIndex));
+    materialData.setIllum(illum);
 }
 
 MaterialParser::Exception::Exception(const std::string &functionName, const std::string &errorMessage,

@@ -85,7 +85,7 @@ void WindowManagement::initData(const std::vector<Object> &objects)
 
 void WindowManagement::updateLoop()
 {
-    const Texture texture("textures/wall.ppm");
+    const Texture texture("srcs/textures/wall.ppm");
     const Shader shader("srcs/shaders/shader.vs", "srcs/shaders/shader.fs");
     while (!glfwWindowShouldClose(window))
     {
@@ -142,11 +142,11 @@ void WindowManagement::updateWireframeMode()
     {
         if (keyEnable == true)
         {
+            wireFrameMode = !wireFrameMode;
             if (wireFrameMode)
                 glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
             else
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            wireFrameMode = !wireFrameMode;
         }
         keyEnable = false;
     }

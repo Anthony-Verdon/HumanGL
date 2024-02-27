@@ -13,7 +13,8 @@ std::vector<std::string> Utils::splitLine(std::string line)
     {
         index = line.find(" ");
         word = line.substr(0, index);
-        words.push_back(word);
+        if (word.length() > 0)
+            words.push_back(word);
         line = line.substr(index + 1, std::string::npos);
     }
     return words;
@@ -53,13 +54,13 @@ Matrix Utils::convertNumToRGB(unsigned int number)
 
 bool Utils::checkExtension(const std::string &path, const std::string &extension)
 {
-    unsigned int extensionLength;
-    unsigned int pathLength;
-
-    extensionLength = extension.length();
-    pathLength = path.length();
-    if (pathLength > extensionLength && path.compare(pathLength - extensionLength, extensionLength, extension) == 0)
-        return (true);
-    else
+    std::string filename = path.substr(path.find_last_of("/") + 1, path.length());
+    if (extension.size() >= filename.size())
         return (false);
+    for (size_t i = 0; i < extension.size(); i++)
+    {
+        if (filename[filename.size() - extension.size() + i] != extension[i])
+            return (false);
+    }
+    return (true);
 }

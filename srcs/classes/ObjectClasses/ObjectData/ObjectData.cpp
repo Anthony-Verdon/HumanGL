@@ -106,6 +106,10 @@ void ObjectData::setSmoothShading(bool smoothShading)
     this->smoothShading = smoothShading;
 }
 
+void ObjectData::setMaterial(const Material &material)
+{
+    this->material = material;
+}
 void ObjectData::addVertex(const Vertex &vertex)
 {
     vertices.push_back(vertex);

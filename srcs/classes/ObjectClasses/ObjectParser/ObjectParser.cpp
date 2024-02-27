@@ -4,6 +4,7 @@
 #include <cmath>
 #include <string>
 #include <vector>
+
 MapObjectParsingMethods ObjectParser::parsingMethods = {{"v", &ObjectParser::defineVertex},
                                                         {"f", &ObjectParser::defineFace},
                                                         {"s", &ObjectParser::defineSmoothShading},
@@ -17,6 +18,9 @@ std::vector<Object> ObjectParser::parseObjectFile(const std::string &path)
 {
     std::vector<Object> objects;
 
+    if (!Utils::checkExtension(path, ".obj"))
+        throw(Exception("PARSE_OBJECT_FILE", "INVALID_EXTENSION", path, 0));
+
     std::stringstream fileStream = Utils::readFile(path);
     fileStream = Utils::readFile(path);
     std::string line;
@@ -28,8 +32,11 @@ std::vector<Object> ObjectParser::parseObjectFile(const std::string &path)
         auto it = parsingMethods.find(symbol);
         if (symbol == "o")
         {
-            Object newObject(objectData);
-            objects.push_back(newObject);
+            if (objectData.getFaces().size() > 0)
+            {
+                Object newObject(objectData);
+                objects.push_back(newObject);
+            }
             objectData.reset();
             defineName(line, lineIndex);
         }
@@ -39,8 +46,11 @@ std::vector<Object> ObjectParser::parseObjectFile(const std::string &path)
             throw(Exception("PARSE_OBJECT_FILE", "INVALID_SYMBOL", line, lineIndex));
         lineIndex++;
     }
-    Object newObject(objectData);
-    objects.push_back(newObject);
+    if (objectData.getFaces().size() > 0)
+    {
+        Object newObject(objectData);
+        objects.push_back(newObject);
+    }
     return (objects);
 }
 
@@ -64,9 +74,16 @@ void ObjectParser::defineVertex(const std::string &line, unsigned int lineIndex)
         throw(Exception("DEFINE_VERTEX", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
     for (size_t i = 1; i < words.size(); i++)
+    {
+        if (!isFloat(words[i]))
+            throw(Exception("DEFINE_VERTEX", "INVALID_ARGUMENTS", line, lineIndex));
         vertex.push_back(std::stof(words[i]));
+    }
     if (words.size() == 4)
         vertex.push_back(1.0f);
+
+    for (size_t i = 0; i < 3; i++)
+        vertex[i] = vertex[i] / vertex[3];
 
     objectData.addVertex(vertex);
 }
@@ -84,6 +101,8 @@ void ObjectParser::defineFace(const std::string &line, unsigned int lineIndex)
 
     for (size_t i = 1; i < words.size(); i++)
     {
+        if (!isInt(words[i]))
+            throw(Exception("DEFINE_FACE", "INVALID_ARGUMENTS", line, lineIndex));
         vertexID = std::stoi(words[i]);
         if (vertexID < -nbVertices || vertexID > nbVertices)
             throw(Exception("DEFINE_FACE", "INVALID_VERTEX_INDEX", line, lineIndex));
@@ -210,12 +229,55 @@ void ObjectParser::defineMTL(const std::string &line, unsigned int lineIndex)
     if (words.size() != 2)
         throw(Exception("DEFINE_MTL", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
-    // objectValue.material = words[1];
-
-    // def it like that but need to add a check when using material to see if they exist
-    // or add a check at the end of the parsing
+    for (size_t i = 0; i < materials.size(); i++)
+    {
+        if (materials[i].getName() == words[1])
+            objectData.setMaterial(materials[i]);
+        return;
+    }
+    throw(Exception("DEFINE_MTL", "INVALID_ARGUMENT", line, lineIndex));
 }
 
+bool ObjectParser::isInt(const std::string &word)
+{
+    const std::string numbers = "0123456789";
+    size_t start = 0;
+    if (word[0] == '-')
+        start++;
+
+    for (size_t i = start; i < word.size(); i++)
+    {
+        if (numbers.find(word[i]) == std::string::npos)
+            return (false);
+    }
+    return (true);
+}
+
+bool ObjectParser::isFloat(const std::string &word)
+{
+    const std::string numbers = "0123456789";
+    size_t start = 0;
+    bool pointFound = false;
+    if (word[0] == '-')
+        start++;
+
+    for (size_t i = start; i < word.size(); i++)
+    {
+        if (word[i] == '.')
+        {
+            if (pointFound || i == 0 || (word[0] == '-' && i == 1))
+                return (false);
+            else
+            {
+                pointFound = true;
+                continue;
+            }
+        }
+        if (numbers.find(word[i]) == std::string::npos)
+            return (false);
+    }
+    return (true);
+}
 ObjectParser::Exception::Exception(const std::string &functionName, const std::string &errorMessage,
                                    const std::string &line, unsigned int lineIndex)
 {

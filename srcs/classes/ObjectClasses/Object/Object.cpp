@@ -79,8 +79,6 @@ void Object::initVAO()
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
-    // if we want to draw with EBO
-
     std::unique_ptr<float[]> verticesArray;
     std::unique_ptr<unsigned int[]> facesArray;
 
@@ -89,14 +87,6 @@ void Object::initVAO()
 
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size() * 4, &verticesArray[0], GL_STATIC_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * faces.size() * 3, &facesArray[0], GL_STATIC_DRAW);
-
-    /*
-    //if we want to draw face by face for multiples materials
-    std::unique_ptr<float []> verticesArray;
-
-    verticesArray = convertEBOintoVBO();
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * faces.size() * 3 * 4, &verticesArray[0], GL_STATIC_DRAW);
-    */
 
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
