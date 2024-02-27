@@ -3,6 +3,7 @@
 #include "../Texture/Texture.hpp"
 #include "../Time/Time.hpp"
 #include "../Utils/Utils.hpp"
+#include <GLFW/glfw3.h>
 #include <cmath>
 
 WindowManagement::WindowManagement(const std::vector<Object> &objects)
@@ -118,6 +119,9 @@ void WindowManagement::updateCameraPosition()
 
     int right = isKeyPressed(GLFW_KEY_D) - isKeyPressed(GLFW_KEY_A);
     camera.addToPosition(right * camera.getRightDirection() * speed);
+
+    int up = isKeyPressed(GLFW_KEY_SPACE) - isKeyPressed(GLFW_KEY_LEFT_SHIFT);
+    camera.addToPosition(up * camera.getUpDirection() * speed);
 }
 
 void WindowManagement::updateSceneOrientation()

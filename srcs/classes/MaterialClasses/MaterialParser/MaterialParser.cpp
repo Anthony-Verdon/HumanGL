@@ -43,6 +43,8 @@ std::vector<Material> MaterialParser::parseMaterialFile(const std::string &path)
         lineIndex++;
     }
 
+    Material newMaterial(materialData);
+    materials.push_back(newMaterial);
     return (materials);
 }
 
