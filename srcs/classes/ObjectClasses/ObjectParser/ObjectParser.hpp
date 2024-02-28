@@ -6,25 +6,24 @@
 #include <map>
 #include <vector>
 
-typedef std::map<std::string, void (*)(const std::string &, unsigned int)> MapObjectParsingMethods;
+typedef std::map<std::string, void (*)(ObjectData &, const std::string &, unsigned int)> MapObjectParsingMethods;
 
 class ObjectParser
 {
   private:
     static float triangleArea(const Vertex &a, const Vertex &b, const Vertex &c);
     static bool insideTriangle(const Vertex &p, const Vertex &a, const Vertex &b, const Vertex &c);
-    static void triangulate(Face &face);
+    static void triangulate(ObjectData &objectData, Face &face);
 
-    static void defineName(const std::string &line, unsigned int lineIndex);
+    static void defineName(ObjectData &objectData, const std::string &line, unsigned int lineIndex);
 
-    static void defineVertex(const std::string &line, unsigned int lineIndex);
-    static void defineFace(const std::string &line, unsigned int lineIndex);
-    static void defineSmoothShading(const std::string &line, unsigned int lineIndex);
-    static void saveNewMTL(const std::string &line, unsigned int lineIndex);
-    static void defineMTL(const std::string &line, unsigned int lineIndex);
+    static void defineVertex(ObjectData &objectData, const std::string &line, unsigned int lineIndex);
+    static void defineFace(ObjectData &objectData, const std::string &line, unsigned int lineIndex);
+    static void defineSmoothShading(ObjectData &objectData, const std::string &line, unsigned int lineIndex);
+    static void saveNewMTL(ObjectData &objectData, const std::string &line, unsigned int lineIndex);
+    static void defineMTL(ObjectData &objectData, const std::string &line, unsigned int lineIndex);
     static MapObjectParsingMethods parsingMethods;
 
-    static ObjectData objectData;
     static std::vector<Material> materials;
 
     class Exception : public std::exception

@@ -11,16 +11,15 @@ MapObjectParsingMethods ObjectParser::parsingMethods = {{"v", &ObjectParser::def
                                                         {"mtllib", &ObjectParser::saveNewMTL},
                                                         {"usemtl", &ObjectParser::defineMTL}};
 
-ObjectData ObjectParser::objectData;
 std::vector<Material> ObjectParser::materials;
 
 std::vector<Object> ObjectParser::parseObjectFile(const std::string &path)
 {
-    std::vector<Object> objects;
-
     if (!Utils::checkExtension(path, ".obj"))
         throw(Exception("PARSE_OBJECT_FILE", "INVALID_EXTENSION", path, 0));
 
+    ObjectData objectData;
+    std::vector<Object> objects;
     std::stringstream fileStream = Utils::readFile(path);
     fileStream = Utils::readFile(path);
     std::string line;
@@ -38,10 +37,10 @@ std::vector<Object> ObjectParser::parseObjectFile(const std::string &path)
                 objects.push_back(newObject);
             }
             objectData.reset();
-            defineName(line, lineIndex);
+            defineName(objectData, line, lineIndex);
         }
         else if (it != parsingMethods.end())
-            (it->second)(line, lineIndex);
+            (it->second)(objectData, line, lineIndex);
         else if (symbol.length() != 0)
             throw(Exception("PARSE_OBJECT_FILE", "INVALID_SYMBOL", line, lineIndex));
         lineIndex++;
@@ -54,7 +53,7 @@ std::vector<Object> ObjectParser::parseObjectFile(const std::string &path)
     return (objects);
 }
 
-void ObjectParser::defineName(const std::string &line, unsigned int lineIndex)
+void ObjectParser::defineName(ObjectData &objectData, const std::string &line, unsigned int lineIndex)
 {
     std::vector<std::string> words;
 
@@ -64,7 +63,7 @@ void ObjectParser::defineName(const std::string &line, unsigned int lineIndex)
     objectData.setName(words[1]);
 }
 
-void ObjectParser::defineVertex(const std::string &line, unsigned int lineIndex)
+void ObjectParser::defineVertex(ObjectData &objectData, const std::string &line, unsigned int lineIndex)
 {
     Vertex vertex;
     std::vector<std::string> words;
@@ -88,7 +87,7 @@ void ObjectParser::defineVertex(const std::string &line, unsigned int lineIndex)
     objectData.addVertex(vertex);
 }
 
-void ObjectParser::defineFace(const std::string &line, unsigned int lineIndex)
+void ObjectParser::defineFace(ObjectData &objectData, const std::string &line, unsigned int lineIndex)
 {
     Face face;
     int vertexID;
@@ -111,10 +110,10 @@ void ObjectParser::defineFace(const std::string &line, unsigned int lineIndex)
             vertexID = nbVertices + 1 + vertexID;
         face.push_back(vertexID - 1);
     }
-    triangulate(face);
+    triangulate(objectData, face);
 }
 
-void ObjectParser::triangulate(Face &face)
+void ObjectParser::triangulate(ObjectData &objectData, Face &face)
 {
     while (face.size() > 3)
     {
@@ -193,7 +192,7 @@ float ObjectParser::triangleArea(const Vertex &a, const Vertex &b, const Vertex 
     return (area);
 }
 
-void ObjectParser::defineSmoothShading(const std::string &line, unsigned int lineIndex)
+void ObjectParser::defineSmoothShading(ObjectData &objectData, const std::string &line, unsigned int lineIndex)
 {
     std::vector<std::string> words;
 
@@ -209,8 +208,9 @@ void ObjectParser::defineSmoothShading(const std::string &line, unsigned int lin
         throw(Exception("DEFINE_SMOOTH_SHADING", "INVALID_ARGUMENT", line, lineIndex));
 }
 
-void ObjectParser::saveNewMTL(const std::string &line, unsigned int lineIndex)
+void ObjectParser::saveNewMTL(ObjectData &objectData, const std::string &line, unsigned int lineIndex)
 {
+    (void)objectData;
     std::vector<std::string> words;
 
     words = Utils::splitLine(line);
@@ -221,7 +221,7 @@ void ObjectParser::saveNewMTL(const std::string &line, unsigned int lineIndex)
     materials.insert(materials.end(), newMaterials.begin(), newMaterials.end());
 }
 
-void ObjectParser::defineMTL(const std::string &line, unsigned int lineIndex)
+void ObjectParser::defineMTL(ObjectData &objectData, const std::string &line, unsigned int lineIndex)
 {
     std::vector<std::string> words;
 

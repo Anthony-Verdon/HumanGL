@@ -11,12 +11,14 @@ MapMaterialParsingMethods MaterialParser::parsingMethods = {
 
 std::vector<Material> MaterialParser::parseMaterialFile(const std::string &path)
 {
+    if (!Utils::checkExtension(path, ".mtl"))
+        throw(Exception("PARSE_MATERIAL_FILE", "INVALID_EXTENSION", path, 0));
+
     MaterialData materialData;
     bool firstMaterial = true;
     std::vector<Material> materials;
 
     std::stringstream fileStream = Utils::readFile(path);
-    fileStream = Utils::readFile(path);
     std::string line;
     unsigned int lineIndex = 1;
     while (std::getline(fileStream, line))

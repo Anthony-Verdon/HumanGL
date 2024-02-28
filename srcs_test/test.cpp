@@ -86,83 +86,83 @@ TEST_CASE("test the definition of an object")
         CHECK_THROWS(ObjectParser::parseObjectFile("srcs_test/ressources/objectWrongSymbol.obj"));
     }
 
+    ObjectData objectData;
     SUBCASE("testing the definition of a name")
     {
-        ObjectParser::objectData.reset();
-        CHECK_NOTHROW(ObjectParser::defineName("o name ", 0));
-        CHECK_THROWS(ObjectParser::defineName("o ", 0));
-        CHECK_THROWS(ObjectParser::defineName("o name1 name2", 0));
+        objectData.reset();
+        CHECK_NOTHROW(ObjectParser::defineName(objectData, "o name ", 0));
+        CHECK_THROWS(ObjectParser::defineName(objectData, "o ", 0));
+        CHECK_THROWS(ObjectParser::defineName(objectData, "o name1 name2", 0));
     }
 
     SUBCASE("testing the definition of a vertex")
     {
-        ObjectParser::objectData.reset();
-        CHECK_NOTHROW(ObjectParser::defineVertex("v -0.5 0 0.5 ", 0));
-        CHECK_NOTHROW(ObjectParser::defineVertex("v -0.5 0 0.5 1", 0));
-        CHECK_THROWS(ObjectParser::defineVertex("v -0.5 0", 0));
-        CHECK_THROWS(ObjectParser::defineVertex("v -0.5 0 0.5 1 1", 0));
-        CHECK_THROWS(ObjectParser::defineVertex("v -0.5a 0 0.5", 0));
-        CHECK_THROWS(ObjectParser::defineVertex("v --0.5 0 0.5", 0));
-        CHECK_THROWS(ObjectParser::defineVertex("v -.5 0 0.5", 0));
-        CHECK_THROWS(ObjectParser::defineVertex("v .5 0 0.5", 0));
-        CHECK_THROWS(ObjectParser::defineVertex("v ..5 0 0.5", 0));
+        objectData.reset();
+        CHECK_NOTHROW(ObjectParser::defineVertex(objectData, "v -0.5 0 0.5 ", 0));
+        CHECK_NOTHROW(ObjectParser::defineVertex(objectData, "v -0.5 0 0.5 1", 0));
+        CHECK_THROWS(ObjectParser::defineVertex(objectData, "v -0.5 0", 0));
+        CHECK_THROWS(ObjectParser::defineVertex(objectData, "v -0.5 0 0.5 1 1", 0));
+        CHECK_THROWS(ObjectParser::defineVertex(objectData, "v -0.5a 0 0.5", 0));
+        CHECK_THROWS(ObjectParser::defineVertex(objectData, "v --0.5 0 0.5", 0));
+        CHECK_THROWS(ObjectParser::defineVertex(objectData, "v -.5 0 0.5", 0));
+        CHECK_THROWS(ObjectParser::defineVertex(objectData, "v .5 0 0.5", 0));
+        CHECK_THROWS(ObjectParser::defineVertex(objectData, "v ..5 0 0.5", 0));
     }
 
     SUBCASE("testing the definition of a face")
     {
-        ObjectParser::objectData.reset();
-        ObjectParser::defineVertex("v -0.5 0 0.5 ", 0);
-        ObjectParser::defineVertex("v -0.5 0 0.5 ", 0);
-        ObjectParser::defineVertex("v -0.5 0 0.5 ", 0);
-        ObjectParser::defineVertex("v -0.5 0 0.5 ", 0);
-        ObjectParser::defineVertex("v -0.5 0 0.5 ", 0);
-        ObjectParser::defineVertex("v -0.5 0 0.5 ", 0);
-        ObjectParser::defineVertex("v -0.5 0 0.5 ", 0);
-        CHECK_NOTHROW(ObjectParser::defineFace("f 1 2 3", 0));
-        CHECK_NOTHROW(ObjectParser::defineFace("f -1 -2 -3", 0));
-        CHECK_NOTHROW(ObjectParser::defineFace("f 1 2 3 4 5 6 7", 0));
-        CHECK_THROWS(ObjectParser::defineFace("f 1 2", 0));
-        CHECK_THROWS(ObjectParser::defineFace("f 1 2 1.5", 0));
-        CHECK_THROWS(ObjectParser::defineFace("f 1 2 1a", 0));
-        CHECK_THROWS(ObjectParser::defineFace("f 1 2 8", 0));
-        CHECK_THROWS(ObjectParser::defineFace("f 1 2 -9", 0));
+        objectData.reset();
+        ObjectParser::defineVertex(objectData, "v -0.5 0 0.5 ", 0);
+        ObjectParser::defineVertex(objectData, "v -0.5 0 0.5 ", 0);
+        ObjectParser::defineVertex(objectData, "v -0.5 0 0.5 ", 0);
+        ObjectParser::defineVertex(objectData, "v -0.5 0 0.5 ", 0);
+        ObjectParser::defineVertex(objectData, "v -0.5 0 0.5 ", 0);
+        ObjectParser::defineVertex(objectData, "v -0.5 0 0.5 ", 0);
+        ObjectParser::defineVertex(objectData, "v -0.5 0 0.5 ", 0);
+        CHECK_NOTHROW(ObjectParser::defineFace(objectData, "f 1 2 3", 0));
+        CHECK_NOTHROW(ObjectParser::defineFace(objectData, "f -1 -2 -3", 0));
+        CHECK_NOTHROW(ObjectParser::defineFace(objectData, "f 1 2 3 4 5 6 7", 0));
+        CHECK_THROWS(ObjectParser::defineFace(objectData, "f 1 2", 0));
+        CHECK_THROWS(ObjectParser::defineFace(objectData, "f 1 2 1.5", 0));
+        CHECK_THROWS(ObjectParser::defineFace(objectData, "f 1 2 1a", 0));
+        CHECK_THROWS(ObjectParser::defineFace(objectData, "f 1 2 8", 0));
+        CHECK_THROWS(ObjectParser::defineFace(objectData, "f 1 2 -9", 0));
     }
 
     SUBCASE("testing the definition of smooth shading")
     {
-        ObjectParser::objectData.reset();
-        CHECK_NOTHROW(ObjectParser::defineSmoothShading("s on", 0));
-        CHECK_NOTHROW(ObjectParser::defineSmoothShading("s off", 0));
-        CHECK_NOTHROW(ObjectParser::defineSmoothShading("s 0", 0));
-        CHECK_NOTHROW(ObjectParser::defineSmoothShading("s 1", 0));
-        CHECK_THROWS(ObjectParser::defineSmoothShading("s", 0));
-        CHECK_THROWS(ObjectParser::defineSmoothShading("s 1 1", 0));
-        CHECK_THROWS(ObjectParser::defineSmoothShading("s -1", 0));
-        CHECK_THROWS(ObjectParser::defineSmoothShading("s 2", 0));
-        CHECK_THROWS(ObjectParser::defineSmoothShading("s iufhrng", 0));
+        objectData.reset();
+        CHECK_NOTHROW(ObjectParser::defineSmoothShading(objectData, "s on", 0));
+        CHECK_NOTHROW(ObjectParser::defineSmoothShading(objectData, "s off", 0));
+        CHECK_NOTHROW(ObjectParser::defineSmoothShading(objectData, "s 0", 0));
+        CHECK_NOTHROW(ObjectParser::defineSmoothShading(objectData, "s 1", 0));
+        CHECK_THROWS(ObjectParser::defineSmoothShading(objectData, "s", 0));
+        CHECK_THROWS(ObjectParser::defineSmoothShading(objectData, "s 1 1", 0));
+        CHECK_THROWS(ObjectParser::defineSmoothShading(objectData, "s -1", 0));
+        CHECK_THROWS(ObjectParser::defineSmoothShading(objectData, "s 2", 0));
+        CHECK_THROWS(ObjectParser::defineSmoothShading(objectData, "s iufhrng", 0));
     }
 
     SUBCASE("testing the usage of a mtllib")
     {
-        ObjectParser::objectData.reset();
-
-        CHECK_NOTHROW(ObjectParser::saveNewMTL("mtllib srcs_test/ressources/material.mtl", 0));
+        objectData.reset();
+        CHECK_NOTHROW(ObjectParser::saveNewMTL(objectData, "mtllib srcs_test/ressources/material.mtl", 0));
         CHECK(ObjectParser::materials.size() == 2);
         CHECK(ObjectParser::materials[0].getName() == "Material");
         CHECK(ObjectParser::materials[1].getName() == "Material2");
-        CHECK_THROWS(ObjectParser::saveNewMTL("mtllib ", 0));
-        CHECK_THROWS(ObjectParser::saveNewMTL("mtllib first.mtl second.mtl", 0));
+        CHECK_THROWS(ObjectParser::saveNewMTL(objectData, "mtllib ", 0));
+        CHECK_THROWS(ObjectParser::saveNewMTL(objectData, "mtllib first.mtl second.mtl", 0));
     }
 
     SUBCASE("testing the definition of a material")
     {
-        ObjectParser::objectData.reset();
-        ObjectParser::saveNewMTL("mtllib srcs_test/ressources/material.mtl", 0);
-        CHECK_NOTHROW(ObjectParser::defineMTL("usemtl Material", 0));
-        CHECK_NOTHROW(ObjectParser::defineMTL("usemtl Material2", 0));
-        CHECK_THROWS(ObjectParser::defineMTL("usemtl ", 0));
-        CHECK_THROWS(ObjectParser::defineMTL("usemtl first second", 0));
-        CHECK_THROWS(ObjectParser::defineMTL("usemtl dontExist ", 0));
+        objectData.reset();
+        ObjectParser::saveNewMTL(objectData, "objectData,mtllib srcs_test/ressources/material.mtl", 0);
+        CHECK_NOTHROW(ObjectParser::defineMTL(objectData, "usemtl Material", 0));
+        CHECK_NOTHROW(ObjectParser::defineMTL(objectData, "usemtl Material2", 0));
+        CHECK_THROWS(ObjectParser::defineMTL(objectData, "usemtl ", 0));
+        CHECK_THROWS(ObjectParser::defineMTL(objectData, "usemtl first second", 0));
+        CHECK_THROWS(ObjectParser::defineMTL(objectData, "usemtl dontExist ", 0));
     }
 }
 

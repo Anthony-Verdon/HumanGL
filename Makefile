@@ -79,10 +79,10 @@ ${NAME_BONUS}:	${OBJS_BONUS}
 			${COMPILER} ${OBJS_BONUS} -o ${NAME_BONUS} ${LIBRARIES}
 
 clean:
-			${RM} ${OBJS} ${OBJS_BONUS} 
+			${RM} ${OBJS} ${OBJS_BONUS} {OBJS_TEST}
 
 fclean: 	clean
-			${RM} ${NAME} ${NAME_BONUS}
+			${RM} ${NAME} ${NAME_BONUS} {NAME_TEST}
 
 re:
 			make fclean
