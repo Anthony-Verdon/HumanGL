@@ -14,6 +14,8 @@ SRCS := srcs/main.cpp \
 		srcs/classes/Utils/Utils.cpp \
 		srcs/classes/Matrix/Matrix.cpp \
 
+SRCS_TEST := srcs_test/test.cpp
+
 SRCS_BONUS := srcs_bonus/main.cpp \
 		srcs_bonus/init.cpp \
 		srcs_bonus/input.cpp \
@@ -32,9 +34,13 @@ SRCS_BONUS := srcs_bonus/main.cpp \
 
 OBJS := $(SRCS:.cpp=.o)
 
+OBJS_TEST := $(SRCS_TEST:.cpp=.o)
+
 OBJS_BONUS := $(SRCS_BONUS:.cpp=.o)
 
 NAME := scop
+
+NAME_TEST := scop_test
 
 NAME_BONUS := scop_bonus
 
@@ -54,13 +60,15 @@ all: 		${NAME}
 ${NAME}:	${OBJS}
 			${COMPILER} ${OBJS} -o ${NAME} ${LIBRARIES}
 
+test: 		${NAME_TEST}
+
+${NAME_TEST}:	${OBJS_TEST}
+			${COMPILER} ${OBJS_TEST} -o ${NAME_TEST}
+
 bonus: 		${NAME_BONUS}
 
 ${NAME_BONUS}:	${OBJS_BONUS}
 			${COMPILER} ${OBJS_BONUS} -o ${NAME_BONUS} ${LIBRARIES}
-
-tester:
-			make -C tester
 
 clean:
 			${RM} ${OBJS} ${OBJS_BONUS} 
@@ -72,4 +80,4 @@ re:
 			make fclean
 			make
 
-.PHONY: 	all clean fclean re bonus tester
+.PHONY: 	all clean fclean re test bonus 
