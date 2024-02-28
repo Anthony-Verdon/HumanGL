@@ -25,19 +25,20 @@ SRCS_TEST := srcs_test/test.cpp \
 		srcs/classes/MaterialClasses/MaterialParser/MaterialParser.cpp \
 
 SRCS_BONUS := srcs_bonus/main.cpp \
-		srcs_bonus/init.cpp \
-		srcs_bonus/input.cpp \
-		srcs_bonus/parsing/parseObjFile.cpp \
-		srcs_bonus/parsing/parseMtlFile.cpp \
 		libs/glad/glad.cpp \
 		srcs_bonus/classes/Camera/Camera.cpp \
 		srcs_bonus/classes/Shader/Shader.cpp \
 		srcs_bonus/classes/Texture/Texture.cpp \
 		srcs_bonus/classes/Time/Time.cpp \
-		srcs_bonus/classes/Object/Object.cpp \
+		srcs_bonus/classes/ObjectClasses/Object/Object.cpp \
+		srcs_bonus/classes/ObjectClasses/ObjectData/ObjectData.cpp \
+		srcs_bonus/classes/ObjectClasses/ObjectParser/ObjectParser.cpp \
+		srcs_bonus/classes/MaterialClasses/Material/Material.cpp \
+		srcs_bonus/classes/MaterialClasses/MaterialData/MaterialData.cpp \
+		srcs_bonus/classes/MaterialClasses/MaterialParser/MaterialParser.cpp \
+		srcs_bonus/classes/WindowManagement/WindowManagement.cpp \
 		srcs_bonus/classes/Utils/Utils.cpp \
 		srcs_bonus/classes/Matrix/Matrix.cpp \
-		srcs_bonus/classes/Material/Material.cpp
 
 
 OBJS := $(SRCS:.cpp=.o)
@@ -79,10 +80,10 @@ ${NAME_BONUS}:	${OBJS_BONUS}
 			${COMPILER} ${OBJS_BONUS} -o ${NAME_BONUS} ${LIBRARIES}
 
 clean:
-			${RM} ${OBJS} ${OBJS_BONUS} {OBJS_TEST}
+			${RM} ${OBJS} ${OBJS_BONUS} ${OBJS_TEST}
 
 fclean: 	clean
-			${RM} ${NAME} ${NAME_BONUS} {NAME_TEST}
+			${RM} ${NAME} ${NAME_BONUS} ${NAME_TEST}
 
 re:
 			make fclean
