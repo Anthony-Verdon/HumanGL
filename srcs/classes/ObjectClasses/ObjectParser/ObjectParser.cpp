@@ -104,7 +104,7 @@ void ObjectParser::defineFace(const std::string &line, unsigned int lineIndex)
         if (!isInt(words[i]))
             throw(Exception("DEFINE_FACE", "INVALID_ARGUMENTS", line, lineIndex));
         vertexID = std::stoi(words[i]);
-        if (vertexID < -nbVertices || vertexID > nbVertices)
+        if (vertexID < -nbVertices || vertexID >= nbVertices)
             throw(Exception("DEFINE_FACE", "INVALID_VERTEX_INDEX", line, lineIndex));
 
         if (vertexID < 0)
@@ -232,8 +232,10 @@ void ObjectParser::defineMTL(const std::string &line, unsigned int lineIndex)
     for (size_t i = 0; i < materials.size(); i++)
     {
         if (materials[i].getName() == words[1])
+        {
             objectData.setMaterial(materials[i]);
-        return;
+            return;
+        }
     }
     throw(Exception("DEFINE_MTL", "INVALID_ARGUMENT", line, lineIndex));
 }
@@ -281,7 +283,7 @@ bool ObjectParser::isFloat(const std::string &word)
 ObjectParser::Exception::Exception(const std::string &functionName, const std::string &errorMessage,
                                    const std::string &line, unsigned int lineIndex)
 {
-    this->errorMessage = "OBJECT_PARSER::" + functionName + "::" + errorMessage;
+    this->errorMessage = "\nOBJECT_PARSER::" + functionName + "::" + errorMessage;
     this->errorMessage += "\n|\n| " + std::to_string(lineIndex) + ": " + line + "\n|";
 }
 

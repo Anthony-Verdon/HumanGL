@@ -14,7 +14,15 @@ SRCS := srcs/main.cpp \
 		srcs/classes/Utils/Utils.cpp \
 		srcs/classes/Matrix/Matrix.cpp \
 
-SRCS_TEST := srcs_test/test.cpp
+SRCS_TEST := srcs_test/test.cpp \
+		libs/glad/glad.cpp \
+		srcs/classes/Utils/Utils.cpp \
+		srcs/classes/ObjectClasses/Object/Object.cpp \
+		srcs/classes/ObjectClasses/ObjectData/ObjectData.cpp \
+		srcs/classes/ObjectClasses/ObjectParser/ObjectParser.cpp \
+		srcs/classes/MaterialClasses/Material/Material.cpp \
+		srcs/classes/MaterialClasses/MaterialData/MaterialData.cpp \
+		srcs/classes/MaterialClasses/MaterialParser/MaterialParser.cpp \
 
 SRCS_BONUS := srcs_bonus/main.cpp \
 		srcs_bonus/init.cpp \

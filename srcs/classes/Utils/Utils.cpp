@@ -1,7 +1,6 @@
 #include "Utils.hpp"
 #include <cmath>
 #include <fstream>
-
 std::vector<std::string> Utils::splitLine(std::string line)
 {
     size_t index;
@@ -22,7 +21,7 @@ std::vector<std::string> Utils::splitLine(std::string line)
 
 float Utils::DegToRad(float angle)
 {
-    return (angle * (M_PI / 180));
+    return (roundf(angle * (M_PI / 180) * 100000) / 100000);
 }
 
 std::stringstream Utils::readFile(const std::string &path)
@@ -35,21 +34,6 @@ std::stringstream Utils::readFile(const std::string &path)
     stream << file.rdbuf();
     file.close();
     return (stream);
-}
-
-unsigned int Utils::convertRGBtoNum(unsigned char R, unsigned char G, unsigned char B)
-{
-    return ((R << 16) | (G << 8) | B);
-}
-
-Matrix Utils::convertNumToRGB(unsigned int number)
-{
-    Matrix color(3, 1);
-
-    color.setData(0, 0, (number & 0xff0000) % 255);
-    color.setData(1, 0, (number & 0x00ff00) % 255);
-    color.setData(2, 0, (number & 0x0000ff) % 255);
-    return (color);
 }
 
 bool Utils::checkExtension(const std::string &path, const std::string &extension)
