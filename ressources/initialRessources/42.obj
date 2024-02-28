@@ -1,7 +1,7 @@
 # Blender v2.71 (sub 0) OBJ File: '42.blend'
 # www.blender.org
-o Cube
 mtllib ressources/initialRessources/42.mtl
+o Cube
 v 0.232406 -1.216630 1.133818
 v 0.232406 -0.745504 2.843098
 v -0.227475 -0.745504 2.843098
@@ -67,7 +67,6 @@ f 31 30 29 32
 f 32 29 28 33
 f 33 28 27 34
 f 24 25 39 35
-usemtl Material2
 f 35 39 40 36
 f 36 40 41 37
 f 37 41 42 38

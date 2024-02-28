@@ -68,6 +68,23 @@ TEST_CASE("test useful functions")
 
 TEST_CASE("test the definition of an object")
 {
+    SUBCASE("testing the parsing of a file with an invalid extension")
+    {
+        CHECK_NOTHROW(ObjectParser::parseObjectFile("srcs_test/ressources/object.obj"));
+        CHECK_NOTHROW(ObjectParser::parseObjectFile("srcs_test/ressources/..obj"));
+        CHECK_THROWS(ObjectParser::parseObjectFile("objectWrongExtension.obja"));
+        CHECK_THROWS(ObjectParser::parseObjectFile("objectWrongExtension.o"));
+        CHECK_THROWS(ObjectParser::parseObjectFile("objectWrongExtension.ob"));
+        CHECK_THROWS(ObjectParser::parseObjectFile("objectWrongExtensionobj"));
+        CHECK_THROWS(ObjectParser::parseObjectFile(".obj"));
+        CHECK_THROWS(ObjectParser::parseObjectFile("ressources/.obj"));
+    }
+
+    SUBCASE("testing the parsing of a file with an invalid symbol")
+    {
+        CHECK_NOTHROW(ObjectParser::parseObjectFile("srcs_test/ressources/object.obj"));
+        CHECK_THROWS(ObjectParser::parseObjectFile("srcs_test/ressources/objectWrongSymbol.obj"));
+    }
 
     SUBCASE("testing the definition of a name")
     {
@@ -151,6 +168,24 @@ TEST_CASE("test the definition of an object")
 
 TEST_CASE("test the definition of a material")
 {
+    SUBCASE("testing the parsing of a file with an invalid extension")
+    {
+        CHECK_NOTHROW(MaterialParser::parseMaterialFile("srcs_test/ressources/material.mtl"));
+        CHECK_NOTHROW(MaterialParser::parseMaterialFile("srcs_test/ressources/..mtl"));
+        CHECK_THROWS(MaterialParser::parseMaterialFile("materialWrongExtension..mtla"));
+        CHECK_THROWS(MaterialParser::parseMaterialFile("materialWrongExtension.m"));
+        CHECK_THROWS(MaterialParser::parseMaterialFile("materialWrongExtension.mt"));
+        CHECK_THROWS(MaterialParser::parseMaterialFile("materialWrongExtensionmtl"));
+        CHECK_THROWS(MaterialParser::parseMaterialFile(".mtl"));
+        CHECK_THROWS(MaterialParser::parseMaterialFile("ressources/.mtl"));
+    }
+
+    SUBCASE("testing the parsing of a file with an invalid symbol")
+    {
+        CHECK_NOTHROW(MaterialParser::parseMaterialFile("srcs_test/ressources/material.mtl"));
+        CHECK_THROWS(MaterialParser::parseMaterialFile("srcs_test/ressources/materialWronSymbol.mtl"));
+    }
+
     MaterialData materialData;
     SUBCASE("testing the definition of a name")
     {
