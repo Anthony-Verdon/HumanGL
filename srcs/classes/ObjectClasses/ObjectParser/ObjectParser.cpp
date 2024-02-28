@@ -104,7 +104,7 @@ void ObjectParser::defineFace(const std::string &line, unsigned int lineIndex)
         if (!isInt(words[i]))
             throw(Exception("DEFINE_FACE", "INVALID_ARGUMENTS", line, lineIndex));
         vertexID = std::stoi(words[i]);
-        if (vertexID < -nbVertices || vertexID >= nbVertices)
+        if (vertexID < -(nbVertices + 1) || vertexID > nbVertices || vertexID == 0)
             throw(Exception("DEFINE_FACE", "INVALID_VERTEX_INDEX", line, lineIndex));
 
         if (vertexID < 0)

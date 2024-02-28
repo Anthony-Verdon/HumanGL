@@ -74,6 +74,14 @@ TEST_CASE("test the definition of an object")
     SUBCASE("testing definitions of object elements")
     {
 
+        SUBCASE("testing the definition of a name")
+        {
+            ObjectParser::objectData.reset();
+            CHECK_NOTHROW(ObjectParser::defineName("o name ", 0));
+            CHECK_THROWS(ObjectParser::defineName("o ", 0));
+            CHECK_THROWS(ObjectParser::defineName("o name1 name2", 0));
+        }
+
         SUBCASE("testing the definition of a vertex")
         {
             ObjectParser::objectData.reset();
@@ -98,14 +106,14 @@ TEST_CASE("test the definition of an object")
             ObjectParser::defineVertex("v -0.5 0 0.5 ", 0);
             ObjectParser::defineVertex("v -0.5 0 0.5 ", 0);
             ObjectParser::defineVertex("v -0.5 0 0.5 ", 0);
-            CHECK_NOTHROW(ObjectParser::defineFace("f 0 1 2", 0));
-            CHECK_NOTHROW(ObjectParser::defineFace("f -0 -1 -2", 0));
-            CHECK_NOTHROW(ObjectParser::defineFace("f 0 1 2 3 4 5 6", 0)); // probably in triangulate function
-            CHECK_THROWS(ObjectParser::defineFace("f 0 1", 0));
-            CHECK_THROWS(ObjectParser::defineFace("f 0 1.5", 0));
-            CHECK_THROWS(ObjectParser::defineFace("f 0 1a", 0));
-            CHECK_THROWS(ObjectParser::defineFace("f 0 7", 0));
-            CHECK_THROWS(ObjectParser::defineFace("f 0 -8", 0));
+            CHECK_NOTHROW(ObjectParser::defineFace("f 1 2 3", 0));
+            CHECK_NOTHROW(ObjectParser::defineFace("f -1 -2 -3", 0));
+            CHECK_NOTHROW(ObjectParser::defineFace("f 1 2 3 4 5 6 7", 0));
+            CHECK_THROWS(ObjectParser::defineFace("f 1 2", 0));
+            CHECK_THROWS(ObjectParser::defineFace("f 1 2 1.5", 0));
+            CHECK_THROWS(ObjectParser::defineFace("f 1 2 1a", 0));
+            CHECK_THROWS(ObjectParser::defineFace("f 1 2 8", 0));
+            CHECK_THROWS(ObjectParser::defineFace("f 1 2 -9", 0));
         }
 
         SUBCASE("testing the definition of smooth shading")
@@ -149,4 +157,28 @@ TEST_CASE("test the definition of an object")
 
 TEST_CASE("test the definition of a material")
 {
+    SUBCASE("testing the definition of a name")
+    {
+    }
+    SUBCASE("testing the definition of ambiant color")
+    {
+    }
+    SUBCASE("testing the definition of specular color")
+    {
+    }
+    SUBCASE("testing the definition of diffuse color")
+    {
+    }
+    SUBCASE("testing the definition of specular exponent")
+    {
+    }
+    SUBCASE("testing the definition of refraction index")
+    {
+    }
+    SUBCASE("testing the definition of opacity")
+    {
+    }
+    SUBCASE("testing the definition of illum")
+    {
+    }
 }
