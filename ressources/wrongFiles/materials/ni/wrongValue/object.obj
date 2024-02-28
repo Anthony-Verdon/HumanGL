@@ -1,0 +1,11 @@
+mtllib ressources/wrongFiles/materials/ni/wrongValue/material.mtl
+
+v -0.500000 -0.500000 0.50000 
+v 0.500000 -0.500000 0.500000 
+v 0.500000 0.500000 0.500000 
+v -0.500000 0.500000 0.500000 
+
+s 0
+usemtl Material
+f 1 2 3
+f 1 3 4

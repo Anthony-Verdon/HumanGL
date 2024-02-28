@@ -1,0 +1,9 @@
+mtllib ressources/wrongFiles/objects/usemtl/test.mtl
+v -0.500000 -0.500000 0.50000 
+v 0.500000 -0.500000 0.500000 
+v 0.500000 0.500000 0.500000 
+v -0.500000 0.500000 0.500000 
+
+usemtl notTheGoodOne
+f 1 2 3
+f 1 3 4

@@ -60,7 +60,7 @@ std::string ObjectData::getName() const
     if (name.has_value())
         return (name.value());
     else
-        return ("undefined");
+        return ("");
 }
 
 Material ObjectData::getMaterial() const

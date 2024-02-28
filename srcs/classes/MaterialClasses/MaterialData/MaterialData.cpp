@@ -66,7 +66,7 @@ unsigned int MaterialData::getIllum() const
 
 void MaterialData::reset()
 {
-    name = "default";
+    name = "";
     for (size_t i = 0; i < 3; i++)
     {
         for (size_t j = 0; j < 3; j++)
