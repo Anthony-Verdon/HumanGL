@@ -70,6 +70,8 @@ void MaterialParser::defineAmbiantColor(MaterialData &materialData, const std::s
     std::array<float, 3> ambiantColor;
     for (size_t i = 0; i < 3; i++)
     {
+        if (!Utils::isFloat(words[i + 1]))
+            throw(Exception("DEFINE_AMBIANT_COLOR", "INVALID_ARGUMENT", line, lineIndex));
         ambiantColor[i] = std::stof(words[i + 1]);
         if (ambiantColor[i] < 0 || ambiantColor[i] > 1)
             throw(Exception("DEFINE_AMBIANT_COLOR", "INVALID_ARGUMENT", line, lineIndex));
@@ -88,6 +90,8 @@ void MaterialParser::defineSpecularColor(MaterialData &materialData, const std::
     std::array<float, 3> specularColor;
     for (size_t i = 0; i < 3; i++)
     {
+        if (!Utils::isFloat(words[i + 1]))
+            throw(Exception("DEFINE_SPECULAR_COLOR", "INVALID_ARGUMENT", line, lineIndex));
         specularColor[i] = std::stof(words[i + 1]);
         if (specularColor[i] < 0 || specularColor[i] > 1)
             throw(Exception("DEFINE_SPECULAR_COLOR", "INVALID_ARGUMENT", line, lineIndex));
@@ -106,6 +110,8 @@ void MaterialParser::defineDiffuseColor(MaterialData &materialData, const std::s
     std::array<float, 3> diffuseColor;
     for (size_t i = 0; i < 3; i++)
     {
+        if (!Utils::isFloat(words[i + 1]))
+            throw(Exception("DEFINE_DIFFUSE_COLOR", "INVALID_ARGUMENT", line, lineIndex));
         diffuseColor[i] = std::stof(words[i + 1]);
         if (diffuseColor[i] < 0 || diffuseColor[i] > 1)
             throw(Exception("DEFINE_DIFFUSE_COLOR", "INVALID_ARGUMENT", line, lineIndex));
@@ -121,6 +127,8 @@ void MaterialParser::defineSpecularExponent(MaterialData &materialData, const st
     if (words.size() != 2)
         throw(Exception("DEFINE_SPECULAR_EXPONENT", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
+    if (!Utils::isFloat(words[1]))
+        throw(Exception("DEFINE_SPECULAR_EXPONENT", "INVALID_ARGUMENT", line, lineIndex));
     float specularExponent = std::stof(words[1]);
     if (specularExponent < 0 || specularExponent > 1000)
         throw(Exception("DEFINE_SPECULAR_EXPONENT", "INVALID_ARGUMENT", line, lineIndex));
@@ -135,6 +143,8 @@ void MaterialParser::defineRefractionIndex(MaterialData &materialData, const std
     if (words.size() != 2)
         throw(Exception("DEFINE_REFRACTION_INDEX", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
+    if (!Utils::isFloat(words[1]))
+        throw(Exception("DEFINE_REFRACTION_INDEX", "INVALID_ARGUMENT", line, lineIndex));
     float refractionIndex = std::stof(words[1]);
     if (refractionIndex < 0 || refractionIndex > 10)
         throw(Exception("DEFINE_REFRACTION_INDEX", "INVALID_ARGUMENT", line, lineIndex));
@@ -149,6 +159,8 @@ void MaterialParser::defineOpacity(MaterialData &materialData, const std::string
     if (words.size() != 2)
         throw(Exception("DEFINE_OPACITY", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
+    if (!Utils::isFloat(words[1]))
+        throw(Exception("DEFINE_OPACITY", "INVALID_ARGUMENT", line, lineIndex));
     float opacity = std::stof(words[1]);
     if (opacity < 0 || opacity > 1)
         throw(Exception("DEFINE_OPACITY", "INVALID_ARGUMENT", line, lineIndex));
@@ -163,6 +175,8 @@ void MaterialParser::defineIllum(MaterialData &materialData, const std::string &
     if (words.size() != 2)
         throw(Exception("DEFINE_ILLUM", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
+    if (!Utils::isInt(words[1]))
+        throw(Exception("DEFINE_ILLUM", "INVALID_ARGUMENT", line, lineIndex));
     int illum = std::stoi(words[1]);
     if (illum < 0 || illum > 10)
         throw(Exception("DEFINE_ILLUM", "INVALID_ARGUMENT", line, lineIndex));

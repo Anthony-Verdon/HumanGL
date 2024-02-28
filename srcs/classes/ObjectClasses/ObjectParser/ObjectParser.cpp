@@ -75,8 +75,8 @@ void ObjectParser::defineVertex(const std::string &line, unsigned int lineIndex)
 
     for (size_t i = 1; i < words.size(); i++)
     {
-        if (!isFloat(words[i]))
-            throw(Exception("DEFINE_VERTEX", "INVALID_ARGUMENTS", line, lineIndex));
+        if (!Utils::isFloat(words[i]))
+            throw(Exception("DEFINE_VERTEX", "INVALID_ARGUMENT", line, lineIndex));
         vertex.push_back(std::stof(words[i]));
     }
     if (words.size() == 4)
@@ -101,8 +101,8 @@ void ObjectParser::defineFace(const std::string &line, unsigned int lineIndex)
 
     for (size_t i = 1; i < words.size(); i++)
     {
-        if (!isInt(words[i]))
-            throw(Exception("DEFINE_FACE", "INVALID_ARGUMENTS", line, lineIndex));
+        if (!Utils::isInt(words[i]))
+            throw(Exception("DEFINE_FACE", "INVALID_ARGUMENT", line, lineIndex));
         vertexID = std::stoi(words[i]);
         if (vertexID < -(nbVertices + 1) || vertexID > nbVertices || vertexID == 0)
             throw(Exception("DEFINE_FACE", "INVALID_VERTEX_INDEX", line, lineIndex));
@@ -240,46 +240,6 @@ void ObjectParser::defineMTL(const std::string &line, unsigned int lineIndex)
     throw(Exception("DEFINE_MTL", "INVALID_ARGUMENT", line, lineIndex));
 }
 
-bool ObjectParser::isInt(const std::string &word)
-{
-    const std::string numbers = "0123456789";
-    size_t start = 0;
-    if (word[0] == '-')
-        start++;
-
-    for (size_t i = start; i < word.size(); i++)
-    {
-        if (numbers.find(word[i]) == std::string::npos)
-            return (false);
-    }
-    return (true);
-}
-
-bool ObjectParser::isFloat(const std::string &word)
-{
-    const std::string numbers = "0123456789";
-    size_t start = 0;
-    bool pointFound = false;
-    if (word[0] == '-')
-        start++;
-
-    for (size_t i = start; i < word.size(); i++)
-    {
-        if (word[i] == '.')
-        {
-            if (pointFound || i == 0 || (word[0] == '-' && i == 1))
-                return (false);
-            else
-            {
-                pointFound = true;
-                continue;
-            }
-        }
-        if (numbers.find(word[i]) == std::string::npos)
-            return (false);
-    }
-    return (true);
-}
 ObjectParser::Exception::Exception(const std::string &functionName, const std::string &errorMessage,
                                    const std::string &line, unsigned int lineIndex)
 {

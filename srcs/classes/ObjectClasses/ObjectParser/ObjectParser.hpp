@@ -11,9 +11,6 @@ typedef std::map<std::string, void (*)(const std::string &, unsigned int)> MapOb
 class ObjectParser
 {
   private:
-    static bool isInt(const std::string &word);
-    static bool isFloat(const std::string &words);
-
     static float triangleArea(const Vertex &a, const Vertex &b, const Vertex &c);
     static bool insideTriangle(const Vertex &p, const Vertex &a, const Vertex &b, const Vertex &c);
     static void triangulate(Face &face);
