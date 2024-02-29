@@ -25,7 +25,9 @@
 | usemtl | use material | usemtl [material name] |
 
 ### for bonus
-| v | vertex texture | v uv[w] |
+| symbol | meaning | declaration |
+| ------ | ------- | ----------- |
+| vt | vertex texture | vt uv[w] |
 | f | face | f [vertex index/texture vertex index, at least 3] |
 
 smooth shading can be declared but won't be take into account
