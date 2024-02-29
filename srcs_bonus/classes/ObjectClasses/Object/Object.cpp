@@ -53,26 +53,6 @@ unsigned int Object::getVAO() const
     return (VAO);
 }
 
-std::unique_ptr<float[]> Object::convertEBOintoVBO()
-{
-    std::unique_ptr<float[]> verticesArray;
-
-    verticesArray = std::make_unique<float[]>(faces.size() * 3 * 4);
-    size_t j = 0;
-    for (size_t i = 0; i < faces.size(); i++)
-    {
-        for (size_t x = 0; x < 3; x++)
-        {
-            verticesArray[j] = vertices[faces[i][x]][0];
-            verticesArray[j + 1] = vertices[faces[i][x]][1];
-            verticesArray[j + 2] = vertices[faces[i][x]][2];
-            verticesArray[j + 3] = vertices[faces[i][x]][3];
-            j += 4;
-        }
-    }
-    return (verticesArray);
-}
-
 void Object::initVAO()
 {
     glGenVertexArrays(1, &VAO);

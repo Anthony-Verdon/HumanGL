@@ -2,7 +2,6 @@
 
 #include "../ObjectData/ObjectData.hpp"
 #include <iostream>
-#include <memory>
 
 // possibility to create a sub class named "OpenGLObject" containing VAO
 class Object : public ObjectData
@@ -25,7 +24,6 @@ class Object : public ObjectData
     unsigned int getVAO() const;
 
     void initVAO();
-    std::unique_ptr<float[]> convertEBOintoVBO();
 };
 
 std::ostream &operator<<(std::ostream &os, const Object &instance);
