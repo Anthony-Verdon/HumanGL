@@ -1,5 +1,5 @@
 o test
-mtllib ressources/goodFiles/textureTest.mtl
+mtllib ressources/textureTest.mtl
 v -0.500000 -0.500000 0.500000
 v 0.500000 -0.500000 0.500000
 v 0.500000 0.500000 0.500000

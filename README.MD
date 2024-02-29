@@ -1,9 +1,5 @@
 # scop
 
-| symbol | attributes | meaning |
-| ------ | ---------- | ------- |
-| v | x y z [w] | vertex, coordinate of a point. w is optional |
-
 | key | action |
 | --- | ------ |
 | ESC | close the window |

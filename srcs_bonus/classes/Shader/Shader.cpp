@@ -14,6 +14,7 @@ Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath)
     const unsigned int vertex = compileShader(vertexCode.c_str(), GL_VERTEX_SHADER);
     const unsigned int fragment = compileShader(fragmentCode.c_str(), GL_FRAGMENT_SHADER);
     compileProgram(vertex, fragment);
+    std::cout << "shader compiled" << std::endl;
 }
 
 Shader::Shader(const Shader &copy)

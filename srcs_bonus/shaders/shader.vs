@@ -1,20 +1,15 @@
 #version 330 core
-layout (location = 0) in vec3 aPos;
+layout (location = 0) in vec4 aPos;
+layout (location = 1) in vec3 aTexCoord;
 
 uniform mat4 rotation;
 uniform mat4 view;
 uniform mat4 projection;
-uniform vec3 aColor;
-uniform float aMixValue;
-out vec2 texCoord;
-out vec3 color;
-out float mixValue;
+
+out vec2 TexCoord;
 
 void main()
 {
-    gl_Position = projection * view * rotation * vec4(aPos, 1.0);
-    texCoord = vec2(aPos.x, aPos.y);
-    color = aColor;
-    mixValue = aMixValue;
-
+    gl_Position = projection * view * rotation * aPos;
+    TexCoord = vec2(aTexCoord.x, aTexCoord.y);
 }

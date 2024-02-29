@@ -202,8 +202,8 @@ TEST_CASE("test the definition of a material")
 
     SUBCASE("testing the parsing of a file with an invalid symbol")
     {
-        CHECK_NOTHROW(MaterialParser::parseMaterialFile("srcs/tester/ressources/material.mtl"));
-        CHECK_THROWS(MaterialParser::parseMaterialFile("srcs/tester/ressources/materialWronSymbol.mtl"));
+        CHECK_NOTHROW(MaterialParser::parseMaterialFile("srcs_bonus/tester/ressources/material.mtl"));
+        CHECK_THROWS(MaterialParser::parseMaterialFile("srcs_bonus/tester/ressources/materialWronSymbol.mtl"));
     }
 
     MaterialData materialData;
