@@ -80,6 +80,9 @@ void ObjectParser::defineVertex(ObjectData &objectData, const std::string &line,
     if (words.size() == 4)
         vertex.push_back(1.0f);
 
+    if (vertex[3] == 0)
+        throw(Exception("DEFINE_VERTEX", "INVALID_ARGUMENT", line, lineIndex));
+
     for (size_t i = 0; i < 3; i++)
         vertex[i] = vertex[i] / vertex[3];
 
@@ -99,7 +102,10 @@ void ObjectParser::defineTextureVertex(ObjectData &objectData, const std::string
     {
         if (!Utils::isFloat(words[i]))
             throw(Exception("DEFINE_VERTEX_TEXTURE", "INVALID_ARGUMENT", line, lineIndex));
-        textureVertex.push_back(std::stof(words[i]));
+        float value = std::stof(words[i]);
+        if (value < 0 || value > 1)
+            throw(Exception("DEFINE_VERTEX_TEXTURE", "INVALID_ARGUMENT", line, lineIndex));
+        textureVertex.push_back(value);
     }
     for (size_t i = textureVertex.size(); i < 3; i++)
         textureVertex.push_back(0);
@@ -116,6 +122,15 @@ void ObjectParser::defineFace(ObjectData &objectData, const std::string &line, u
 
     for (size_t i = 1; i < words.size(); i++)
     {
+        int nbBackSlash = 0;
+        for (size_t j = 0; j < words[i].size(); j++)
+        {
+            if (words[i][j] == '/')
+                nbBackSlash++;
+        }
+        if (nbBackSlash != 1)
+            throw(Exception("DEFINE_FACE", "INVALID_ARGUMENT", line, lineIndex));
+
         std::vector<std::string> vertices = Utils::splitLine(words[i], "/");
         if (vertices.size() != 2)
             throw(Exception("DEFINE_FACE", "INVALID_ARGUMENT", line, lineIndex));
@@ -147,7 +162,7 @@ size_t ObjectParser::CalculateVertexIndex(ObjectData &objectData, const std::str
     if (!Utils::isInt(vertex))
         throw(Exception("DEFINE_FACE", "INVALID_ARGUMENT", line, lineIndex));
     int vertexIndex = std::stoi(vertex);
-    if (vertexIndex < -(nbVertices + 1) || vertexIndex > nbVertices || vertexIndex == 0)
+    if (vertexIndex < -nbVertices || vertexIndex > nbVertices || vertexIndex == 0)
         throw(Exception("DEFINE_FACE", errorMessage, line, lineIndex));
 
     if (vertexIndex < 0)

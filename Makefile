@@ -14,7 +14,7 @@ SRCS := srcs/main.cpp \
 		srcs/classes/Utils/Utils.cpp \
 		srcs/classes/Matrix/Matrix.cpp \
 
-SRCS_TEST := srcs_test/test.cpp \
+SRCS_TEST := srcs/tester/tester.cpp \
 		libs/glad/glad.cpp \
 		srcs/classes/Utils/Utils.cpp \
 		srcs/classes/ObjectClasses/Object/Object.cpp \
@@ -40,6 +40,15 @@ SRCS_BONUS := srcs_bonus/main.cpp \
 		srcs_bonus/classes/Utils/Utils.cpp \
 		srcs_bonus/classes/Matrix/Matrix.cpp \
 
+SRCS_TEST_BONUS := srcs_bonus/tester/tester.cpp \
+		libs/glad/glad.cpp \
+		srcs_bonus/classes/Utils/Utils.cpp \
+		srcs_bonus/classes/ObjectClasses/Object/Object.cpp \
+		srcs_bonus/classes/ObjectClasses/ObjectData/ObjectData.cpp \
+		srcs_bonus/classes/ObjectClasses/ObjectParser/ObjectParser.cpp \
+		srcs_bonus/classes/MaterialClasses/Material/Material.cpp \
+		srcs_bonus/classes/MaterialClasses/MaterialData/MaterialData.cpp \
+		srcs_bonus/classes/MaterialClasses/MaterialParser/MaterialParser.cpp \
 
 OBJS := $(SRCS:.cpp=.o)
 
@@ -47,11 +56,15 @@ OBJS_TEST := $(SRCS_TEST:.cpp=.o)
 
 OBJS_BONUS := $(SRCS_BONUS:.cpp=.o)
 
+OBJS_TEST_BONUS := $(SRCS_TEST_BONUS:.cpp=.o)
+
 NAME := scop
 
 NAME_TEST := scop_test
 
 NAME_BONUS := scop_bonus
+
+NAME_TEST_BONUS := scop_test_bonus
 
 COMPILER ?= c++
 
@@ -79,6 +92,11 @@ bonus: 		${NAME_BONUS}
 ${NAME_BONUS}:	${OBJS_BONUS}
 			${COMPILER} ${OBJS_BONUS} -o ${NAME_BONUS} ${LIBRARIES}
 
+testbonus: ${NAME_TEST_BONUS}
+
+${NAME_TEST_BONUS}: ${OBJS_TEST_BONUS}
+			${COMPILER} ${OBJS_TEST_BONUS} -o ${NAME_TEST_BONUS}
+
 clean:
 			${RM} ${OBJS} ${OBJS_BONUS} ${OBJS_TEST}
 
@@ -88,5 +106,8 @@ fclean: 	clean
 re:
 			make fclean
 			make
+			make test
+			make bonus
+			make testbonus
 
-.PHONY: 	all clean fclean re test bonus 
+.PHONY: 	all clean fclean re test bonus testbonus

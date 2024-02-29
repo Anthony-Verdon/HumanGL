@@ -124,6 +124,8 @@ void ObjectData::reset()
 {
     name.reset();
     vertices.clear();
+    textureVertices.clear();
+    combinedVertices.clear();
     faces.clear();
     smoothShading = false;
     material.reset();

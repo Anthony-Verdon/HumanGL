@@ -1,0 +1,16 @@
+v -2 0 0 #left tip
+v 2 0 0 #right tip
+v 0 2 0  #top tip
+v 0 -2 0  #bot tip
+v 0.5 0.5 0 # top right corner
+v -0.5 0.5 0 # top left corner
+v -0.5 -0.5 0 # bot left corner
+v 0.5 -0.5 0 # bot right corner
+
+# f 5 6 7 8 middle square
+# f 6 1 7 left branch
+# f 8 2 5 right branch
+# f 5 3 6 top branch
+# f 7 4 8 bot branch
+
+f 6 1 7 4 8 2 5 3

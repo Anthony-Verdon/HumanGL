@@ -1,12 +1,12 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include "../srcs/classes/Utils/Utils.hpp"
+#include "../classes/Utils/Utils.hpp"
 
 // allow to use private methods only on this file
 #define private public
 
-#include "../srcs/classes/MaterialClasses/MaterialParser/MaterialParser.hpp"
-#include "../srcs/classes/ObjectClasses/ObjectParser/ObjectParser.hpp"
-#include "doctest.h"
+#include "../../libs/doctest.h"
+#include "../classes/MaterialClasses/MaterialParser/MaterialParser.hpp"
+#include "../classes/ObjectClasses/ObjectParser/ObjectParser.hpp"
 
 // maybe test texture too
 TEST_CASE("test useful functions")
@@ -15,16 +15,16 @@ TEST_CASE("test useful functions")
     {
         std::string line1 = "hi ! How are you ?";
         std::vector<std::string> lineSplit1 = {"hi", "!", "How", "are", "you", "?"};
-        CHECK_MESSAGE(Utils::splitLine(line1) == lineSplit1, "line: ", line1);
+        CHECK_MESSAGE(Utils::splitLine(line1, " ") == lineSplit1, "line: ", line1);
         std::string line2 = "     multiples     spaces     ";
         std::vector<std::string> lineSplit2 = {"multiples", "spaces"};
-        CHECK_MESSAGE(Utils::splitLine(line2) == lineSplit2, "line: ", line2);
+        CHECK_MESSAGE(Utils::splitLine(line2, " ") == lineSplit2, "line: ", line2);
         std::string line3 = "";
         std::vector<std::string> lineSplit3 = {};
-        CHECK_MESSAGE(Utils::splitLine(line3) == lineSplit3, "line: {nothing}");
+        CHECK_MESSAGE(Utils::splitLine(line3, " ") == lineSplit3, "line: {nothing}");
         std::string line4 = "            ";
         std::vector<std::string> lineSplit4 = {};
-        CHECK_MESSAGE(Utils::splitLine(line4) == lineSplit4, "line: {only space}");
+        CHECK_MESSAGE(Utils::splitLine(line4, " ") == lineSplit4, "line: {only space}");
     }
 
     // didn't test degToRad function because comparaison of float is always false
@@ -70,8 +70,8 @@ TEST_CASE("test the definition of an object")
 {
     SUBCASE("testing the parsing of a file with an invalid extension")
     {
-        CHECK_NOTHROW(ObjectParser::parseObjectFile("srcs_test/ressources/object.obj"));
-        CHECK_NOTHROW(ObjectParser::parseObjectFile("srcs_test/ressources/..obj"));
+        CHECK_NOTHROW(ObjectParser::parseObjectFile("srcs_bonus/tester/ressources/object.obj"));
+        CHECK_NOTHROW(ObjectParser::parseObjectFile("srcs_bonus/tester/ressources/..obj"));
         CHECK_THROWS(ObjectParser::parseObjectFile("objectWrongExtension.obja"));
         CHECK_THROWS(ObjectParser::parseObjectFile("objectWrongExtension.o"));
         CHECK_THROWS(ObjectParser::parseObjectFile("objectWrongExtension.ob"));
@@ -82,8 +82,8 @@ TEST_CASE("test the definition of an object")
 
     SUBCASE("testing the parsing of a file with an invalid symbol")
     {
-        CHECK_NOTHROW(ObjectParser::parseObjectFile("srcs_test/ressources/object.obj"));
-        CHECK_THROWS(ObjectParser::parseObjectFile("srcs_test/ressources/objectWrongSymbol.obj"));
+        CHECK_NOTHROW(ObjectParser::parseObjectFile("srcs_bonus/tester/ressources/object.obj"));
+        CHECK_THROWS(ObjectParser::parseObjectFile("srcs_bonus/tester/ressources/objectWrongSymbol.obj"));
     }
 
     ObjectData objectData;
@@ -100,6 +100,7 @@ TEST_CASE("test the definition of an object")
         objectData.reset();
         CHECK_NOTHROW(ObjectParser::defineVertex(objectData, "v -0.5 0 0.5 ", 0));
         CHECK_NOTHROW(ObjectParser::defineVertex(objectData, "v -0.5 0 0.5 1", 0));
+        CHECK_THROWS(ObjectParser::defineVertex(objectData, "v -0.5 0 0 0", 0));
         CHECK_THROWS(ObjectParser::defineVertex(objectData, "v -0.5 0", 0));
         CHECK_THROWS(ObjectParser::defineVertex(objectData, "v -0.5 0 0.5 1 1", 0));
         CHECK_THROWS(ObjectParser::defineVertex(objectData, "v -0.5a 0 0.5", 0));
@@ -109,24 +110,43 @@ TEST_CASE("test the definition of an object")
         CHECK_THROWS(ObjectParser::defineVertex(objectData, "v ..5 0 0.5", 0));
     }
 
+    SUBCASE("testing the definition of a texture vertex")
+    {
+        objectData.reset();
+        CHECK_NOTHROW(ObjectParser::defineTextureVertex(objectData, "vt 0 0 ", 0));
+        CHECK_NOTHROW(ObjectParser::defineTextureVertex(objectData, "vt 0.5 0.5 ", 0));
+        CHECK_NOTHROW(ObjectParser::defineTextureVertex(objectData, "vt 1 1 ", 0));
+        CHECK_NOTHROW(ObjectParser::defineTextureVertex(objectData, "vt 1 1 0 ", 0));
+        CHECK_THROWS(ObjectParser::defineTextureVertex(objectData, "vt 0.5", 0));
+        CHECK_THROWS(ObjectParser::defineTextureVertex(objectData, "vt 0.5 0.5 0.5 0.5", 0));
+        CHECK_THROWS(ObjectParser::defineTextureVertex(objectData, "vt -0.5 0.5", 0));
+        CHECK_THROWS(ObjectParser::defineTextureVertex(objectData, "vt 0..5 0.5", 0));
+        CHECK_THROWS(ObjectParser::defineTextureVertex(objectData, "vt 0.5a 0.5", 0));
+    }
+
     SUBCASE("testing the definition of a face")
     {
         objectData.reset();
-        ObjectParser::defineVertex(objectData, "v -0.5 0 0.5 ", 0);
-        ObjectParser::defineVertex(objectData, "v -0.5 0 0.5 ", 0);
-        ObjectParser::defineVertex(objectData, "v -0.5 0 0.5 ", 0);
-        ObjectParser::defineVertex(objectData, "v -0.5 0 0.5 ", 0);
-        ObjectParser::defineVertex(objectData, "v -0.5 0 0.5 ", 0);
-        ObjectParser::defineVertex(objectData, "v -0.5 0 0.5 ", 0);
-        ObjectParser::defineVertex(objectData, "v -0.5 0 0.5 ", 0);
-        CHECK_NOTHROW(ObjectParser::defineFace(objectData, "f 1 2 3", 0));
-        CHECK_NOTHROW(ObjectParser::defineFace(objectData, "f -1 -2 -3", 0));
-        CHECK_NOTHROW(ObjectParser::defineFace(objectData, "f 1 2 3 4 5 6 7", 0));
-        CHECK_THROWS(ObjectParser::defineFace(objectData, "f 1 2", 0));
-        CHECK_THROWS(ObjectParser::defineFace(objectData, "f 1 2 1.5", 0));
-        CHECK_THROWS(ObjectParser::defineFace(objectData, "f 1 2 1a", 0));
-        CHECK_THROWS(ObjectParser::defineFace(objectData, "f 1 2 8", 0));
-        CHECK_THROWS(ObjectParser::defineFace(objectData, "f 1 2 -9", 0));
+        ObjectParser::defineVertex(objectData, "v 0 0 0 ", 0);
+        ObjectParser::defineVertex(objectData, "v 0 1 0", 0);
+        ObjectParser::defineVertex(objectData, "v 1 1 0 ", 0);
+        ObjectParser::defineVertex(objectData, "v 1 0 0 ", 0);
+        ObjectParser::defineTextureVertex(objectData, "vt 0 0 ", 0);
+        ObjectParser::defineTextureVertex(objectData, "vt 0 1", 0);
+        ObjectParser::defineTextureVertex(objectData, "vt 1 1 ", 0);
+        ObjectParser::defineTextureVertex(objectData, "vt 1 0 ", 0);
+        CHECK_NOTHROW(ObjectParser::defineFace(objectData, "f 1/1 2/2 3/3", 0));
+        CHECK_NOTHROW(ObjectParser::defineFace(objectData, "f -1/-1 -2/-2 -3/-3", 0));
+        CHECK_NOTHROW(ObjectParser::defineFace(objectData, "f 1/1 2/2 3/3 4/4", 0));
+        CHECK_THROWS(ObjectParser::defineFace(objectData, "f 1/1 2/2", 0));
+        CHECK_THROWS(ObjectParser::defineFace(objectData, "f 1/1 2/2 3/3 4/4 5/5", 0));
+        CHECK_THROWS(ObjectParser::defineFace(objectData, "f 1/1 2/2 3/3 4/4 -5/-5", 0));
+        CHECK_THROWS(ObjectParser::defineFace(objectData, "f /1/1 2/2 3/3 4/4", 0));
+        CHECK_THROWS(ObjectParser::defineFace(objectData, "f 1//1 2/2 3/3 4/4", 0));
+        CHECK_THROWS(ObjectParser::defineFace(objectData, "f 1/1/ 2/2 3/3 4/4", 0));
+        CHECK_THROWS(ObjectParser::defineFace(objectData, "f 1/1 / 2/2 3/3 4/4", 0));
+        CHECK_THROWS(ObjectParser::defineFace(objectData, "f 1/1 / 2/2 3/3 4/4a", 0));
+        CHECK_THROWS(ObjectParser::defineFace(objectData, "f 1/1 / 2/2 3/3 4/3.5", 0));
     }
 
     SUBCASE("testing the definition of smooth shading")
@@ -146,7 +166,7 @@ TEST_CASE("test the definition of an object")
     SUBCASE("testing the usage of a mtllib")
     {
         objectData.reset();
-        CHECK_NOTHROW(ObjectParser::saveNewMTL(objectData, "mtllib srcs_test/ressources/material.mtl", 0));
+        CHECK_NOTHROW(ObjectParser::saveNewMTL(objectData, "mtllib srcs_bonus/tester/ressources/material.mtl", 0));
         CHECK(ObjectParser::materials.size() == 2);
         CHECK(ObjectParser::materials[0].getName() == "Material");
         CHECK(ObjectParser::materials[1].getName() == "Material2");
@@ -157,7 +177,7 @@ TEST_CASE("test the definition of an object")
     SUBCASE("testing the definition of a material")
     {
         objectData.reset();
-        ObjectParser::saveNewMTL(objectData, "objectData,mtllib srcs_test/ressources/material.mtl", 0);
+        ObjectParser::saveNewMTL(objectData, "objectData,mtllib srcs_bonus/tester/ressources/material.mtl", 0);
         CHECK_NOTHROW(ObjectParser::defineMTL(objectData, "usemtl Material", 0));
         CHECK_NOTHROW(ObjectParser::defineMTL(objectData, "usemtl Material2", 0));
         CHECK_THROWS(ObjectParser::defineMTL(objectData, "usemtl ", 0));
@@ -170,8 +190,8 @@ TEST_CASE("test the definition of a material")
 {
     SUBCASE("testing the parsing of a file with an invalid extension")
     {
-        CHECK_NOTHROW(MaterialParser::parseMaterialFile("srcs_test/ressources/material.mtl"));
-        CHECK_NOTHROW(MaterialParser::parseMaterialFile("srcs_test/ressources/..mtl"));
+        CHECK_NOTHROW(MaterialParser::parseMaterialFile("srcs_bonus/tester/ressources/material.mtl"));
+        CHECK_NOTHROW(MaterialParser::parseMaterialFile("srcs_bonus/tester/ressources/..mtl"));
         CHECK_THROWS(MaterialParser::parseMaterialFile("materialWrongExtension..mtla"));
         CHECK_THROWS(MaterialParser::parseMaterialFile("materialWrongExtension.m"));
         CHECK_THROWS(MaterialParser::parseMaterialFile("materialWrongExtension.mt"));
@@ -182,8 +202,8 @@ TEST_CASE("test the definition of a material")
 
     SUBCASE("testing the parsing of a file with an invalid symbol")
     {
-        CHECK_NOTHROW(MaterialParser::parseMaterialFile("srcs_test/ressources/material.mtl"));
-        CHECK_THROWS(MaterialParser::parseMaterialFile("srcs_test/ressources/materialWronSymbol.mtl"));
+        CHECK_NOTHROW(MaterialParser::parseMaterialFile("srcs/tester/ressources/material.mtl"));
+        CHECK_THROWS(MaterialParser::parseMaterialFile("srcs/tester/ressources/materialWronSymbol.mtl"));
     }
 
     MaterialData materialData;

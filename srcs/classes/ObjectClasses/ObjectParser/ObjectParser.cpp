@@ -81,6 +81,9 @@ void ObjectParser::defineVertex(ObjectData &objectData, const std::string &line,
     if (words.size() == 4)
         vertex.push_back(1.0f);
 
+    if (vertex[3] == 0.0f)
+        throw(Exception("DEFINE_VERTEX", "INVALID_ARGUMENT", line, lineIndex));
+
     for (size_t i = 0; i < 3; i++)
         vertex[i] = vertex[i] / vertex[3];
 
@@ -103,7 +106,7 @@ void ObjectParser::defineFace(ObjectData &objectData, const std::string &line, u
         if (!Utils::isInt(words[i]))
             throw(Exception("DEFINE_FACE", "INVALID_ARGUMENT", line, lineIndex));
         vertexID = std::stoi(words[i]);
-        if (vertexID < -(nbVertices + 1) || vertexID > nbVertices || vertexID == 0)
+        if (vertexID < -nbVertices || vertexID > nbVertices || vertexID == 0)
             throw(Exception("DEFINE_FACE", "INVALID_VERTEX_INDEX", line, lineIndex));
 
         if (vertexID < 0)
