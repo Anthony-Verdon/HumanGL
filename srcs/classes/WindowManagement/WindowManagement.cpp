@@ -213,6 +213,10 @@ void WindowManagement::updateTexture()
     }
 }
 
+/*
+    glBindVertexArray: tell which VAO we want to use
+    glDrawElements: take informations from the actual VAO to draw elements
+*/
 void WindowManagement::renderObject(const Object &object, const Texture &texture, const Shader &shader)
 {
     updateShader(object, texture, shader);

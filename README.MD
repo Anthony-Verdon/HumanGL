@@ -1,7 +1,6 @@
 # scop
 
 ## keys
-
 | key | action |
 | --- | ------ |
 | ESC | close the window |
@@ -45,3 +44,8 @@ smooth shading can be declared but won't be take into account
 | illum | illumination model | illum [integer value 0-10]
 
 only Ka is take into account to define the color if the texture isn't display
+
+## useful links
+
+openGL documentation: https://docs.gl/
+the tutorial I followed for this project: https://learnopengl.com/

@@ -1,20 +1,18 @@
+//vertex shader (.vs): for the vertex position
+//layout: get the variable at a specific location in a certain type
+//uniform: global variables, allow to pass data to the GPU for the shaders
+
 #version 330 core
-layout (location = 0) in vec3 aPos;
+layout (location = 0) in vec4 aPos;
 
 uniform mat4 rotation;
 uniform mat4 view;
 uniform mat4 projection;
-uniform vec3 aColor;
-uniform float aMixValue;
+
 out vec2 texCoord;
-out vec3 color;
-out float mixValue;
 
 void main()
 {
-    gl_Position = projection * view * rotation * vec4(aPos, 1.0);
+    gl_Position = projection * view * rotation * aPos;
     texCoord = vec2(aPos.x, aPos.y);
-    color = aColor;
-    mixValue = aMixValue;
-
 }

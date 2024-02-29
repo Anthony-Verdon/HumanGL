@@ -48,6 +48,18 @@ unsigned int Object::getVAO() const
     return (VAO);
 }
 
+/*
+    VAO = Vertex Array Object, store the VBO and how the VBO is configurated
+    VBO = Vertex Buffer Object, contains all the vertices of an object
+    EBO = Element Buffer Object, allow to store once each vertex and define element with their index
+
+    glGen* : generate what is asked
+    glBind* : bind the element to tell which one is used for each Buffer, 0 = reinitialized
+    glBufferData : store informations into the corresponding buffer
+    glVertexAttribPointer : how the VBO is configured
+    if a VBO is bind after a VAO, it's stored in the VAO
+
+*/
 void Object::initVAO()
 {
     glGenVertexArrays(1, &VAO);
