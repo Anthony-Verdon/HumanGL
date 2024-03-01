@@ -47,5 +47,5 @@ only Ka is take into account to define the color if the texture isn't display
 
 ## useful links
 
-openGL documentation: https://docs.gl/
+openGL documentation: https://docs.gl/   
 the tutorial I followed for this project: https://learnopengl.com/
