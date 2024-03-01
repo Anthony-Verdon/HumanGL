@@ -35,7 +35,7 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void mouse_callback(GLFWwindow *window, double xPos, double yPos);
 void scroll_callback(GLFWwindow *window, double xOffset, double yOffset);
 
-class WindowManagement : public data
+class WindowManagement : public s_data
 {
   private:
     GLFWwindow *window;
