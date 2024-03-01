@@ -20,6 +20,8 @@ class ObjectData
     std::string getName() const;
     std::vector<Vertex> getVertices() const;
     std::unique_ptr<float[]> getVerticesIntoArray() const;
+    std::vector<Vertex> getCombinedVertices() const;
+    std::unique_ptr<float[]> getCombinedVerticesIntoArray() const;
     std::vector<Face> getFaces() const;
     std::unique_ptr<unsigned int[]> getFacesIntoArray() const;
     bool getSmoothShading() const;
@@ -29,6 +31,7 @@ class ObjectData
     void reset();
     void setName(const std::string &name);
     void setVertices(const std::vector<Vertex> &vertices);
+    void setCombinedVertices(const std::vector<Vertex> &vertices);
     void setFaces(const std::vector<Face> &faces);
     void setSmoothShading(bool smoothShading);
     void setMaterial(const Material &material);
@@ -36,9 +39,13 @@ class ObjectData
     void addVertex(const Vertex &vertex);
     void addFace(const Face &face);
 
+    void generateFacesColor();
+    int CombineVertexWithColor(size_t vertexIndex, float color);
+
   protected:
     std::optional<std::string> name;
     std::vector<Vertex> vertices;
+    std::vector<Vertex> combinedVertices;
     std::vector<Face> faces;
     bool smoothShading;
     std::optional<Material> material;

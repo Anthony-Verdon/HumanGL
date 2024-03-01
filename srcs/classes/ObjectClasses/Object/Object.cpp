@@ -5,6 +5,7 @@ Object::Object(const ObjectData &data)
 {
     name = data.getName();
     vertices = data.getVertices();
+    combinedVertices = data.getCombinedVertices();
     faces = data.getFaces();
     smoothShading = data.getSmoothShading();
     material = data.getMaterial();
@@ -35,6 +36,7 @@ Object::~Object()
     if (VAOInit)
     {
         glDeleteVertexArrays(1, &VAO);
+        glDeleteBuffers(1, &VBO);
         glDeleteBuffers(1, &EBO);
     }
 }
@@ -62,6 +64,8 @@ unsigned int Object::getVAO() const
 */
 void Object::initVAO()
 {
+    generateFacesColor();
+
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
@@ -73,14 +77,16 @@ void Object::initVAO()
     std::unique_ptr<float[]> verticesArray;
     std::unique_ptr<unsigned int[]> facesArray;
 
-    verticesArray = getVerticesIntoArray();
+    verticesArray = getCombinedVerticesIntoArray();
     facesArray = getFacesIntoArray();
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size() * 4, &verticesArray[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * combinedVertices.size() * 7, &verticesArray[0], GL_STATIC_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * faces.size() * 3, &facesArray[0], GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void *)(4 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);

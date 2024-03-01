@@ -1,5 +1,6 @@
 #include "ObjectData.hpp"
-
+#include <algorithm>
+#include <ctime>
 ObjectData::ObjectData()
 {
     reset();
@@ -28,6 +29,27 @@ std::unique_ptr<float[]> ObjectData::getVerticesIntoArray() const
         array[j + 2] = vertices[i][2];
         array[j + 3] = vertices[i][3];
         j += 4;
+    }
+    return (array);
+}
+
+std::vector<std::vector<float>> ObjectData::getCombinedVertices() const
+{
+    return (combinedVertices);
+}
+
+std::unique_ptr<float[]> ObjectData::getCombinedVerticesIntoArray() const
+{
+    size_t j;
+    std::unique_ptr<float[]> array;
+
+    j = 0;
+    array = std::make_unique<float[]>(combinedVertices.size() * 7);
+    for (size_t i = 0; i < combinedVertices.size(); i++)
+    {
+        for (int k = 0; k < 7; k++)
+            array[j + k] = combinedVertices[i][k];
+        j += 7;
     }
     return (array);
 }
@@ -118,4 +140,39 @@ void ObjectData::addVertex(const Vertex &vertex)
 void ObjectData::addFace(const Face &face)
 {
     faces.push_back(face);
+}
+
+void ObjectData::generateFacesColor()
+{
+    srand(time(NULL));
+
+    std::vector<Face> newFaces;
+    for (size_t i = 0; i < faces.size(); i++)
+    {
+        float randomColor = static_cast<float>(rand() % 10000) / 10000;
+        Face newFace;
+
+        for (int j = 0; j < 3; j++)
+            newFace.push_back(CombineVertexWithColor(faces[i][j], randomColor));
+        newFaces.push_back(newFace);
+    }
+    faces = newFaces;
+}
+
+int ObjectData::CombineVertexWithColor(size_t vertexIndex, float color)
+{
+    Vertex combinedVertex;
+
+    for (size_t j = 0; j < 4; j++)
+        combinedVertex.push_back((vertices[vertexIndex][j]));
+    for (size_t j = 0; j < 3; j++)
+        combinedVertex.push_back(color);
+
+    auto it = std::find(combinedVertices.begin(), combinedVertices.end(), combinedVertex);
+    if (it == combinedVertices.end())
+    {
+        combinedVertices.push_back(combinedVertex);
+        return (combinedVertices.size() - 1);
+    }
+    return (std::distance(combinedVertices.begin(), it));
 }
