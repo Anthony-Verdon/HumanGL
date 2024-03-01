@@ -111,12 +111,12 @@ void ObjectParser::defineFace(ObjectData &objectData, const std::string &line, u
 
         if (vertexID < 0)
             vertexID = nbVertices + 1 + vertexID;
-        face.push_back(vertexID - 1);
+        face.push_back(CombineVertices(objectData, vertexID));
     }
     triangulate(objectData, face);
 }
 
-size_t ObjectParser::combinedVertices(ObjectData &objectData, size_t vertexIndex)
+size_t ObjectParser::CombineVertices(ObjectData &objectData, size_t vertexIndex)
 {
     Vertex vertex = objectData.getVertices()[vertexIndex - 1];
     Vertex combinedVertex;
@@ -131,6 +131,7 @@ size_t ObjectParser::combinedVertices(ObjectData &objectData, size_t vertexIndex
     auto it = std::find(combinedVertices.begin(), combinedVertices.end(), combinedVertex);
     if (it == combinedVertices.end())
         objectData.addCombinedVertex(combinedVertex);
+
     return (std::distance(combinedVertices.begin(), it));
 }
 
@@ -140,14 +141,14 @@ void ObjectParser::triangulate(ObjectData &objectData, Face &face)
     {
         for (size_t i = 1; i < face.size() - 1; i++)
         {
-            Vertex a = objectData.getVertices()[face[i]];
-            Vertex b = objectData.getVertices()[face[i - 1]];
-            Vertex c = objectData.getVertices()[face[i + 1]];
+            Vertex a = objectData.getCombinedVertices()[face[i]];
+            Vertex b = objectData.getCombinedVertices()[face[i - 1]];
+            Vertex c = objectData.getCombinedVertices()[face[i + 1]];
 
             bool isEar = true;
-            for (size_t j = 0; j < objectData.getVertices().size(); j++)
+            for (size_t j = 0; j < objectData.getCombinedVertices().size(); j++)
             {
-                Vertex p = objectData.getVertices()[j];
+                Vertex p = objectData.getCombinedVertices()[j];
                 if (p == a || p == b || p == c)
                     continue;
                 if (insideTriangle(p, a, b, c))

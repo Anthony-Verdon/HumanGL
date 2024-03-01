@@ -14,7 +14,7 @@ class ObjectParser
     static float triangleArea(const Vertex &a, const Vertex &b, const Vertex &c);
     static bool insideTriangle(const Vertex &p, const Vertex &a, const Vertex &b, const Vertex &c);
     static void triangulate(ObjectData &objectData, Face &face);
-    static size_t combinedVertices(ObjectData &objectData, size_t vertexIndex);
+    static size_t CombineVertices(ObjectData &objectData, size_t vertexIndex);
 
     static void defineName(ObjectData &objectData, const std::string &line, unsigned int lineIndex);
 

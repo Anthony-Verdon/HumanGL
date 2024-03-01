@@ -19,7 +19,7 @@ class ObjectParser
   private:
     static size_t CalculateVertexIndex(ObjectData &objectData, const std::string &vertex, e_vertexType vertexType,
                                        const std::string &line, unsigned int lineIndex);
-    static size_t CombineVertex(ObjectData &objectData, size_t vertexIndex, size_t textureVertexIndex);
+    static size_t CombineVertices(ObjectData &objectData, size_t vertexIndex, size_t textureVertexIndex);
 
     static float triangleArea(const Vertex &a, const Vertex &b, const Vertex &c);
     static bool insideTriangle(const Vertex &p, const Vertex &a, const Vertex &b, const Vertex &c);

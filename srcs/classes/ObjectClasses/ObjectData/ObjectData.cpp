@@ -20,12 +20,12 @@ std::unique_ptr<float[]> ObjectData::getVerticesIntoArray() const
     std::unique_ptr<float[]> array;
 
     j = 0;
-    array = std::make_unique<float[]>(vertices.size() * 7);
+    array = std::make_unique<float[]>(vertices.size() * 4);
     for (size_t i = 0; i < vertices.size(); i++)
     {
-        for (int k = 0; k < 7; k++)
+        for (int k = 0; k < 4; k++)
             array[j + k] = vertices[i][k];
-        j += 7;
+        j += 4;
     }
     return (array);
 }

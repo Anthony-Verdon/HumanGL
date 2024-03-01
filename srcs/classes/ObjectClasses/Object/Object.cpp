@@ -7,6 +7,7 @@ Object::Object(const ObjectData &data)
 {
     name = data.getName();
     vertices = data.getVertices();
+    combinedVertices = data.getCombinedVertices();
     faces = data.getFaces();
     smoothShading = data.getSmoothShading();
     material = data.getMaterial();
@@ -23,6 +24,7 @@ Object &Object::operator=(const Object &copy)
     if (&copy != this)
     {
         vertices = copy.getVertices();
+        combinedVertices = copy.getCombinedVertices();
         faces = copy.getFaces();
         name = copy.getName();
         smoothShading = copy.getSmoothShading();
@@ -56,13 +58,6 @@ Object::~Object()
 */
 void Object::initVAO()
 {
-    for (size_t i = 0; i < vertices.size(); i++)
-    {
-        float randomValue = static_cast<float>(rand() % 10000) / 10000;
-        vertices[i].push_back(randomValue);
-        vertices[i].push_back(randomValue);
-        vertices[i].push_back(randomValue);
-    }
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
@@ -71,10 +66,10 @@ void Object::initVAO()
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
-    std::unique_ptr<float[]> verticesArray = getVerticesIntoArray();
+    std::unique_ptr<float[]> verticesArray = getCombinedVerticesIntoArray();
     std::unique_ptr<unsigned int[]> facesArray = getFacesIntoArray();
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size() * 7, &verticesArray[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * combinedVertices.size() * 7, &verticesArray[0], GL_STATIC_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * faces.size() * 3, &facesArray[0], GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void *)0);
