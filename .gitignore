@@ -1,5 +1,3 @@
-scop
-scop_test
-scop_bonus
-scop_test_bonus
+scop*
 *.o
+.vscode
