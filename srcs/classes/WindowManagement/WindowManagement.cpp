@@ -219,19 +219,17 @@ void WindowManagement::updateTexture()
 */
 void WindowManagement::renderObject(const Object &object, const Texture &texture, const Shader &shader)
 {
-    updateShader(object, texture, shader);
+    updateShader(texture, shader);
     glBindVertexArray(object.getVAO());
     glDrawElements(GL_TRIANGLES, object.getFaces().size() * 3, GL_UNSIGNED_INT, 0);
 }
 
-void WindowManagement::updateShader(const Object &object, const Texture &texture, const Shader &shader)
+void WindowManagement::updateShader(const Texture &texture, const Shader &shader)
 {
     shader.use();
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture.getID());
     shader.setInt("texture1", 0);
-    std::array<float, 3> color = object.getMaterial().getColor(AMBIANT_COLOR);
-    shader.setVec3("aColor", color[0], color[1], color[2]);
     shader.setFloat("aMixValue", mixedValue);
 
     sceneRotation[X_AXIS] += inputRotation[X_AXIS] * Time::getDeltaTime();

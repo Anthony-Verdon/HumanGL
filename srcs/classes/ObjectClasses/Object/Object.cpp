@@ -39,7 +39,7 @@ Object::~Object()
     if (VAOInit)
     {
         glDeleteVertexArrays(1, &VAO);
-        glGenBuffers(1, &VBO);
+        glDeleteBuffers(1, &VBO);
         glDeleteBuffers(1, &EBO);
     }
 }
@@ -58,6 +58,8 @@ Object::~Object()
 */
 void Object::initVAO()
 {
+    generateFacesColor();
+
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);

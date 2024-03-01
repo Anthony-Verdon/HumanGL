@@ -60,7 +60,7 @@ class WindowManagement : public s_data
     void updateCameraView();
     void updateTexture();
     void renderObject(const Object &object, const Texture &texture, const Shader &shader);
-    void updateShader(const Object &object, const Texture &texture, const Shader &shader);
+    void updateShader(const Texture &texture, const Shader &shader);
 
   public:
     WindowManagement(const std::vector<Object> &objects);

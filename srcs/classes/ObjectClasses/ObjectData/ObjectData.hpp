@@ -37,8 +37,10 @@ class ObjectData
     void setMaterial(const Material &material);
 
     void addVertex(const Vertex &vertex);
-    void addCombinedVertex(const Vertex &vertex);
     void addFace(const Face &face);
+
+    void generateFacesColor();
+    int CombineVertexWithColor(size_t vertexIndex, float color);
 
   protected:
     std::optional<std::string> name;

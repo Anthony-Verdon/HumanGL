@@ -1,5 +1,6 @@
 #include "ObjectData.hpp"
-
+#include <algorithm>
+#include <ctime>
 ObjectData::ObjectData()
 {
     reset();
@@ -134,11 +135,42 @@ void ObjectData::addVertex(const Vertex &vertex)
     vertices.push_back(vertex);
 }
 
-void ObjectData::addCombinedVertex(const Vertex &vertex)
-{
-    combinedVertices.push_back(vertex);
-}
 void ObjectData::addFace(const Face &face)
 {
     faces.push_back(face);
+}
+
+void ObjectData::generateFacesColor()
+{
+    srand(time(NULL));
+
+    std::vector<Face> newFaces;
+    for (size_t i = 0; i < faces.size(); i++)
+    {
+        float randomColor = static_cast<float>(rand() % 10000) / 10000;
+        Face newFace;
+
+        for (int j = 0; j < 3; j++)
+            newFace.push_back(CombineVertexWithColor(faces[i][j], randomColor));
+        newFaces.push_back(newFace);
+    }
+    faces = newFaces;
+}
+
+int ObjectData::CombineVertexWithColor(size_t vertexIndex, float color)
+{
+    Vertex combinedVertex;
+
+    for (size_t j = 0; j < 4; j++)
+        combinedVertex.push_back((vertices[vertexIndex][j]));
+    for (size_t j = 0; j < 3; j++)
+        combinedVertex.push_back(color);
+
+    auto it = std::find(combinedVertices.begin(), combinedVertices.end(), combinedVertex);
+    if (it == combinedVertices.end())
+    {
+        combinedVertices.push_back(combinedVertex);
+        return (combinedVertices.size() - 1);
+    }
+    return (std::distance(combinedVertices.begin(), it));
 }
