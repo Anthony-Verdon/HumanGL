@@ -1,10 +1,10 @@
 #include "ObjectParser.hpp"
 #include "../../MaterialClasses/MaterialParser/MaterialParser.hpp"
 #include "../../Utils/Utils.hpp"
+#include <algorithm>
 #include <cmath>
 #include <string>
 #include <vector>
-
 MapObjectParsingMethods ObjectParser::parsingMethods = {{"v", &ObjectParser::defineVertex},
                                                         {"f", &ObjectParser::defineFace},
                                                         {"s", &ObjectParser::defineSmoothShading},
@@ -114,6 +114,24 @@ void ObjectParser::defineFace(ObjectData &objectData, const std::string &line, u
         face.push_back(vertexID - 1);
     }
     triangulate(objectData, face);
+}
+
+size_t ObjectParser::combinedVertices(ObjectData &objectData, size_t vertexIndex)
+{
+    Vertex vertex = objectData.getVertices()[vertexIndex - 1];
+    Vertex combinedVertex;
+
+    for (size_t i = 0; i < 4; i++)
+        combinedVertex.push_back((vertex[i]));
+    float randomColor = static_cast<float>(rand() % 10000) / 10000;
+    for (size_t i = 0; i < 3; i++)
+        combinedVertex.push_back(randomColor);
+
+    std::vector<Vertex> combinedVertices = objectData.getCombinedVertices();
+    auto it = std::find(combinedVertices.begin(), combinedVertices.end(), combinedVertex);
+    if (it == combinedVertices.end())
+        objectData.addCombinedVertex(combinedVertex);
+    return (std::distance(combinedVertices.begin(), it));
 }
 
 void ObjectParser::triangulate(ObjectData &objectData, Face &face)

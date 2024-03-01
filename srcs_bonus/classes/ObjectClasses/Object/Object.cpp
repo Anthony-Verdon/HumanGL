@@ -63,11 +63,8 @@ void Object::initVAO()
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
-    std::unique_ptr<float[]> verticesArray;
-    std::unique_ptr<unsigned int[]> facesArray;
-
-    verticesArray = getCombinedVerticesIntoArray();
-    facesArray = getFacesIntoArray();
+    std::unique_ptr<float[]> verticesArray = getCombinedVerticesIntoArray();
+    std::unique_ptr<unsigned int[]> facesArray = getFacesIntoArray();
 
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * combinedVertices.size() * 7, &verticesArray[0], GL_STATIC_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * faces.size() * 3, &facesArray[0], GL_STATIC_DRAW);

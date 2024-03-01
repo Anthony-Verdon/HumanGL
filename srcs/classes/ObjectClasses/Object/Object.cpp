@@ -1,5 +1,7 @@
 #include "Object.hpp"
 #include "../../../../libs/glad/glad.h"
+#include <cstdlib>
+#include <ctime>
 
 Object::Object(const ObjectData &data)
 {
@@ -35,17 +37,9 @@ Object::~Object()
     if (VAOInit)
     {
         glDeleteVertexArrays(1, &VAO);
+        glGenBuffers(1, &VBO);
         glDeleteBuffers(1, &EBO);
     }
-}
-
-bool Object::isVAOInit() const
-{
-    return (VAOInit);
-}
-unsigned int Object::getVAO() const
-{
-    return (VAO);
 }
 
 /*
@@ -62,6 +56,13 @@ unsigned int Object::getVAO() const
 */
 void Object::initVAO()
 {
+    for (size_t i = 0; i < vertices.size(); i++)
+    {
+        float randomValue = static_cast<float>(rand() % 10000) / 10000;
+        vertices[i].push_back(randomValue);
+        vertices[i].push_back(randomValue);
+        vertices[i].push_back(randomValue);
+    }
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
@@ -70,22 +71,30 @@ void Object::initVAO()
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
-    std::unique_ptr<float[]> verticesArray;
-    std::unique_ptr<unsigned int[]> facesArray;
+    std::unique_ptr<float[]> verticesArray = getVerticesIntoArray();
+    std::unique_ptr<unsigned int[]> facesArray = getFacesIntoArray();
 
-    verticesArray = getVerticesIntoArray();
-    facesArray = getFacesIntoArray();
-
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size() * 4, &verticesArray[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size() * 7, &verticesArray[0], GL_STATIC_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * faces.size() * 3, &facesArray[0], GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void *)(4 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     VAOInit = true;
+}
+
+bool Object::isVAOInit() const
+{
+    return (VAOInit);
+}
+unsigned int Object::getVAO() const
+{
+    return (VAO);
 }
 
 std::ostream &operator<<(std::ostream &os, const Object &instance)

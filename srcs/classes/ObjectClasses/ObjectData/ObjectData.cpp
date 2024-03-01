@@ -20,14 +20,33 @@ std::unique_ptr<float[]> ObjectData::getVerticesIntoArray() const
     std::unique_ptr<float[]> array;
 
     j = 0;
-    array = std::make_unique<float[]>(vertices.size() * 4);
+    array = std::make_unique<float[]>(vertices.size() * 7);
     for (size_t i = 0; i < vertices.size(); i++)
     {
-        array[j] = vertices[i][0];
-        array[j + 1] = vertices[i][1];
-        array[j + 2] = vertices[i][2];
-        array[j + 3] = vertices[i][3];
-        j += 4;
+        for (int k = 0; k < 7; k++)
+            array[j + k] = vertices[i][k];
+        j += 7;
+    }
+    return (array);
+}
+
+std::vector<std::vector<float>> ObjectData::getCombinedVertices() const
+{
+    return (combinedVertices);
+}
+
+std::unique_ptr<float[]> ObjectData::getCombinedVerticesIntoArray() const
+{
+    size_t j;
+    std::unique_ptr<float[]> array;
+
+    j = 0;
+    array = std::make_unique<float[]>(combinedVertices.size() * 7);
+    for (size_t i = 0; i < combinedVertices.size(); i++)
+    {
+        for (int k = 0; k < 7; k++)
+            array[j + k] = combinedVertices[i][k];
+        j += 7;
     }
     return (array);
 }
@@ -115,6 +134,10 @@ void ObjectData::addVertex(const Vertex &vertex)
     vertices.push_back(vertex);
 }
 
+void ObjectData::addCombinedVertex(const Vertex &vertex)
+{
+    combinedVertices.push_back(vertex);
+}
 void ObjectData::addFace(const Face &face)
 {
     faces.push_back(face);
