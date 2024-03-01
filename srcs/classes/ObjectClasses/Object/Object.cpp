@@ -58,6 +58,7 @@ Object::~Object()
 */
 void Object::initVAO()
 {
+    centerObject();
     generateFacesColor();
 
     glGenVertexArrays(1, &VAO);

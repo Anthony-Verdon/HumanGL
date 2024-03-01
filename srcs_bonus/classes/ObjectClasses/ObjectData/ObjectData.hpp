@@ -44,8 +44,10 @@ class ObjectData
     void addCombinedVertex(const Vertex &vertex);
     void addFace(const Face &face);
 
-    void generateFacesColor();
+    void GenerateFacesColor();
     int CombineVertexWithColor(size_t vertexIndex, float color);
+
+    void centerObject();
 
   protected:
     std::optional<std::string> name;

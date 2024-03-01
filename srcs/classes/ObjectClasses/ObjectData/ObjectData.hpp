@@ -42,6 +42,8 @@ class ObjectData
     void generateFacesColor();
     int CombineVertexWithColor(size_t vertexIndex, float color);
 
+    void centerObject();
+
   protected:
     std::optional<std::string> name;
     std::vector<Vertex> vertices;

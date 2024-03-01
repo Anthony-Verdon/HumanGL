@@ -174,3 +174,16 @@ int ObjectData::CombineVertexWithColor(size_t vertexIndex, float color)
     }
     return (std::distance(combinedVertices.begin(), it));
 }
+
+void ObjectData::centerObject()
+{
+    for (int j = 0; j < 3; j++)
+    {
+        float center = 0;
+        for (size_t i = 0; i < vertices.size(); i++)
+            center += vertices[i][j];
+        center = center / vertices.size();
+        for (size_t i = 0; i < vertices.size(); i++)
+            vertices[i][j] -= center;
+    }
+}
