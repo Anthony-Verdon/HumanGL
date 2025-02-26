@@ -36,6 +36,7 @@ class ObjectParser
     static MapObjectParsingMethods parsingMethods;
 
     static std::vector<Material> materials;
+    static std::string currentObjPath;
 
     class Exception : public std::exception
     {

@@ -12,12 +12,14 @@ MapObjectParsingMethods ObjectParser::parsingMethods = {
     {"vn", &ObjectParser::defineNormalVertex}};
 
 std::vector<Material> ObjectParser::materials;
+std::string ObjectParser::currentObjPath = "";
 
 std::vector<Object> ObjectParser::parseObjectFile(const std::string &path)
 {
     if (!Utils::checkExtension(path, ".obj"))
         throw(Exception("PARSE_OBJECT_FILE", "INVALID_EXTENSION", path, 0));
 
+    currentObjPath = path;
     ObjectData objectData;
     std::vector<Object> objects;
     std::stringstream fileStream = Utils::readFile(path);
@@ -301,7 +303,9 @@ void ObjectParser::saveNewMTL(ObjectData &objectData, const std::string &line, u
     if (words.size() != 2)
         throw(Exception("CREATE_NEW_MTL", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
-    std::vector<Material> newMaterials = MaterialParser::parseMaterialFile(words[1]);
+    std::string path = currentObjPath;
+    path.resize(currentObjPath.find_last_of('/'));
+    std::vector<Material> newMaterials = MaterialParser::parseMaterialFile(path + "/" + words[1]);
     materials.insert(materials.end(), newMaterials.begin(), newMaterials.end());
 }
 
