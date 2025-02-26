@@ -1,6 +1,5 @@
 #include "ObjectData.hpp"
 #include <algorithm>
-#include <climits>
 
 ObjectData::ObjectData()
 {
@@ -117,9 +116,9 @@ Material ObjectData::getMaterial() const
         return (Material());
     }
 }
-bool ObjectData::getSmoothShading() const
+unsigned int ObjectData::getSmoothShadingGroup() const
 {
-    return (smoothShading);
+    return (smoothShadingGroup);
 }
 
 void ObjectData::reset()
@@ -129,7 +128,7 @@ void ObjectData::reset()
     textureVertices.clear();
     combinedVertices.clear();
     faces.clear();
-    smoothShading = false;
+    smoothShadingGroup = 0;
     material.reset();
 }
 
@@ -157,9 +156,9 @@ void ObjectData::setFaces(const std::vector<Face> &faces)
     this->faces = faces;
 }
 
-void ObjectData::setSmoothShading(bool smoothShading)
+void ObjectData::setSmoothShadingGroup(unsigned int smoothShadingGroup)
 {
-    this->smoothShading = smoothShading;
+    this->smoothShadingGroup = smoothShadingGroup;
 }
 
 void ObjectData::setMaterial(const Material &material)

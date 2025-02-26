@@ -8,7 +8,7 @@ Object::Object(const ObjectData &data)
     textureVertices = data.getTextureVertices();
     combinedVertices = data.getCombinedVertices();
     faces = data.getFaces();
-    smoothShading = data.getSmoothShading();
+    smoothShadingGroup = data.getSmoothShadingGroup();
     material = data.getMaterial();
     VAOInit = false;
 }
@@ -27,7 +27,7 @@ Object &Object::operator=(const Object &copy)
         combinedVertices = copy.getCombinedVertices();
         faces = copy.getFaces();
         name = copy.getName();
-        smoothShading = copy.getSmoothShading();
+        smoothShadingGroup = copy.getSmoothShadingGroup();
         material = copy.getMaterial();
         VAOInit = false;
     }
@@ -88,7 +88,7 @@ void Object::initVAO()
 std::ostream &operator<<(std::ostream &os, const Object &instance)
 {
     os << "name: " << instance.getName() << std::endl;
-    os << "smooth shading: " << instance.getSmoothShading() << std::endl;
+    os << "smooth shading: " << instance.getSmoothShadingGroup() << std::endl;
     std::vector<Vertex> objectVertices = instance.getCombinedVertices();
     os << "vertices: " << std::endl;
     for (size_t i = 0; i < objectVertices.size(); i++)

@@ -286,12 +286,13 @@ void ObjectParser::defineSmoothShading(ObjectData &objectData, const std::string
     if (words.size() != 2)
         throw(Exception("DEFINE_SMOOTH_SHADING", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
-    if (words[1] == "on" || words[1] == "1")
-        objectData.setSmoothShading(true);
-    else if (words[1] == "off" || words[1] == "0")
-        objectData.setSmoothShading(false);
+    if (words[1] == "off")
+        objectData.setSmoothShadingGroup(0);
+    else if (words[1].find_first_not_of("0123456789") == std::string::npos) // only numbers
+    objectData.setSmoothShadingGroup(std::stoi(words[1]));
+
     else
-        ;//throw(Exception("DEFINE_SMOOTH_SHADING", "INVALID_ARGUMENT", line, lineIndex));
+        throw(Exception("DEFINE_SMOOTH_SHADING", "INVALID_ARGUMENT", line, lineIndex));
 }
 
 void ObjectParser::saveNewMTL(ObjectData &objectData, const std::string &line, unsigned int lineIndex)
