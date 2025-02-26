@@ -55,7 +55,6 @@ unsigned int Object::getVAO() const
 
 void Object::initVAO()
 {
-    GenerateFacesColor();
     centerObject();
 
     glGenVertexArrays(1, &VAO);

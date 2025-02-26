@@ -191,6 +191,8 @@ size_t ObjectParser::CombineVertices(ObjectData &objectData, size_t vertexIndex,
         combinedVertex.push_back((vertex[i]));
     for (size_t i = 0; i < 3; i++)
         combinedVertex.push_back((textureVertex[i]));
+    for (size_t i = 0; i < 3; i++)
+        combinedVertex.push_back(objectData.getMaterial().getColor(2)[i]);
 
     std::vector<Vertex> combinedVertices = objectData.getCombinedVertices();
     auto it = std::find(combinedVertices.begin(), combinedVertices.end(), combinedVertex);
