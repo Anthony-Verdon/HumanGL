@@ -309,8 +309,7 @@ void ObjectParser::saveNewMTL(ObjectData &objectData, const std::string &line)
     if (words.size() != 2)
         throw(Exception("CREATE_NEW_MTL", "INVALID_NUMBER_OF_ARGUMENTS", line));
 
-    std::string path = currentObjPath;
-    path.resize(currentObjPath.find_last_of('/'));
+    std::string path = currentObjPath.substr(0, currentObjPath.find_last_of('/'));
     std::vector<Material> newMaterials = MaterialParser::parseMaterialFile(path + "/" + words[1]);
     materials.insert(materials.end(), newMaterials.begin(), newMaterials.end());
 }
