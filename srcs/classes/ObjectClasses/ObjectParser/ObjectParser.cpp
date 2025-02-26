@@ -56,6 +56,7 @@ std::vector<Object> ObjectParser::parseObjectFile(const std::string &path)
         Object newObject(objectData);
         objects.push_back(newObject);
     }
+
     return (objects);
 }
 
@@ -206,6 +207,24 @@ size_t ObjectParser::CombineVertices(ObjectData &objectData, size_t vertexIndex,
 
 void ObjectParser::triangulate(ObjectData &objectData, Face &face)
 {
+    if (face.size() == 4)
+    {
+        {
+            Face newFace;
+            newFace.push_back(face[0]);
+            newFace.push_back(face[1]);
+            newFace.push_back(face[3]);
+            objectData.addFace(newFace);
+        }
+        {
+            Face newFace;
+            newFace.push_back(face[1]);
+            newFace.push_back(face[2]);
+            newFace.push_back(face[3]);
+            objectData.addFace(newFace);
+        }
+        return;
+    }
     while (face.size() > 3)
     {
         for (size_t i = 1; i < face.size() - 1; i++)
