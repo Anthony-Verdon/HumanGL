@@ -5,6 +5,7 @@
 #include <cmath>
 #include <string>
 #include <vector>
+
 MapObjectParsingMethods ObjectParser::parsingMethods = {
     {"v", &ObjectParser::defineVertex},    {"vt", &ObjectParser::defineTextureVertex},
     {"f", &ObjectParser::defineFace},      {"s", &ObjectParser::defineSmoothShading},
@@ -12,6 +13,7 @@ MapObjectParsingMethods ObjectParser::parsingMethods = {
     {"vn", &ObjectParser::defineNormalVertex}};
 
 std::vector<Material> ObjectParser::materials;
+unsigned int ObjectParser::currentLineIndex = 0;
 std::string ObjectParser::currentObjPath = "";
 
 std::vector<Object> ObjectParser::parseObjectFile(const std::string &path)
@@ -20,12 +22,14 @@ std::vector<Object> ObjectParser::parseObjectFile(const std::string &path)
         throw(Exception("PARSE_OBJECT_FILE", "INVALID_EXTENSION", path, 0));
 
     currentObjPath = path;
+    currentLineIndex = 1;
+
     ObjectData objectData;
     std::vector<Object> objects;
+    
     std::stringstream fileStream = Utils::readFile(path);
     fileStream = Utils::readFile(path);
     std::string line;
-    unsigned int lineIndex = 1;
     while (std::getline(fileStream, line))
     {
         line = line.substr(0, line.find("#"));
@@ -39,13 +43,13 @@ std::vector<Object> ObjectParser::parseObjectFile(const std::string &path)
                 objects.push_back(newObject);
             }
             objectData.reset();
-            defineName(objectData, line, lineIndex);
+            defineName(objectData, line);
         }
         else if (it != parsingMethods.end())
-            (it->second)(objectData, line, lineIndex);
+            (it->second)(objectData, line);
         else if (symbol.length() != 0)
-            throw(Exception("PARSE_OBJECT_FILE", "INVALID_SYMBOL", line, lineIndex));
-        lineIndex++;
+            throw(Exception("PARSE_OBJECT_FILE", "INVALID_SYMBOL", line, currentLineIndex));
+        currentLineIndex++;
     }
     if (objectData.getFaces().size() > 0)
     {
@@ -55,36 +59,36 @@ std::vector<Object> ObjectParser::parseObjectFile(const std::string &path)
     return (objects);
 }
 
-void ObjectParser::defineName(ObjectData &objectData, const std::string &line, unsigned int lineIndex)
+void ObjectParser::defineName(ObjectData &objectData, const std::string &line)
 {
     std::vector<std::string> words;
 
     words = Utils::splitLine(line, " ");
     if (words.size() != 2)
-        throw(Exception("DEFINE_NAME", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
+        throw(Exception("DEFINE_NAME", "INVALID_NUMBER_OF_ARGUMENTS", line, currentLineIndex));
     objectData.setName(words[1]);
 }
 
-void ObjectParser::defineVertex(ObjectData &objectData, const std::string &line, unsigned int lineIndex)
+void ObjectParser::defineVertex(ObjectData &objectData, const std::string &line)
 {
     Vertex vertex;
     std::vector<std::string> words;
 
     words = Utils::splitLine(line, " ");
     if (words.size() < 4 || words.size() > 5)
-        throw(Exception("DEFINE_VERTEX", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
+        throw(Exception("DEFINE_VERTEX", "INVALID_NUMBER_OF_ARGUMENTS", line, currentLineIndex));
 
     for (size_t i = 1; i < words.size(); i++)
     {
         if (!Utils::isFloat(words[i]))
-            throw(Exception("DEFINE_VERTEX", "INVALID_ARGUMENT", line, lineIndex));
+            throw(Exception("DEFINE_VERTEX", "INVALID_ARGUMENT", line, currentLineIndex));
         vertex.push_back(std::stof(words[i]));
     }
     if (words.size() == 4)
         vertex.push_back(1.0f);
 
     if (vertex[3] == 0)
-        throw(Exception("DEFINE_VERTEX", "INVALID_ARGUMENT", line, lineIndex));
+        throw(Exception("DEFINE_VERTEX", "INVALID_ARGUMENT", line, currentLineIndex));
 
     for (size_t i = 0; i < 3; i++)
         vertex[i] = vertex[i] / vertex[3];
@@ -92,22 +96,22 @@ void ObjectParser::defineVertex(ObjectData &objectData, const std::string &line,
     objectData.addVertex(vertex);
 }
 
-void ObjectParser::defineTextureVertex(ObjectData &objectData, const std::string &line, unsigned int lineIndex)
+void ObjectParser::defineTextureVertex(ObjectData &objectData, const std::string &line)
 {
     Vertex textureVertex;
     std::vector<std::string> words;
 
     words = Utils::splitLine(line, " ");
     if (words.size() < 3 || words.size() > 4)
-        throw(Exception("DEFINE_VERTEX_TEXTURE", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
+        throw(Exception("DEFINE_VERTEX_TEXTURE", "INVALID_NUMBER_OF_ARGUMENTS", line, currentLineIndex));
 
     for (size_t i = 1; i < words.size(); i++)
     {
         if (!Utils::isFloat(words[i]))
-            throw(Exception("DEFINE_VERTEX_TEXTURE", "INVALID_ARGUMENT", line, lineIndex));
+            throw(Exception("DEFINE_VERTEX_TEXTURE", "INVALID_ARGUMENT", line, currentLineIndex));
         float value = std::stof(words[i]);
         if (value < 0 || value > 1)
-            throw(Exception("DEFINE_VERTEX_TEXTURE", "INVALID_ARGUMENT", line, lineIndex));
+            throw(Exception("DEFINE_VERTEX_TEXTURE", "INVALID_ARGUMENT", line, currentLineIndex));
         textureVertex.push_back(value);
     }
     for (size_t i = textureVertex.size(); i < 3; i++)
@@ -116,19 +120,18 @@ void ObjectParser::defineTextureVertex(ObjectData &objectData, const std::string
     objectData.addTextureVertex(textureVertex);
 }
 
-void ObjectParser::defineNormalVertex(ObjectData &objectData, const std::string &line, unsigned int lineIndex)
+void ObjectParser::defineNormalVertex(ObjectData &objectData, const std::string &line)
 {
     (void)objectData;
     (void)line;
-    (void)lineIndex;
 }
 
-void ObjectParser::defineFace(ObjectData &objectData, const std::string &line, unsigned int lineIndex)
+void ObjectParser::defineFace(ObjectData &objectData, const std::string &line)
 {
     Face face;
     std::vector<std::string> words = Utils::splitLine(line, " ");
     if (words.size() < 4)
-        throw(Exception("DEFINE_FACE", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
+        throw(Exception("DEFINE_FACE", "INVALID_NUMBER_OF_ARGUMENTS", line, currentLineIndex));
 
     for (size_t i = 1; i < words.size(); i++)
     {
@@ -139,21 +142,21 @@ void ObjectParser::defineFace(ObjectData &objectData, const std::string &line, u
                 nbBackSlash++;
         }
         if (nbBackSlash != 2)
-            throw(Exception("DEFINE_FACE", "INVALID_ARGUMENT", line, lineIndex));
+            throw(Exception("DEFINE_FACE", "INVALID_ARGUMENT", line, currentLineIndex));
 
         std::vector<std::string> vertices = Utils::splitLine(words[i], "/");
         if (vertices.size() != 3)
-            throw(Exception("DEFINE_FACE", "INVALID_ARGUMENT", line, lineIndex));
+            throw(Exception("DEFINE_FACE", "INVALID_ARGUMENT", line, currentLineIndex));
 
-        size_t vertexIndex = CalculateVertexIndex(objectData, vertices[0], CLASSIC, line, lineIndex);
-        size_t textureVertexIndex = CalculateVertexIndex(objectData, vertices[1], TEXTURE, line, lineIndex);
+        size_t vertexIndex = CalculateVertexIndex(objectData, vertices[0], CLASSIC, line);
+        size_t textureVertexIndex = CalculateVertexIndex(objectData, vertices[1], TEXTURE, line);
         face.push_back(CombineVertices(objectData, vertexIndex, textureVertexIndex));
     }
     triangulate(objectData, face);
 }
 
 size_t ObjectParser::CalculateVertexIndex(ObjectData &objectData, const std::string &vertex, e_vertexType vertexType,
-                                          const std::string &line, unsigned int lineIndex)
+                                          const std::string &line)
 {
     int nbVertices;
     std::string errorMessage;
@@ -170,10 +173,10 @@ size_t ObjectParser::CalculateVertexIndex(ObjectData &objectData, const std::str
     }
 
     if (!Utils::isInt(vertex))
-        throw(Exception("DEFINE_FACE", "INVALID_ARGUMENT", line, lineIndex));
+        throw(Exception("DEFINE_FACE", "INVALID_ARGUMENT", line, currentLineIndex));
     int vertexIndex = std::stoi(vertex);
     if (vertexIndex < -nbVertices || vertexIndex > nbVertices || vertexIndex == 0)
-        throw(Exception("DEFINE_FACE", errorMessage, line, lineIndex));
+        throw(Exception("DEFINE_FACE", errorMessage, line, currentLineIndex));
 
     if (vertexIndex < 0)
         vertexIndex = nbVertices + 1 + vertexIndex;
@@ -280,13 +283,13 @@ float ObjectParser::triangleArea(const Vertex &a, const Vertex &b, const Vertex 
     return (area);
 }
 
-void ObjectParser::defineSmoothShading(ObjectData &objectData, const std::string &line, unsigned int lineIndex)
+void ObjectParser::defineSmoothShading(ObjectData &objectData, const std::string &line)
 {
     std::vector<std::string> words;
 
     words = Utils::splitLine(line, " ");
     if (words.size() != 2)
-        throw(Exception("DEFINE_SMOOTH_SHADING", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
+        throw(Exception("DEFINE_SMOOTH_SHADING", "INVALID_NUMBER_OF_ARGUMENTS", line, currentLineIndex));
 
     if (words[1] == "off")
         objectData.setSmoothShadingGroup(0);
@@ -294,17 +297,17 @@ void ObjectParser::defineSmoothShading(ObjectData &objectData, const std::string
     objectData.setSmoothShadingGroup(std::stoi(words[1]));
 
     else
-        throw(Exception("DEFINE_SMOOTH_SHADING", "INVALID_ARGUMENT", line, lineIndex));
+        throw(Exception("DEFINE_SMOOTH_SHADING", "INVALID_ARGUMENT", line, currentLineIndex));
 }
 
-void ObjectParser::saveNewMTL(ObjectData &objectData, const std::string &line, unsigned int lineIndex)
+void ObjectParser::saveNewMTL(ObjectData &objectData, const std::string &line)
 {
     (void)objectData;
     std::vector<std::string> words;
 
     words = Utils::splitLine(line, " ");
     if (words.size() != 2)
-        throw(Exception("CREATE_NEW_MTL", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
+        throw(Exception("CREATE_NEW_MTL", "INVALID_NUMBER_OF_ARGUMENTS", line, currentLineIndex));
 
     std::string path = currentObjPath;
     path.resize(currentObjPath.find_last_of('/'));
@@ -312,13 +315,13 @@ void ObjectParser::saveNewMTL(ObjectData &objectData, const std::string &line, u
     materials.insert(materials.end(), newMaterials.begin(), newMaterials.end());
 }
 
-void ObjectParser::defineMTL(ObjectData &objectData, const std::string &line, unsigned int lineIndex)
+void ObjectParser::defineMTL(ObjectData &objectData, const std::string &line)
 {
     std::vector<std::string> words;
 
     words = Utils::splitLine(line, " ");
     if (words.size() != 2)
-        throw(Exception("DEFINE_MTL", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
+        throw(Exception("DEFINE_MTL", "INVALID_NUMBER_OF_ARGUMENTS", line, currentLineIndex));
 
     for (size_t i = 0; i < materials.size(); i++)
     {
@@ -328,7 +331,7 @@ void ObjectParser::defineMTL(ObjectData &objectData, const std::string &line, un
             return;
         }
     }
-    throw(Exception("DEFINE_MTL", "INVALID_ARGUMENT", line, lineIndex));
+    throw(Exception("DEFINE_MTL", "INVALID_ARGUMENT", line, currentLineIndex));
 }
 
 ObjectParser::Exception::Exception(const std::string &functionName, const std::string &errorMessage,
