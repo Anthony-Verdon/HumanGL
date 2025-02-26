@@ -86,8 +86,8 @@ void WindowManagement::initData(const std::vector<Object> &objects)
 
 void WindowManagement::updateLoop()
 {
-    const Texture texture("srcs_bonus/textures/myLittlePony.ppm");
-    const Shader shader("srcs_bonus/shaders/shader.vs", "srcs_bonus/shaders/shader.fs");
+    const Texture texture("srcs/textures/myLittlePony.ppm");
+    const Shader shader("srcs/shaders/shader.vs", "srcs/shaders/shader.fs");
 
     while (!glfwWindowShouldClose(window))
     {

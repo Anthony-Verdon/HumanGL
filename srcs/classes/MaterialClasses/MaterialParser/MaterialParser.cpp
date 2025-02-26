@@ -6,7 +6,7 @@ MapMaterialParsingMethods MaterialParser::parsingMethods = {
     {"Ka", &MaterialParser::defineAmbiantColor},    {"Ks", &MaterialParser::defineSpecularColor},
     {"Kd", &MaterialParser::defineDiffuseColor},    {"Ns", &MaterialParser::defineSpecularExponent},
     {"Ni", &MaterialParser::defineRefractionIndex}, {"d", &MaterialParser::defineOpacity},
-    {"illum", &MaterialParser::defineIllum},
+    {"illum", &MaterialParser::defineIllum},        {"Ke", &MaterialParser::defineEmissiveCoeff},
 };
 
 std::vector<Material> MaterialParser::parseMaterialFile(const std::string &path)
@@ -183,6 +183,13 @@ void MaterialParser::defineIllum(MaterialData &materialData, const std::string &
     if (illum < 0 || illum > 10)
         throw(Exception("DEFINE_ILLUM", "INVALID_ARGUMENT", line, lineIndex));
     materialData.setIllum(illum);
+}
+
+void MaterialParser::defineEmissiveCoeff(MaterialData &materialData, const std::string &line, unsigned int lineIndex)
+{
+    (void)materialData;
+    (void)line;
+    (void)lineIndex;
 }
 
 MaterialParser::Exception::Exception(const std::string &functionName, const std::string &errorMessage,

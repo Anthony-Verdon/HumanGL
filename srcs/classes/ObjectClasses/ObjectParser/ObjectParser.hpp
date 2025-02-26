@@ -26,9 +26,9 @@ class ObjectParser
     static void triangulate(ObjectData &objectData, Face &face);
 
     static void defineName(ObjectData &objectData, const std::string &line, unsigned int lineIndex);
-
     static void defineVertex(ObjectData &objectData, const std::string &line, unsigned int lineIndex);
     static void defineTextureVertex(ObjectData &objectData, const std::string &line, unsigned int lineIndex);
+    static void defineNormalVertex(ObjectData &objectData, const std::string &line, unsigned int lineIndex);
     static void defineFace(ObjectData &objectData, const std::string &line, unsigned int lineIndex);
     static void defineSmoothShading(ObjectData &objectData, const std::string &line, unsigned int lineIndex);
     static void saveNewMTL(ObjectData &objectData, const std::string &line, unsigned int lineIndex);

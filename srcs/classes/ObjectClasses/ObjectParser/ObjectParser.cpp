@@ -8,7 +8,8 @@
 MapObjectParsingMethods ObjectParser::parsingMethods = {
     {"v", &ObjectParser::defineVertex},    {"vt", &ObjectParser::defineTextureVertex},
     {"f", &ObjectParser::defineFace},      {"s", &ObjectParser::defineSmoothShading},
-    {"mtllib", &ObjectParser::saveNewMTL}, {"usemtl", &ObjectParser::defineMTL}};
+    {"mtllib", &ObjectParser::saveNewMTL}, {"usemtl", &ObjectParser::defineMTL},
+    {"vn", &ObjectParser::defineNormalVertex}};
 
 std::vector<Material> ObjectParser::materials;
 
@@ -113,6 +114,13 @@ void ObjectParser::defineTextureVertex(ObjectData &objectData, const std::string
     objectData.addTextureVertex(textureVertex);
 }
 
+void ObjectParser::defineNormalVertex(ObjectData &objectData, const std::string &line, unsigned int lineIndex)
+{
+    (void)objectData;
+    (void)line;
+    (void)lineIndex;
+}
+
 void ObjectParser::defineFace(ObjectData &objectData, const std::string &line, unsigned int lineIndex)
 {
     Face face;
@@ -128,11 +136,11 @@ void ObjectParser::defineFace(ObjectData &objectData, const std::string &line, u
             if (words[i][j] == '/')
                 nbBackSlash++;
         }
-        if (nbBackSlash != 1)
+        if (nbBackSlash != 2)
             throw(Exception("DEFINE_FACE", "INVALID_ARGUMENT", line, lineIndex));
 
         std::vector<std::string> vertices = Utils::splitLine(words[i], "/");
-        if (vertices.size() != 2)
+        if (vertices.size() != 3)
             throw(Exception("DEFINE_FACE", "INVALID_ARGUMENT", line, lineIndex));
 
         size_t vertexIndex = CalculateVertexIndex(objectData, vertices[0], CLASSIC, line, lineIndex);
@@ -281,7 +289,7 @@ void ObjectParser::defineSmoothShading(ObjectData &objectData, const std::string
     else if (words[1] == "off" || words[1] == "0")
         objectData.setSmoothShading(false);
     else
-        throw(Exception("DEFINE_SMOOTH_SHADING", "INVALID_ARGUMENT", line, lineIndex));
+        ;//throw(Exception("DEFINE_SMOOTH_SHADING", "INVALID_ARGUMENT", line, lineIndex));
 }
 
 void ObjectParser::saveNewMTL(ObjectData &objectData, const std::string &line, unsigned int lineIndex)
