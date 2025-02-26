@@ -43,8 +43,7 @@ class ObjectParser
     class Exception : public std::exception
     {
       public:
-        Exception(const std::string &functionName, const std::string &errorMessage, const std::string &line,
-                  unsigned int lineIndex);
+        Exception(const std::string &functionName, const std::string &errorMessage, const std::string &line);
         const char *what(void) const throw();
 
       private:
