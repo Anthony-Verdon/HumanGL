@@ -86,8 +86,9 @@ void WindowManagement::initData(const std::vector<Object> &objects)
 
 void WindowManagement::updateLoop()
 {
-    const Texture texture("srcs/textures/myLittlePony.ppm");
-    const Shader shader("srcs/shaders/shader.vs", "srcs/shaders/shader.fs");
+    const Texture texture("srcs_bonus/textures/myLittlePony.ppm");
+    const Shader shader("srcs_bonus/shaders/shader.vs", "srcs_bonus/shaders/shader.fs");
+
     while (!glfwWindowShouldClose(window))
     {
         Time::updateTime();
@@ -180,7 +181,6 @@ void WindowManagement::updateScene(const Texture &texture, const Shader &shader)
 
     for (size_t i = 0; i < objects.size(); i++)
         renderObject(objects[i], texture, shader);
-
     glfwSwapBuffers(window);
     glfwPollEvents();
 }
@@ -213,10 +213,6 @@ void WindowManagement::updateTexture()
     }
 }
 
-/*
-    glBindVertexArray: tell which VAO we want to use
-    glDrawElements: take informations from the actual VAO to draw elements
-*/
 void WindowManagement::renderObject(const Object &object, const Texture &texture, const Shader &shader)
 {
     updateShader(texture, shader);

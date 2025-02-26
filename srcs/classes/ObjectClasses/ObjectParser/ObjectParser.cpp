@@ -5,11 +5,10 @@
 #include <cmath>
 #include <string>
 #include <vector>
-MapObjectParsingMethods ObjectParser::parsingMethods = {{"v", &ObjectParser::defineVertex},
-                                                        {"f", &ObjectParser::defineFace},
-                                                        {"s", &ObjectParser::defineSmoothShading},
-                                                        {"mtllib", &ObjectParser::saveNewMTL},
-                                                        {"usemtl", &ObjectParser::defineMTL}};
+MapObjectParsingMethods ObjectParser::parsingMethods = {
+    {"v", &ObjectParser::defineVertex},    {"vt", &ObjectParser::defineTextureVertex},
+    {"f", &ObjectParser::defineFace},      {"s", &ObjectParser::defineSmoothShading},
+    {"mtllib", &ObjectParser::saveNewMTL}, {"usemtl", &ObjectParser::defineMTL}};
 
 std::vector<Material> ObjectParser::materials;
 
@@ -57,7 +56,7 @@ void ObjectParser::defineName(ObjectData &objectData, const std::string &line, u
 {
     std::vector<std::string> words;
 
-    words = Utils::splitLine(line);
+    words = Utils::splitLine(line, " ");
     if (words.size() != 2)
         throw(Exception("DEFINE_NAME", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
     objectData.setName(words[1]);
@@ -68,7 +67,7 @@ void ObjectParser::defineVertex(ObjectData &objectData, const std::string &line,
     Vertex vertex;
     std::vector<std::string> words;
 
-    words = Utils::splitLine(line);
+    words = Utils::splitLine(line, " ");
     if (words.size() < 4 || words.size() > 5)
         throw(Exception("DEFINE_VERTEX", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
@@ -81,7 +80,7 @@ void ObjectParser::defineVertex(ObjectData &objectData, const std::string &line,
     if (words.size() == 4)
         vertex.push_back(1.0f);
 
-    if (vertex[3] == 0.0f)
+    if (vertex[3] == 0)
         throw(Exception("DEFINE_VERTEX", "INVALID_ARGUMENT", line, lineIndex));
 
     for (size_t i = 0; i < 3; i++)
@@ -90,30 +89,104 @@ void ObjectParser::defineVertex(ObjectData &objectData, const std::string &line,
     objectData.addVertex(vertex);
 }
 
+void ObjectParser::defineTextureVertex(ObjectData &objectData, const std::string &line, unsigned int lineIndex)
+{
+    Vertex textureVertex;
+    std::vector<std::string> words;
+
+    words = Utils::splitLine(line, " ");
+    if (words.size() < 3 || words.size() > 4)
+        throw(Exception("DEFINE_VERTEX_TEXTURE", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
+
+    for (size_t i = 1; i < words.size(); i++)
+    {
+        if (!Utils::isFloat(words[i]))
+            throw(Exception("DEFINE_VERTEX_TEXTURE", "INVALID_ARGUMENT", line, lineIndex));
+        float value = std::stof(words[i]);
+        if (value < 0 || value > 1)
+            throw(Exception("DEFINE_VERTEX_TEXTURE", "INVALID_ARGUMENT", line, lineIndex));
+        textureVertex.push_back(value);
+    }
+    for (size_t i = textureVertex.size(); i < 3; i++)
+        textureVertex.push_back(0);
+
+    objectData.addTextureVertex(textureVertex);
+}
+
 void ObjectParser::defineFace(ObjectData &objectData, const std::string &line, unsigned int lineIndex)
 {
     Face face;
-    int vertexID;
-    const int nbVertices = static_cast<int>(objectData.getVertices().size());
-    std::vector<std::string> words;
-
-    words = Utils::splitLine(line);
+    std::vector<std::string> words = Utils::splitLine(line, " ");
     if (words.size() < 4)
         throw(Exception("DEFINE_FACE", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
     for (size_t i = 1; i < words.size(); i++)
     {
-        if (!Utils::isInt(words[i]))
+        int nbBackSlash = 0;
+        for (size_t j = 0; j < words[i].size(); j++)
+        {
+            if (words[i][j] == '/')
+                nbBackSlash++;
+        }
+        if (nbBackSlash != 1)
             throw(Exception("DEFINE_FACE", "INVALID_ARGUMENT", line, lineIndex));
-        vertexID = std::stoi(words[i]);
-        if (vertexID < -nbVertices || vertexID > nbVertices || vertexID == 0)
-            throw(Exception("DEFINE_FACE", "INVALID_VERTEX_INDEX", line, lineIndex));
 
-        if (vertexID < 0)
-            vertexID = nbVertices + 1 + vertexID;
-        face.push_back(vertexID - 1);
+        std::vector<std::string> vertices = Utils::splitLine(words[i], "/");
+        if (vertices.size() != 2)
+            throw(Exception("DEFINE_FACE", "INVALID_ARGUMENT", line, lineIndex));
+
+        size_t vertexIndex = CalculateVertexIndex(objectData, vertices[0], CLASSIC, line, lineIndex);
+        size_t textureVertexIndex = CalculateVertexIndex(objectData, vertices[1], TEXTURE, line, lineIndex);
+        face.push_back(CombineVertices(objectData, vertexIndex, textureVertexIndex));
     }
     triangulate(objectData, face);
+}
+
+size_t ObjectParser::CalculateVertexIndex(ObjectData &objectData, const std::string &vertex, e_vertexType vertexType,
+                                          const std::string &line, unsigned int lineIndex)
+{
+    int nbVertices;
+    std::string errorMessage;
+
+    if (vertexType == CLASSIC)
+    {
+        nbVertices = objectData.getVertices().size();
+        errorMessage = "INVALID_VERTEX_INDEX";
+    }
+    else
+    {
+        nbVertices = objectData.getTextureVertices().size();
+        errorMessage = "INVALID_TEXTURE_VERTEX_INDEX";
+    }
+
+    if (!Utils::isInt(vertex))
+        throw(Exception("DEFINE_FACE", "INVALID_ARGUMENT", line, lineIndex));
+    int vertexIndex = std::stoi(vertex);
+    if (vertexIndex < -nbVertices || vertexIndex > nbVertices || vertexIndex == 0)
+        throw(Exception("DEFINE_FACE", errorMessage, line, lineIndex));
+
+    if (vertexIndex < 0)
+        vertexIndex = nbVertices + 1 + vertexIndex;
+
+    return (vertexIndex);
+}
+
+size_t ObjectParser::CombineVertices(ObjectData &objectData, size_t vertexIndex, size_t textureVertexIndex)
+{
+    Vertex vertex = objectData.getVertices()[vertexIndex - 1];
+    Vertex textureVertex = objectData.getTextureVertices()[textureVertexIndex - 1];
+    Vertex combinedVertex;
+
+    for (size_t i = 0; i < 4; i++)
+        combinedVertex.push_back((vertex[i]));
+    for (size_t i = 0; i < 3; i++)
+        combinedVertex.push_back((textureVertex[i]));
+
+    std::vector<Vertex> combinedVertices = objectData.getCombinedVertices();
+    auto it = std::find(combinedVertices.begin(), combinedVertices.end(), combinedVertex);
+    if (it == combinedVertices.end())
+        objectData.addCombinedVertex(combinedVertex);
+    return (std::distance(combinedVertices.begin(), it));
 }
 
 void ObjectParser::triangulate(ObjectData &objectData, Face &face)
@@ -122,14 +195,14 @@ void ObjectParser::triangulate(ObjectData &objectData, Face &face)
     {
         for (size_t i = 1; i < face.size() - 1; i++)
         {
-            Vertex a = objectData.getVertices()[face[i]];
-            Vertex b = objectData.getVertices()[face[i - 1]];
-            Vertex c = objectData.getVertices()[face[i + 1]];
+            Vertex a = objectData.getCombinedVertices()[face[i]];
+            Vertex b = objectData.getCombinedVertices()[face[i - 1]];
+            Vertex c = objectData.getCombinedVertices()[face[i + 1]];
 
             bool isEar = true;
-            for (size_t j = 0; j < objectData.getVertices().size(); j++)
+            for (size_t j = 0; j < objectData.getCombinedVertices().size(); j++)
             {
-                Vertex p = objectData.getVertices()[j];
+                Vertex p = objectData.getCombinedVertices()[j];
                 if (p == a || p == b || p == c)
                     continue;
                 if (insideTriangle(p, a, b, c))
@@ -199,7 +272,7 @@ void ObjectParser::defineSmoothShading(ObjectData &objectData, const std::string
 {
     std::vector<std::string> words;
 
-    words = Utils::splitLine(line);
+    words = Utils::splitLine(line, " ");
     if (words.size() != 2)
         throw(Exception("DEFINE_SMOOTH_SHADING", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
@@ -216,7 +289,7 @@ void ObjectParser::saveNewMTL(ObjectData &objectData, const std::string &line, u
     (void)objectData;
     std::vector<std::string> words;
 
-    words = Utils::splitLine(line);
+    words = Utils::splitLine(line, " ");
     if (words.size() != 2)
         throw(Exception("CREATE_NEW_MTL", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
@@ -228,7 +301,7 @@ void ObjectParser::defineMTL(ObjectData &objectData, const std::string &line, un
 {
     std::vector<std::string> words;
 
-    words = Utils::splitLine(line);
+    words = Utils::splitLine(line, " ");
     if (words.size() != 2)
         throw(Exception("DEFINE_MTL", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 

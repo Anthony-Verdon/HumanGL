@@ -1,7 +1,7 @@
 #include "Utils.hpp"
 #include <cmath>
 #include <fstream>
-std::vector<std::string> Utils::splitLine(std::string line)
+std::vector<std::string> Utils::splitLine(std::string line, const std::string &delimiter)
 {
     size_t index;
     std::string word;
@@ -10,7 +10,7 @@ std::vector<std::string> Utils::splitLine(std::string line)
     index = 0;
     while (index != std::string::npos)
     {
-        index = line.find(" ");
+        index = line.find(delimiter);
         word = line.substr(0, index);
         if (word.length() > 0)
             words.push_back(word);

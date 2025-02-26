@@ -1,12 +1,11 @@
 #include "Object.hpp"
-#include "../../../../libs/glad/glad.h"
-#include <cstdlib>
-#include <ctime>
+#include <glad/glad.h>
 
 Object::Object(const ObjectData &data)
 {
     name = data.getName();
     vertices = data.getVertices();
+    textureVertices = data.getTextureVertices();
     combinedVertices = data.getCombinedVertices();
     faces = data.getFaces();
     smoothShading = data.getSmoothShading();
@@ -24,6 +23,7 @@ Object &Object::operator=(const Object &copy)
     if (&copy != this)
     {
         vertices = copy.getVertices();
+        textureVertices = copy.getTextureVertices();
         combinedVertices = copy.getCombinedVertices();
         faces = copy.getFaces();
         name = copy.getName();
@@ -44,22 +44,19 @@ Object::~Object()
     }
 }
 
-/*
-    VAO = Vertex Array Object, store the VBO and how the VBO is configurated
-    VBO = Vertex Buffer Object, contains all the vertices of an object
-    EBO = Element Buffer Object, allow to store once each vertex and define element with their index
+bool Object::isVAOInit() const
+{
+    return (VAOInit);
+}
+unsigned int Object::getVAO() const
+{
+    return (VAO);
+}
 
-    glGen* : generate what is asked
-    glBind* : bind the element to tell which one is used for each Buffer, 0 = reinitialized
-    glBufferData : store informations into the corresponding buffer
-    glVertexAttribPointer : how the VBO is configured
-    if a VBO is bind after a VAO, it's stored in the VAO
-
-*/
 void Object::initVAO()
 {
+    GenerateFacesColor();
     centerObject();
-    generateFacesColor();
 
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -72,13 +69,15 @@ void Object::initVAO()
     std::unique_ptr<float[]> verticesArray = getCombinedVerticesIntoArray();
     std::unique_ptr<unsigned int[]> facesArray = getFacesIntoArray();
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * combinedVertices.size() * 7, &verticesArray[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * combinedVertices.size() * 10, &verticesArray[0], GL_STATIC_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * faces.size() * 3, &facesArray[0], GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void *)0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void *)(4 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void *)(4 * sizeof(float)));
     glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void *)(7 * sizeof(float)));
+    glEnableVertexAttribArray(2);
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -86,26 +85,18 @@ void Object::initVAO()
     VAOInit = true;
 }
 
-bool Object::isVAOInit() const
-{
-    return (VAOInit);
-}
-unsigned int Object::getVAO() const
-{
-    return (VAO);
-}
-
 std::ostream &operator<<(std::ostream &os, const Object &instance)
 {
     os << "name: " << instance.getName() << std::endl;
     os << "smooth shading: " << instance.getSmoothShading() << std::endl;
-    std::vector<Vertex> objectVertices = instance.getVertices();
+    std::vector<Vertex> objectVertices = instance.getCombinedVertices();
     os << "vertices: " << std::endl;
     for (size_t i = 0; i < objectVertices.size(); i++)
     {
         os << "vertex nb " << i + 1 << ": ";
-        os << objectVertices[i][0] << " " << objectVertices[i][1] << " ";
-        os << objectVertices[i][2] << " " << objectVertices[i][3] << std::endl;
+        for (int j = 0; j < 7; j++)
+            os << objectVertices[i][j] << " ";
+        os << std::endl;
     }
     std::vector<Face> objectFace = instance.getFaces();
     os << "faces: " << std::endl;

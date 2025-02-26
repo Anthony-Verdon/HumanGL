@@ -1,6 +1,7 @@
 #include "ObjectData.hpp"
 #include <algorithm>
-#include <ctime>
+#include <climits>
+
 ObjectData::ObjectData()
 {
     reset();
@@ -10,44 +11,68 @@ ObjectData::~ObjectData()
 {
 }
 
-std::vector<std::vector<float>> ObjectData::getVertices() const
+std::vector<Vertex> ObjectData::getVertices() const
 {
     return (vertices);
 }
 
 std::unique_ptr<float[]> ObjectData::getVerticesIntoArray() const
 {
+    const size_t vertexSize = 4;
     size_t j;
     std::unique_ptr<float[]> array;
 
     j = 0;
-    array = std::make_unique<float[]>(vertices.size() * 4);
+    array = std::make_unique<float[]>(vertices.size() * vertexSize);
     for (size_t i = 0; i < vertices.size(); i++)
     {
-        for (int k = 0; k < 4; k++)
+        for (size_t k = 0; k < vertexSize; k++)
             array[j + k] = vertices[i][k];
-        j += 4;
+        j += vertexSize;
     }
     return (array);
 }
 
-std::vector<std::vector<float>> ObjectData::getCombinedVertices() const
+std::vector<Vertex> ObjectData::getTextureVertices() const
+{
+    return (textureVertices);
+}
+
+std::unique_ptr<float[]> ObjectData::getTexturesVerticesIntoArray() const
+{
+    const size_t textureVertexSize = 3;
+    size_t j;
+    std::unique_ptr<float[]> array;
+
+    j = 0;
+    array = std::make_unique<float[]>(textureVertices.size() * textureVertexSize);
+    for (size_t i = 0; i < textureVertices.size(); i++)
+    {
+        for (size_t k = 0; k < textureVertexSize; k++)
+            array[j + k] = textureVertices[i][k];
+        j += textureVertexSize;
+    }
+    return (array);
+}
+
+std::vector<Vertex> ObjectData::getCombinedVertices() const
 {
     return (combinedVertices);
 }
 
 std::unique_ptr<float[]> ObjectData::getCombinedVerticesIntoArray() const
 {
+    const size_t combinedVertexSize = 10;
     size_t j;
     std::unique_ptr<float[]> array;
 
     j = 0;
-    array = std::make_unique<float[]>(combinedVertices.size() * 7);
+    array = std::make_unique<float[]>(combinedVertices.size() * combinedVertexSize);
     for (size_t i = 0; i < combinedVertices.size(); i++)
     {
-        for (int k = 0; k < 7; k++)
+        for (size_t k = 0; k < combinedVertexSize; k++)
             array[j + k] = combinedVertices[i][k];
-        j += 7;
+        j += combinedVertexSize;
     }
     return (array);
 }
@@ -101,6 +126,8 @@ void ObjectData::reset()
 {
     name.reset();
     vertices.clear();
+    textureVertices.clear();
+    combinedVertices.clear();
     faces.clear();
     smoothShading = false;
     material.reset();
@@ -114,6 +141,15 @@ void ObjectData::setName(const std::string &name)
 void ObjectData::setVertices(const std::vector<Vertex> &vertices)
 {
     this->vertices = vertices;
+}
+
+void ObjectData::setTexturesVertices(const std::vector<Vertex> &vertices)
+{
+    this->textureVertices = vertices;
+}
+void ObjectData::setCombinedVertices(const std::vector<Vertex> &vertices)
+{
+    this->combinedVertices = vertices;
 }
 
 void ObjectData::setFaces(const std::vector<Face> &faces)
@@ -130,9 +166,20 @@ void ObjectData::setMaterial(const Material &material)
 {
     this->material = material;
 }
+
 void ObjectData::addVertex(const Vertex &vertex)
 {
     vertices.push_back(vertex);
+}
+
+void ObjectData::addTextureVertex(const Vertex &vertex)
+{
+    textureVertices.push_back(vertex);
+}
+
+void ObjectData::addCombinedVertex(const Vertex &vertex)
+{
+    combinedVertices.push_back(vertex);
 }
 
 void ObjectData::addFace(const Face &face)
@@ -140,9 +187,11 @@ void ObjectData::addFace(const Face &face)
     faces.push_back(face);
 }
 
-void ObjectData::generateFacesColor()
+void ObjectData::GenerateFacesColor()
 {
     srand(time(NULL));
+    vertices = combinedVertices;
+    combinedVertices.clear();
 
     std::vector<Face> newFaces;
     for (size_t i = 0; i < faces.size(); i++)
@@ -161,7 +210,7 @@ int ObjectData::CombineVertexWithColor(size_t vertexIndex, float color)
 {
     Vertex combinedVertex;
 
-    for (size_t j = 0; j < 4; j++)
+    for (size_t j = 0; j < 7; j++)
         combinedVertex.push_back((vertices[vertexIndex][j]));
     for (size_t j = 0; j < 3; j++)
         combinedVertex.push_back(color);
@@ -180,10 +229,10 @@ void ObjectData::centerObject()
     for (int j = 0; j < 3; j++)
     {
         float center = 0;
-        for (size_t i = 0; i < vertices.size(); i++)
-            center += vertices[i][j];
-        center = center / vertices.size();
-        for (size_t i = 0; i < vertices.size(); i++)
-            vertices[i][j] -= center;
+        for (size_t i = 0; i < combinedVertices.size(); i++)
+            center += combinedVertices[i][j];
+        center = center / combinedVertices.size();
+        for (size_t i = 0; i < combinedVertices.size(); i++)
+            combinedVertices[i][j] -= center;
     }
 }

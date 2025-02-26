@@ -20,9 +20,10 @@ class Object : public ObjectData
     Object &operator=(const Object &copy);
     ~Object();
 
-    void initVAO();
     bool isVAOInit() const;
     unsigned int getVAO() const;
+
+    void initVAO();
 };
 
 std::ostream &operator<<(std::ostream &os, const Object &instance);

@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "../../../libs/glad/glad.h"
+#include <glad/glad.h>
 #include "../Matrix/Matrix.hpp"
 
 class Shader

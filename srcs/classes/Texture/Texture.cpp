@@ -1,5 +1,5 @@
 #include "Texture.hpp"
-#include "../../../libs/glad/glad.h"
+#include <glad/glad.h>
 #include "../Utils/Utils.hpp"
 
 bool Texture::textureInit = false;
@@ -47,7 +47,7 @@ void Texture::checkHeader(const std::string &line, unsigned int nbLine)
             throw(Exception("CHECK_HEADER", "INVALID_LINE", line, nbLine + 1));
         break;
     case 1: {
-        words = Utils::splitLine(line);
+        words = Utils::splitLine(line, " ");
         if (words.size() != 2)
             throw(Exception("CHECK_HEADER", "INVALID_LINE", line, nbLine + 1));
 
@@ -57,7 +57,7 @@ void Texture::checkHeader(const std::string &line, unsigned int nbLine)
         break;
     }
     case 2: {
-        words = Utils::splitLine(line);
+        words = Utils::splitLine(line, " ");
         if (words.size() != 1)
             throw(Exception("CHECK_HEADER", "INVALID_LINE", line, nbLine + 1));
 
@@ -89,7 +89,7 @@ void Texture::loadImage(const std::string &texturePath)
             checkHeader(line, nbLine);
         else
         {
-            words = Utils::splitLine(line);
+            words = Utils::splitLine(line, " ");
             for (size_t i = 0; i < words.size(); i++)
             {
                 data[pixel] = std::stoi(words[i]);

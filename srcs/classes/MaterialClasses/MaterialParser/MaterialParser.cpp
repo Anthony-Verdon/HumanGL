@@ -54,7 +54,7 @@ void MaterialParser::defineName(MaterialData &materialData, const std::string &l
 {
     std::vector<std::string> words;
 
-    words = Utils::splitLine(line);
+    words = Utils::splitLine(line, " ");
     if (words.size() != 2)
         throw(Exception("DEFINE_NAME", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
@@ -65,7 +65,7 @@ void MaterialParser::defineAmbiantColor(MaterialData &materialData, const std::s
 {
     std::vector<std::string> words;
 
-    words = Utils::splitLine(line);
+    words = Utils::splitLine(line, " ");
     if (words.size() != 4)
         throw(Exception("DEFINE_AMBIANT_COLOR", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
@@ -85,7 +85,7 @@ void MaterialParser::defineSpecularColor(MaterialData &materialData, const std::
 {
     std::vector<std::string> words;
 
-    words = Utils::splitLine(line);
+    words = Utils::splitLine(line, " ");
     if (words.size() != 4)
         throw(Exception("DEFINE_SPECULAR_COLOR", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
@@ -105,7 +105,7 @@ void MaterialParser::defineDiffuseColor(MaterialData &materialData, const std::s
 {
     std::vector<std::string> words;
 
-    words = Utils::splitLine(line);
+    words = Utils::splitLine(line, " ");
     if (words.size() != 4)
         throw(Exception("DEFINE_DIFFUSE_COLOR", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
@@ -125,7 +125,7 @@ void MaterialParser::defineSpecularExponent(MaterialData &materialData, const st
 {
     std::vector<std::string> words;
 
-    words = Utils::splitLine(line);
+    words = Utils::splitLine(line, " ");
     if (words.size() != 2)
         throw(Exception("DEFINE_SPECULAR_EXPONENT", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
@@ -141,7 +141,7 @@ void MaterialParser::defineRefractionIndex(MaterialData &materialData, const std
 {
     std::vector<std::string> words;
 
-    words = Utils::splitLine(line);
+    words = Utils::splitLine(line, " ");
     if (words.size() != 2)
         throw(Exception("DEFINE_REFRACTION_INDEX", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
@@ -157,7 +157,7 @@ void MaterialParser::defineOpacity(MaterialData &materialData, const std::string
 {
     std::vector<std::string> words;
 
-    words = Utils::splitLine(line);
+    words = Utils::splitLine(line, " ");
     if (words.size() != 2)
         throw(Exception("DEFINE_OPACITY", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
@@ -173,7 +173,7 @@ void MaterialParser::defineIllum(MaterialData &materialData, const std::string &
 {
     std::vector<std::string> words;
 
-    words = Utils::splitLine(line);
+    words = Utils::splitLine(line, " ");
     if (words.size() != 2)
         throw(Exception("DEFINE_ILLUM", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 

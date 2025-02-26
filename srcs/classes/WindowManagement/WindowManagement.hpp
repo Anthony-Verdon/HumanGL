@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../../libs/glad/glad.h"
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include "../Camera/Camera.hpp"

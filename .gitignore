@@ -1,3 +1,6 @@
 scop*
 *.o
+*.d
 .vscode
+.xmake
+build
