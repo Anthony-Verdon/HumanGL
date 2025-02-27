@@ -1,16 +1,16 @@
 #pragma once
 
 #include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
 #include <string>
 #include "classes/AProgram/AProgram.hpp"
+#include "classes/Matrix/Matrix.hpp"
 
 class WindowManager
 {
   private:
     static GLFWwindow *window;
-    static glm::vec2 windowSize;
-    static glm::vec2 mousePosition;
+    static Matrix windowSize;
+    static Matrix mousePosition;
 
     WindowManager() = delete;
     ~WindowManager() = delete;
@@ -26,11 +26,11 @@ class WindowManager
     
     static GLFWwindow *GetWindow();
 
-    static glm::vec2 GetWindowSize();
+    static Matrix GetWindowSize();
     static unsigned int GetWindowWidth();
     static unsigned int GetWindowHeight();
 
-    static glm::vec2 GetMousePosition();
+    static Matrix GetMousePosition();
     static void SetMousePosition(double xPos, double yPos);
 
     static void SetUserPointer(void *ptr);

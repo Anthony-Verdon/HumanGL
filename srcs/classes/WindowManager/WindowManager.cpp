@@ -5,8 +5,8 @@
 #include "globals.hpp"
 
 GLFWwindow *WindowManager::window = NULL;
-glm::vec2 WindowManager::mousePosition = glm::vec2(0,0);
-glm::vec2 WindowManager::windowSize = glm::vec2(0,0);
+Matrix WindowManager::mousePosition = Matrix::Zero(Matrix(2, 1));
+Matrix WindowManager::windowSize = Matrix(2, 1);
 
 void mouse_callback(GLFWwindow *window, double xPos, double yPos);
 
@@ -51,7 +51,8 @@ void WindowManager::InitWindow(const std::string &name, unsigned int width, unsi
 
     glfwSetCursorPosCallback(window, mouse_callback);
 
-    windowSize = glm::vec2(width, height);
+    windowSize.setData(0, 0, width);
+    windowSize.setData(1, 0, height);
 }
 
 void WindowManager::DestructWindowManager()
@@ -92,27 +93,28 @@ GLFWwindow* WindowManager::GetWindow()
     return (window);
 }
 
-glm::vec2 WindowManager::GetWindowSize()
+Matrix WindowManager::GetWindowSize()
 {
     return (windowSize);
 }
 
 unsigned int WindowManager::GetWindowWidth()
 {
-    return (windowSize.x);
+    return (windowSize.getX());
 }
 
 unsigned int WindowManager::GetWindowHeight()
 {
-    return (windowSize.y);
+    return (windowSize.getY());
 }
 
 void WindowManager::SetMousePosition(double xPos, double yPos)
 {
-    mousePosition = glm::vec2(xPos, yPos);
+    mousePosition.setData(0, 0, xPos);
+    mousePosition.setData(1, 0, yPos);
 }
 
-glm::vec2 WindowManager::GetMousePosition()
+Matrix WindowManager::GetMousePosition()
 {
     return (mousePosition);
 }

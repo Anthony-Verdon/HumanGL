@@ -4,6 +4,7 @@
 #include "classes/Time/Time.hpp"
 #include "classes/Utils/Utils.hpp"
 #include "globals.hpp"
+#include <cmath>
 
 void scroll_callback(GLFWwindow *window, double xOffset, double yOffset);
 
@@ -85,16 +86,16 @@ void Game::updateCamera()
     // orientation
     const float sensitivity = 0.1f;
 
-    glm::vec2 mousePos = WindowManager::GetMousePosition();
-    static float lastX = mousePos.x;
-    static float lastY = mousePos.y;
+    Matrix mousePos = WindowManager::GetMousePosition();
+    static float lastX = mousePos.getX();
+    static float lastY = mousePos.getY();
 
     float xOffset;
     float yOffset;
-    xOffset = (mousePos.x - lastX) * sensitivity;
-    yOffset = (lastY - mousePos.y) * sensitivity;
-    lastX = mousePos.x;
-    lastY = mousePos.y;
+    xOffset = (mousePos.getX() - lastX) * sensitivity;
+    yOffset = (lastY - mousePos.getY()) * sensitivity;
+    lastX = mousePos.getX();
+    lastY = mousePos.getY();
     camera.addToYaw(xOffset);
     camera.addToPitch(yOffset);
     if (camera.getPitch() > 89.0f)
