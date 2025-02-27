@@ -44,8 +44,6 @@ class ObjectData
     void addCombinedVertex(const Vertex &vertex);
     void addFace(const Face &face);
 
-    void centerObject();
-
   protected:
     std::optional<std::string> name;
     std::vector<Vertex> vertices;

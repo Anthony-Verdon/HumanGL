@@ -185,16 +185,3 @@ void ObjectData::addFace(const Face &face)
 {
     faces.push_back(face);
 }
-
-void ObjectData::centerObject()
-{
-    for (int j = 0; j < 3; j++)
-    {
-        float center = 0;
-        for (size_t i = 0; i < combinedVertices.size(); i++)
-            center += combinedVertices[i][j];
-        center = center / combinedVertices.size();
-        for (size_t i = 0; i < combinedVertices.size(); i++)
-            combinedVertices[i][j] -= center;
-    }
-}
