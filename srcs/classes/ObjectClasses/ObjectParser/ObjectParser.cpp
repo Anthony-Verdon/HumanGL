@@ -223,20 +223,20 @@ size_t ObjectParser::CalculateVertexIndex(ObjectData &objectData, const std::str
 
 size_t ObjectParser::CombineVertices(ObjectData &objectData, size_t vertexIndex, size_t textureVertexIndex)
 {
-    Vertex vertex = objectData.getVertices()[vertexIndex - 1];
-    Vertex textureVertex = objectData.getTextureVertices()[textureVertexIndex - 1];
-    Vertex combinedVertex;
+    Vertex vertex = objectData.getVertex(vertexIndex - 1);
+    Vertex textureVertex = objectData.getTextureVertex(textureVertexIndex - 1);
+    Vertex combinedVertex(10);
 
     for (size_t i = 0; i < 4; i++)
-        combinedVertex.push_back((vertex[i]));
+        combinedVertex[i + 0] = vertex[i];
     for (size_t i = 0; i < 3; i++)
-        combinedVertex.push_back((textureVertex[i]));
+        combinedVertex[i + 4] = textureVertex[i];
     for (size_t i = 0; i < 3; i++)
-        combinedVertex.push_back(objectData.getMaterial().getColor(2)[i]);
+        combinedVertex[i + 7] = objectData.getMaterial().getColor(2)[i];
 
     std::vector<Vertex> combinedVertices = objectData.getCombinedVertices();
     auto it = std::find(combinedVertices.begin(), combinedVertices.end(), combinedVertex);
-    if (it == combinedVertices.end())
+    if (!objectData.CombinedVertexExist(combinedVertex))
         objectData.addCombinedVertex(combinedVertex);
     return (std::distance(combinedVertices.begin(), it));
 }
@@ -246,33 +246,34 @@ void ObjectParser::triangulate(ObjectData &objectData, Face &face)
     if (face.size() == 4)
     {
         {
-            Face newFace;
-            newFace.push_back(face[0]);
-            newFace.push_back(face[1]);
-            newFace.push_back(face[3]);
+            TriangleFace newFace;
+            newFace[0] = face[0];
+            newFace[1] = face[1];
+            newFace[2] = face[3];
             objectData.addFace(newFace);
         }
         {
-            Face newFace;
-            newFace.push_back(face[1]);
-            newFace.push_back(face[2]);
-            newFace.push_back(face[3]);
+            TriangleFace newFace;
+            newFace[0] = face[1];
+            newFace[1] = face[2];
+            newFace[2] = face[3];
             objectData.addFace(newFace);
         }
         return;
     }
+    size_t nbCombinedVertices = objectData.getCombinedVerticesSize();
     while (face.size() > 3)
     {
         for (size_t i = 1; i < face.size() - 1; i++)
         {
-            Vertex a = objectData.getCombinedVertices()[face[i]];
-            Vertex b = objectData.getCombinedVertices()[face[i - 1]];
-            Vertex c = objectData.getCombinedVertices()[face[i + 1]];
+            Vertex a = objectData.getCombinedVertex(face[i]);
+            Vertex b = objectData.getCombinedVertex(face[i - 1]);
+            Vertex c = objectData.getCombinedVertex(face[i + 1]);
 
             bool isEar = true;
-            for (size_t j = 0; j < objectData.getCombinedVertices().size(); j++)
+            for (size_t j = 0; j < nbCombinedVertices; j++)
             {
-                Vertex p = objectData.getCombinedVertices()[j];
+                Vertex p = objectData.getCombinedVertex(j);
                 if (p == a || p == b || p == c)
                     continue;
                 if (insideTriangle(p, a, b, c))
@@ -283,11 +284,8 @@ void ObjectParser::triangulate(ObjectData &objectData, Face &face)
             }
             if (isEar)
             {
-                Face newFace;
+                TriangleFace newFace = {face[i - 1], face[i], face[i + 1]};
 
-                newFace.push_back(face[i - 1]);
-                newFace.push_back(face[i]);
-                newFace.push_back(face[i + 1]);
                 for (std::vector<int>::iterator it = face.begin(); it != face.end(); it++)
                 {
                     if (*it == static_cast<int>(face[i]))
@@ -301,7 +299,10 @@ void ObjectParser::triangulate(ObjectData &objectData, Face &face)
             }
         }
     }
-    objectData.addFace(face);
+    TriangleFace newFace;
+    for (int i = 0; i < 3; i++)
+        newFace[i] = face[i];
+    objectData.addFace(newFace);
 }
 
 bool ObjectParser::insideTriangle(const Vertex &p, const Vertex &a, const Vertex &b, const Vertex &c)

@@ -15,6 +15,11 @@ std::vector<Vertex> ObjectData::getVertices() const
     return (vertices);
 }
 
+Vertex ObjectData::getVertex(unsigned int index) const
+{
+    return (vertices[index]);
+}
+
 std::unique_ptr<float[]> ObjectData::getVerticesIntoArray() const
 {
     const size_t vertexSize = 4;
@@ -37,6 +42,11 @@ std::vector<Vertex> ObjectData::getTextureVertices() const
     return (textureVertices);
 }
 
+Vertex ObjectData::getTextureVertex(unsigned int index) const
+{
+    return (textureVertices[index]);
+}
+
 std::unique_ptr<float[]> ObjectData::getTexturesVerticesIntoArray() const
 {
     const size_t textureVertexSize = 3;
@@ -57,6 +67,16 @@ std::unique_ptr<float[]> ObjectData::getTexturesVerticesIntoArray() const
 std::vector<Vertex> ObjectData::getCombinedVertices() const
 {
     return (combinedVertices);
+}
+
+Vertex ObjectData::getCombinedVertex(unsigned int index) const
+{
+    return (combinedVertices[index]);
+}
+
+bool ObjectData::CombinedVertexExist(const Vertex &v) const
+{
+    return (std::find(combinedVertices.begin(), combinedVertices.end(), v) != combinedVertices.end());
 }
 
 std::unique_ptr<float[]> ObjectData::getCombinedVerticesIntoArray() const
@@ -92,11 +112,6 @@ std::unique_ptr<unsigned int[]> ObjectData::getFacesIntoArray() const
     }
 
     return (array);
-}
-
-std::vector<Face> ObjectData::getFaces() const
-{
-    return (faces);
 }
 
 std::string ObjectData::getName() const
@@ -151,11 +166,6 @@ void ObjectData::setCombinedVertices(const std::vector<Vertex> &vertices)
     this->combinedVertices = vertices;
 }
 
-void ObjectData::setFaces(const std::vector<Face> &faces)
-{
-    this->faces = faces;
-}
-
 void ObjectData::setSmoothShadingGroup(unsigned int smoothShadingGroup)
 {
     this->smoothShadingGroup = smoothShadingGroup;
@@ -181,7 +191,7 @@ void ObjectData::addCombinedVertex(const Vertex &vertex)
     combinedVertices.push_back(vertex);
 }
 
-void ObjectData::addFace(const Face &face)
+void ObjectData::addFace(const TriangleFace &face)
 {
     faces.push_back(face);
 }

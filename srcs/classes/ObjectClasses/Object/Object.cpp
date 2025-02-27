@@ -95,7 +95,7 @@ std::ostream &operator<<(std::ostream &os, const Object &instance)
             os << objectVertices[i][j] << " ";
         os << std::endl;
     }
-    std::vector<Face> objectFace = instance.getFaces();
+    std::vector<TriangleFace> objectFace = instance.getFaces();
     os << "faces: " << std::endl;
     for (size_t i = 0; i < objectFace.size(); i++)
     {
