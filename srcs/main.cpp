@@ -19,7 +19,7 @@ int main(int argc, char **argv)
         if (argc != 2)
             throw(std::runtime_error("MAIN::NO_INPUT_FILE"));
 
-        std::vector<Object> objects = ObjectParser::parseObjectFile(argv[1]);
+        std::vector<Object> objects = ObjectParser().parseObjectFile(argv[1]);
         WindowManagement instance(objects);
 
         return (EXIT_SUCCESS);

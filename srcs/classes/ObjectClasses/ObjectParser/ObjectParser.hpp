@@ -12,44 +12,41 @@ typedef enum vertexType
     TEXTURE
 } e_vertexType;
 
-typedef std::map<std::string, void (*)(ObjectData &, const std::string &)> MapObjectParsingMethods;
+class ObjectParser;
+
+typedef std::map<std::string, void (ObjectParser::*)(ObjectData &, const std::string &)> MapObjectParsingMethods;
 
 class ObjectParser
 {
   private:
-    static std::string currentObjPath;
-    static unsigned int currentLineIndex;
-    
-    static size_t CalculateVertexIndex(ObjectData &objectData, const std::string &vertex, e_vertexType vertexType,
-                                       const std::string &line);
-    static size_t CombineVertices(ObjectData &objectData, size_t vertexIndex, size_t textureVertexIndex);
+    std::string path;
+    unsigned int lineIndex;
+  
+    size_t CalculateVertexIndex(ObjectData &objectData, const std::string &vertex, e_vertexType vertexType,
+                                      const std::string &line);
+    size_t CombineVertices(ObjectData &objectData, size_t vertexIndex, size_t textureVertexIndex);
 
-    static float triangleArea(const Vertex &a, const Vertex &b, const Vertex &c);
-    static bool insideTriangle(const Vertex &p, const Vertex &a, const Vertex &b, const Vertex &c);
-    static void triangulate(ObjectData &objectData, Face &face);
+    float triangleArea(const Vertex &a, const Vertex &b, const Vertex &c);
+    bool insideTriangle(const Vertex &p, const Vertex &a, const Vertex &b, const Vertex &c);
+    void triangulate(ObjectData &objectData, Face &face);
 
-    static void defineName(ObjectData &objectData, const std::string &line);
-    static void defineVertex(ObjectData &objectData, const std::string &line);
-    static void defineTextureVertex(ObjectData &objectData, const std::string &line);
-    static void defineNormalVertex(ObjectData &objectData, const std::string &line);
-    static void defineFace(ObjectData &objectData, const std::string &line);
-    static void defineSmoothShading(ObjectData &objectData, const std::string &line);
-    static void saveNewMTL(ObjectData &objectData, const std::string &line);
-    static void defineMTL(ObjectData &objectData, const std::string &line);
-    static MapObjectParsingMethods parsingMethods;
+    void defineName(ObjectData &objectData, const std::string &line);
+    void defineVertex(ObjectData &objectData, const std::string &line);
+    void defineTextureVertex(ObjectData &objectData, const std::string &line);
+    void defineNormalVertex(ObjectData &objectData, const std::string &line);
+    void defineFace(ObjectData &objectData, const std::string &line);
+    void defineSmoothShading(ObjectData &objectData, const std::string &line);
+    void saveNewMTL(ObjectData &objectData, const std::string &line);
+    void defineMTL(ObjectData &objectData, const std::string &line);
+    MapObjectParsingMethods parsingMethods;
 
-    static std::vector<Material> materials;
+    std::vector<Material> materials;
 
-    class Exception : public std::exception
-    {
-      public:
-        Exception(const std::string &functionName, const std::string &errorMessage, const std::string &line);
-        const char *what(void) const throw();
-
-      private:
-        std::string errorMessage;
-    };
+    std::string parseError(const std::string &functionName, const std::string &errorMessage, const std::string &line);
 
   public:
-    static std::vector<Object> parseObjectFile(const std::string &path);
+    ObjectParser();
+    ~ObjectParser();
+
+    std::vector<Object> parseObjectFile(const std::string &path);
 };
