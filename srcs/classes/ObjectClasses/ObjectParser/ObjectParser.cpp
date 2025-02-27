@@ -26,6 +26,12 @@ std::vector<Object> ObjectParser::parseObjectFile(const std::string &path)
     this->path = path;
     materials.clear();
 
+    // parsing time
+    positionVertexTime = 0;
+    textureVertexTime = 0;
+    normalVertexTime = 0;
+    faceTime = 0;
+
     if (!Utils::checkExtension(path, ".obj"))
         throw(std::runtime_error(parseError("PARSE_OBJECT_FILE", "INVALID_EXTENSION", path)));
 
@@ -62,6 +68,11 @@ std::vector<Object> ObjectParser::parseObjectFile(const std::string &path)
         objects.push_back(newObject);
     }
 
+    std::cout << "parsing time for position vertices declaration: " << positionVertexTime << std::endl;
+    std::cout << "parsing time for texture vertices declaration: " << textureVertexTime << std::endl;
+    std::cout << "parsing time for normal vertices declaration: " << normalVertexTime << std::endl;
+    std::cout << "parsing time for faces declaration: " << faceTime << std::endl;
+    std::cout << std::endl;
     return (objects);
 }
 
@@ -77,6 +88,8 @@ void ObjectParser::defineName(ObjectData &objectData, const std::string &line)
 
 void ObjectParser::defineVertex(ObjectData &objectData, const std::string &line)
 {
+    clock_t start = clock();
+
     Vertex vertex;
     std::vector<std::string> words;
 
@@ -100,10 +113,15 @@ void ObjectParser::defineVertex(ObjectData &objectData, const std::string &line)
         vertex[i] = vertex[i] / vertex[3];
 
     objectData.addVertex(vertex);
+
+    clock_t end = clock();
+    positionVertexTime += ((double) (end - start)) / CLOCKS_PER_SEC;
 }
 
 void ObjectParser::defineTextureVertex(ObjectData &objectData, const std::string &line)
 {
+    clock_t start = clock();
+
     Vertex textureVertex;
     std::vector<std::string> words;
 
@@ -124,16 +142,26 @@ void ObjectParser::defineTextureVertex(ObjectData &objectData, const std::string
         textureVertex.push_back(0);
 
     objectData.addTextureVertex(textureVertex);
+
+    clock_t end = clock();
+    textureVertexTime += ((double) (end - start)) / CLOCKS_PER_SEC;
 }
 
 void ObjectParser::defineNormalVertex(ObjectData &objectData, const std::string &line)
 {
+    clock_t start = clock();
+
     (void)objectData;
     (void)line;
+
+    clock_t end = clock();
+    normalVertexTime += ((double) (end - start)) / CLOCKS_PER_SEC;
 }
 
 void ObjectParser::defineFace(ObjectData &objectData, const std::string &line)
 {
+    clock_t start = clock();
+
     Face face;
     std::vector<std::string> words = Utils::splitLine(line, " ");
     if (words.size() < 4)
@@ -159,6 +187,9 @@ void ObjectParser::defineFace(ObjectData &objectData, const std::string &line)
         face.push_back(CombineVertices(objectData, vertexIndex, textureVertexIndex));
     }
     triangulate(objectData, face);
+
+    clock_t end = clock();
+    faceTime += ((double) (end - start)) / CLOCKS_PER_SEC;
 }
 
 size_t ObjectParser::CalculateVertexIndex(ObjectData &objectData, const std::string &vertex, e_vertexType vertexType,

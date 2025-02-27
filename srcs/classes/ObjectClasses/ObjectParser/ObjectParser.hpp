@@ -23,8 +23,7 @@ class ObjectParser
     unsigned int lineIndex;
     std::vector<Material> materials;
   
-    size_t CalculateVertexIndex(ObjectData &objectData, const std::string &vertex, e_vertexType vertexType,
-                                      const std::string &line);
+    size_t CalculateVertexIndex(ObjectData &objectData, const std::string &vertex, e_vertexType vertexType, const std::string &line);
     size_t CombineVertices(ObjectData &objectData, size_t vertexIndex, size_t textureVertexIndex);
 
     float triangleArea(const Vertex &a, const Vertex &b, const Vertex &c);
@@ -40,6 +39,12 @@ class ObjectParser
     void saveNewMTL(ObjectData &objectData, const std::string &line);
     void defineMTL(ObjectData &objectData, const std::string &line);
     MapObjectParsingMethods parsingMethods;
+
+    // parsing time
+    float positionVertexTime;
+    float textureVertexTime;
+    float normalVertexTime;
+    float faceTime;
 
 
     std::string parseError(const std::string &functionName, const std::string &errorMessage, const std::string &line);
