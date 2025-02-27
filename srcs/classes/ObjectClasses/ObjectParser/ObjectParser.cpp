@@ -245,22 +245,11 @@ void ObjectParser::triangulate(ObjectData &objectData, Face &face)
 {
     if (face.size() == 4)
     {
-        {
-            TriangleFace newFace;
-            newFace[0] = face[0];
-            newFace[1] = face[1];
-            newFace[2] = face[3];
-            objectData.addFace(newFace);
-        }
-        {
-            TriangleFace newFace;
-            newFace[0] = face[1];
-            newFace[1] = face[2];
-            newFace[2] = face[3];
-            objectData.addFace(newFace);
-        }
+        objectData.addFace({face[0], face[1], face[3]});
+        objectData.addFace({face[1], face[2], face[3]});
         return;
     }
+
     size_t nbCombinedVertices = objectData.getCombinedVerticesSize();
     while (face.size() > 3)
     {
@@ -285,16 +274,9 @@ void ObjectParser::triangulate(ObjectData &objectData, Face &face)
             if (isEar)
             {
                 TriangleFace newFace = {face[i - 1], face[i], face[i + 1]};
-
-                for (std::vector<int>::iterator it = face.begin(); it != face.end(); it++)
-                {
-                    if (*it == static_cast<int>(face[i]))
-                    {
-                        face.erase(it);
-                        break;
-                    }
-                }
                 objectData.addFace(newFace);
+                auto it = std::find(face.begin(), face.end(), face[i]);
+                face.erase(it);
                 break;
             }
         }
