@@ -21,6 +21,7 @@ class ObjectParser
   private:
     std::string path;
     unsigned int lineIndex;
+    std::vector<Material> materials;
   
     size_t CalculateVertexIndex(ObjectData &objectData, const std::string &vertex, e_vertexType vertexType,
                                       const std::string &line);
@@ -40,7 +41,6 @@ class ObjectParser
     void defineMTL(ObjectData &objectData, const std::string &line);
     MapObjectParsingMethods parsingMethods;
 
-    std::vector<Material> materials;
 
     std::string parseError(const std::string &functionName, const std::string &errorMessage, const std::string &line);
 

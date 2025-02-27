@@ -8,9 +8,6 @@
 
 ObjectParser::ObjectParser()
 {
-    lineIndex = 0;
-    path = "";
-
     parsingMethods = {
         {"v", &ObjectParser::defineVertex},    {"vt", &ObjectParser::defineTextureVertex},
         {"f", &ObjectParser::defineFace},      {"s", &ObjectParser::defineSmoothShading},
@@ -26,10 +23,11 @@ ObjectParser::~ObjectParser()
 std::vector<Object> ObjectParser::parseObjectFile(const std::string &path)
 {
     lineIndex = 0;
+    this->path = path;
+    materials.clear();
+
     if (!Utils::checkExtension(path, ".obj"))
         throw(std::runtime_error(parseError("PARSE_OBJECT_FILE", "INVALID_EXTENSION", path)));
-
-    this->path = path;
 
     ObjectData objectData;
     std::vector<Object> objects;
