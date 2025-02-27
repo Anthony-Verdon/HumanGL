@@ -1,6 +1,6 @@
-#include "classes/ObjectClasses/Object/Object.hpp"
-#include "classes/ObjectClasses/ObjectParser/ObjectParser.hpp"
-#include "classes/WindowManagement/WindowManagement.hpp"
+#include "classes/Game/Game.hpp"
+#include "classes/WindowManager/WindowManager.hpp"
+#include "globals.hpp"
 #include <cstdlib>
 #include <iostream>
 #include <stdexcept>
@@ -19,13 +19,11 @@ int main(int argc, char **argv)
         if (argc < 2)
             throw(std::runtime_error("MAIN::NO_INPUT_FILE"));
 
-        std::vector<Object> objects;
-        for (int i = 1; i < argc; i++)
-        {
-            std::vector<Object> newObjects = ObjectParser().parseObjectFile(argv[i]);
-            objects.insert(objects.end(), newObjects.begin(), newObjects.end());
-        }
-        WindowManagement instance(objects);
+        WindowManager::InitWindow("new game", WINDOW_WIDTH, WINDOW_HEIGHT);
+        Game game;
+        game.LoadObjects(argc, argv);
+        WindowManager::StartUpdateLoop(&game);
+        WindowManager::DestructWindowManager();
 
         return (EXIT_SUCCESS);
     }

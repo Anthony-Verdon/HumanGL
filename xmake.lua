@@ -11,6 +11,7 @@ add_cxxflags("-O3")
 
 add_requires("glfw")
 add_requires("glad")
+add_requires("glm")
 
 target("scop")
     set_kind("binary")
@@ -18,3 +19,4 @@ target("scop")
     add_includedirs("srcs")
     add_packages("glfw")
     add_packages("glad")
+    add_packages("glm")
