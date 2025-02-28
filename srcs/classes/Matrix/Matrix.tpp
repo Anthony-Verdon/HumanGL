@@ -101,22 +101,25 @@ namespace AlgOps
         return (result);
     }
 
-    template <size_t R, size_t C>
-    Matrix<R, C> Matrix<R, C>::operator*(const Matrix<R, C> &instance) const
+    template <size_t R1, size_t C1, size_t R2, size_t C2>
+    Matrix<R1, C2> operator*(const Matrix<R1, C1> &matA, const Matrix<R2, C2> &matB)
     {
-        Matrix<R, C> result;
+        Matrix<R1, C2> result;
         float value;
         
-        if (columns != instance.getRows())
-            throw(Exception("OPERATOR *", "MATRIX_INCOMPATIBLE", *this, instance));
+        if (C1 != R2)
+        {
+            throw(std::runtime_error("error")); //tmp
+            //throw(Exception("OPERATOR *", "MATRIX_INCOMPATIBLE", matA, matB));
+        }
 
         for (size_t y = 0; y < result.getRows(); y++)
         {
             for (size_t x = 0; x < result.getColumns(); x++)
             {
                 value = 0;
-                for (size_t i = 0; i < instance.getRows(); i++)
-                    value += this->getData(y, i) * instance.getData(i, x);
+                for (size_t i = 0; i < matB.getRows(); i++)
+                    value += matA.getData(y, i) * matB.getData(i, x);
                 result.setData(y, x, value);
             }
         }
