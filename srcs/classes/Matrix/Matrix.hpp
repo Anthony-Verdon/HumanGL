@@ -12,21 +12,7 @@ namespace AlgOps
     private:
       std::unique_ptr<float[]> data;
       size_t size;
-      
-      class Exception : public std::exception
-      {
-        public:
-          Exception(const std::string &functionName, const std::string &errorMessage, unsigned int rows, unsigned int columns);
-          Exception(const std::string &functionName, const std::string &errorMessage, const Matrix &matrix);
-          Exception(const std::string &functionName, const std::string &errorMessage, const Matrix &matrix, unsigned int size);
-          Exception(const std::string &functionName, const std::string &errorMessage, const Matrix &matrix, unsigned int rows, unsigned int columns);
-          Exception(const std::string &functionName, const std::string &errorMessage, const Matrix &leftMatrix, const Matrix &rightMatrix);
-          const char *what(void) const throw();
-                
-        private:
-          std::string errorMessage;
-      };
-            
+        
     public:
       Matrix();
       Matrix(const Matrix &copy);

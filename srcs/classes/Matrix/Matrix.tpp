@@ -1,6 +1,7 @@
 #include "Matrix.hpp"
 #include "../Utils/Utils.hpp"
 #include <cmath>
+#include "globals.hpp"
 
 namespace AlgOps
 {
@@ -8,10 +9,10 @@ namespace AlgOps
     template<size_t R, size_t C>
     Matrix<R, C>::Matrix()
     {
-        if (R == 0 || R == 0)
-            throw(Exception("OPERATOR *", "INVALID_SIZE", R, C));
+        if (R == 0 || C == 0)
+            throw(std::runtime_error(ERROR_MESSAGE));
         size = R * C;
-        data = std::make_unique<float[]>(R * C);
+        data = std::make_unique<float[]>(size);
     }
 
     template <size_t R, size_t C>
@@ -26,8 +27,8 @@ namespace AlgOps
         if (&copy != this)
         {
             size = R * C;
-            data = std::make_unique<float[]>(R * C);
-            setData(copy.getData(), R * C);
+            data = std::make_unique<float[]>(size);
+            setData(copy.getData(), size);
         }
         return (*this);
     }
@@ -40,7 +41,7 @@ namespace AlgOps
     template <size_t R, size_t C>
     bool Matrix<R, C>::operator!=(const Matrix<R, C> &instance)
     {
-        for (size_t i = 0; i < R * C; i++)
+        for (size_t i = 0; i < size; i++)
         {
             if (data[i] != instance.getData()[i])
             return (true);
@@ -97,8 +98,7 @@ namespace AlgOps
         
         if (C1 != R2)
         {
-            throw(std::runtime_error("error")); //tmp
-            //throw(Exception("OPERATOR *", "MATRIX_INCOMPATIBLE", matA, matB));
+            throw(std::runtime_error(ERROR_MESSAGE));
         }
 
         for (size_t y = 0; y < R1; y++)
@@ -147,7 +147,7 @@ namespace AlgOps
     float Matrix<R, C>::getData(unsigned int rowIndex, unsigned int columnIndex) const
     {
         if (rowIndex >= R || columnIndex >= C)
-            throw(Exception("GET_DATA", "INVALID_INDEX", *this, rowIndex, columnIndex));
+            throw(std::runtime_error(ERROR_MESSAGE));
 
         return (data[rowIndex * C + columnIndex]);
     }
@@ -157,7 +157,7 @@ namespace AlgOps
     float Matrix<R, C>::getX() const
     {
         if (R < 1 || R > 4 || C != 1)
-            throw(Exception("GET_X", "INVALID_SIZE", *this));
+            throw(std::runtime_error(ERROR_MESSAGE));
 
         return (getData(0, 0));
     }
@@ -167,7 +167,7 @@ namespace AlgOps
     float Matrix<R, C>::getY() const
     {
         if (R < 2 || R > 4 || C != 1)
-            throw(Exception("GET_Y", "INVALID_SIZE", *this));
+            throw(std::runtime_error(ERROR_MESSAGE));
 
         return (getData(1, 0));
     }
@@ -177,7 +177,7 @@ namespace AlgOps
     float Matrix<R, C>::getZ() const
     {
         if (R < 3 || R > 4 || C != 1)
-            throw(Exception("GET_Z", "INVALID_SIZE", *this));
+            throw(std::runtime_error(ERROR_MESSAGE));
 
         return (getData(2, 0));
     }
@@ -187,7 +187,7 @@ namespace AlgOps
     float Matrix<R, C>::getW() const
     {
         if (R != 4 || C != 1)
-            throw(Exception("GET_W", "INVALID_SIZE", *this));
+            throw(std::runtime_error(ERROR_MESSAGE));
 
         return (getData(3, 0));
     }
@@ -196,7 +196,7 @@ namespace AlgOps
     void Matrix<R, C>::setData(unsigned int rowIndex, unsigned int columnIndex, float value)
     {
         if (rowIndex >= R || columnIndex >= C)
-            throw(Exception("SET_DATA", "INVALID_INDEX", *this, rowIndex, columnIndex));
+            throw(std::runtime_error(ERROR_MESSAGE));
 
         data[rowIndex * C + columnIndex] = value;
     }
@@ -204,8 +204,8 @@ namespace AlgOps
     template <size_t R, size_t C>
     void Matrix<R, C>::setData(float *values, unsigned int size)
     {
-        if (size != this->size)
-            throw(Exception("SET_DATA", "INVALID_SIZE", *this, size));
+        if (this->size != size)
+            throw(std::runtime_error(ERROR_MESSAGE));
 
         for (size_t i = 0; i < size; i++)
             data[i] = values[i];
@@ -222,77 +222,13 @@ namespace AlgOps
     void Matrix<R, C>::identity()
     {
         if (R != C)
-            throw(Exception("IDENTITY", "INVALID_SIZE", *this));
+            throw(std::runtime_error(ERROR_MESSAGE));
 
         uniform(0);
         for (size_t i = 0; i < R; i++)
             setData(i, i, 1);
     }
         
-    template <size_t R, size_t C>
-    Matrix<R, C>::Exception::Exception(const std::string &functionName, const std::string &errorMessage, unsigned int rows, unsigned int columns)
-    {
-        this->errorMessage = "MATRIX::" + functionName + "::" + errorMessage;
-        this->errorMessage += "\n|\n| ";
-        this->errorMessage += "rows and columns: " + std::to_string(rows) + " * " + std::to_string(columns);
-        this->errorMessage += "\n|";
-    }
-
-
-    template <size_t R, size_t C>
-    Matrix<R, C>::Exception::Exception(const std::string &functionName, const std::string &errorMessage, const Matrix<R, C> &matrix)
-    {
-        (void)matrix;
-        this->errorMessage = "MATRIX::" + functionName + "::" + errorMessage;
-        this->errorMessage += "\n|\n| ";
-        this->errorMessage += "matrix: " + std::to_string(R) + " * " + std::to_string(C);
-        this->errorMessage += "\n|";
-    }
-
-
-    template <size_t R, size_t C>
-    Matrix<R, C>::Exception::Exception(const std::string &functionName, const std::string &errorMessage, const Matrix<R, C> &matrix, unsigned int size)
-    {
-        (void)matrix;
-        this->errorMessage = "MATRIX::" + functionName + "::" + errorMessage;
-        this->errorMessage += "\n|\n| ";
-        this->errorMessage += "matrix: " + std::to_string(R) + " * " + std::to_string(C);
-        this->errorMessage += "\n|";
-        this->errorMessage += "size: " + std::to_string(size);
-        this->errorMessage += "\n|";
-    }
-
-    template <size_t R, size_t C>
-    Matrix<R, C>::Exception::Exception(const std::string &functionName, const std::string &errorMessage, const Matrix<R, C> &matrix, unsigned int rows, unsigned int columns)
-    {
-        (void)matrix;
-        this->errorMessage = "MATRIX::" + functionName + "::" + errorMessage;
-        this->errorMessage += "\n|\n| ";
-        this->errorMessage += "matrix: " + std::to_string(R) + " * " + std::to_string(C);
-        this->errorMessage += "\n|";
-        this->errorMessage += "rows and columns: " + std::to_string(rows) + " * " + std::to_string(columns);
-        this->errorMessage += "\n|";
-    }
-
-    template <size_t R, size_t C>
-    Matrix<R, C>::Exception::Exception(const std::string &functionName, const std::string &errorMessage, const Matrix<R, C> &leftMatrix, const Matrix<R, C> &rightMatrix)
-    {
-        this->errorMessage = "MATRIX::" + functionName + "::" + errorMessage;
-        this->errorMessage += "\n|\n| ";
-        this->errorMessage +=
-        "left matrix: " + std::to_string(leftMatrix.getRows()) + " * " + std::to_string(leftMatrix.getColumns());
-        this->errorMessage += "\n| ";
-        this->errorMessage +=
-        "right matrix: " + std::to_string(rightMatrix.getRows()) + " * " + std::to_string(rightMatrix.getColumns());
-        this->errorMessage += "\n|";
-    }
-
-    template <size_t R, size_t C>
-    const char *Matrix<R, C>::Exception::what(void) const throw()
-    {
-        return (errorMessage.c_str());
-    }
-
     template <size_t R, size_t C>
     Matrix<R, C> Zero(const Matrix<R, C> &instance)
     {

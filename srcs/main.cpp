@@ -1,4 +1,5 @@
 #include "classes/Game/Game.hpp"
+#include "classes/Matrix/Matrix.hpp"
 #include "classes/WindowManager/WindowManager.hpp"
 #include "globals.hpp"
 #include <cstdlib>
