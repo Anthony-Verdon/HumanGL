@@ -30,11 +30,11 @@ class Game: public AProgram
         void updateDisplayMode();
         void updateWireframeMode();
         void updateTextureMode();
-        void updateScene(const Texture &texture, const Shader &shader);
+        void updateScene();
         void updateCameraView();
         void updateTexture();
-        void renderObject(const Object &object, const Texture &texture, const Shader &shader);
-        void updateShader(const Texture &texture, const Shader &shader);
+        void renderObject(const Object &object);
+        void updateShader();
     
     public:
         Game();
