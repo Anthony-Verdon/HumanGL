@@ -53,12 +53,12 @@ namespace AlgOps
             0, 0, (-(far + near)) / (far - near), -1,
             // new line
             0, 0, (-2 * far * near) / (far - near), 0};
-            result.setData(perspectiveMatrixValues, 16);
-            return (result);
-        }
+        result.setData(perspectiveMatrixValues, 16);
+        return (result);
+    }
         
-        vec3 normalize(const vec3 &vector)
-        {
+    vec3 normalize(const vec3 &vector)
+    {
         vec3 result = vector;
         float length;
         
