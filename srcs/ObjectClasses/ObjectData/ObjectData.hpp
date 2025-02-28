@@ -19,17 +19,25 @@ class ObjectData
     ~ObjectData();
 
     std::string getName() const;
+
     std::vector<Vertex> getVertices() const;
     Vertex getVertex(unsigned int index) const;
     std::unique_ptr<float[]> getVerticesIntoArray() const;
+
     std::vector<Vertex> getTextureVertices() const;
     Vertex getTextureVertex(unsigned int index) const;
     std::unique_ptr<float[]> getTexturesVerticesIntoArray() const;
+
+    std::vector<Vertex> getNormalVertices() const;
+    Vertex getNormalVertex(unsigned int index) const;
+    std::unique_ptr<float[]> getNormalVerticesIntoArray() const;
+
     std::vector<Vertex> getCombinedVertices() const;
-    size_t getCombinedVerticesSize() const { return combinedVertices.size(); };
     Vertex getCombinedVertex(unsigned int index) const;
-    bool CombinedVertexExist(const Vertex &v) const;
     std::unique_ptr<float[]> getCombinedVerticesIntoArray() const;
+    size_t getCombinedVerticesSize() const { return combinedVertices.size(); };
+    bool CombinedVertexExist(const Vertex &v) const;
+
     std::vector<TriangleFace> getFaces() const { return faces; }
     std::unique_ptr<unsigned int[]> getFacesIntoArray() const;
     unsigned int getSmoothShadingGroup() const;
@@ -40,6 +48,7 @@ class ObjectData
     void setName(const std::string &name);
     void setVertices(const std::vector<Vertex> &vertices);
     void setTexturesVertices(const std::vector<Vertex> &vertices);
+    void setNormalVertices(const std::vector<Vertex> &vertices);
     void setCombinedVertices(const std::vector<Vertex> &vertices);
     void setFaces(const std::vector<TriangleFace> &faces) { this->faces = faces; }
     void setSmoothShadingGroup(unsigned int smoothShading);
@@ -47,6 +56,7 @@ class ObjectData
 
     void addVertex(const Vertex &vertex);
     void addTextureVertex(const Vertex &vertex);
+    void addNormalVertex(const Vertex &vertex);
     void addCombinedVertex(const Vertex &vertex);
     void addFace(const TriangleFace &face);
 
@@ -54,6 +64,7 @@ class ObjectData
     std::optional<std::string> name;
     std::vector<Vertex> vertices;
     std::vector<Vertex> textureVertices;
+    std::vector<Vertex> normalVertices;
     std::vector<Vertex> combinedVertices;
     std::vector<TriangleFace> faces;
     unsigned smoothShadingGroup;

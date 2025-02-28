@@ -64,6 +64,33 @@ std::unique_ptr<float[]> ObjectData::getTexturesVerticesIntoArray() const
     return (array);
 }
 
+std::vector<Vertex> ObjectData::getNormalVertices() const
+{
+    return (normalVertices);
+}
+
+Vertex ObjectData::getNormalVertex(unsigned int index) const
+{
+    return (normalVertices[index]);
+}
+
+std::unique_ptr<float[]> ObjectData::getNormalVerticesIntoArray() const
+{
+    const size_t normalVertexSize = 3;
+    size_t j;
+    std::unique_ptr<float[]> array;
+
+    j = 0;
+    array = std::make_unique<float[]>(normalVertices.size() * normalVertexSize);
+    for (size_t i = 0; i < normalVertices.size(); i++)
+    {
+        for (size_t k = 0; k < normalVertexSize; k++)
+            array[j + k] = normalVertices[i][k];
+        j += normalVertexSize;
+    }
+    return (array);
+}
+
 std::vector<Vertex> ObjectData::getCombinedVertices() const
 {
     return (combinedVertices);
@@ -81,7 +108,7 @@ bool ObjectData::CombinedVertexExist(const Vertex &v) const
 
 std::unique_ptr<float[]> ObjectData::getCombinedVerticesIntoArray() const
 {
-    const size_t combinedVertexSize = 10;
+    const size_t combinedVertexSize = 13;
     size_t j;
     std::unique_ptr<float[]> array;
 
@@ -141,6 +168,7 @@ void ObjectData::reset()
     name.reset();
     vertices.clear();
     textureVertices.clear();
+    normalVertices.clear();
     combinedVertices.clear();
     faces.clear();
     smoothShadingGroup = 0;
@@ -161,6 +189,12 @@ void ObjectData::setTexturesVertices(const std::vector<Vertex> &vertices)
 {
     this->textureVertices = vertices;
 }
+
+void ObjectData::setNormalVertices(const std::vector<Vertex> &vertices)
+{
+    this->normalVertices = vertices;
+}
+
 void ObjectData::setCombinedVertices(const std::vector<Vertex> &vertices)
 {
     this->combinedVertices = vertices;
@@ -184,6 +218,11 @@ void ObjectData::addVertex(const Vertex &vertex)
 void ObjectData::addTextureVertex(const Vertex &vertex)
 {
     textureVertices.push_back(vertex);
+}
+
+void ObjectData::addNormalVertex(const Vertex &vertex)
+{
+    normalVertices.push_back(vertex);
 }
 
 void ObjectData::addCombinedVertex(const Vertex &vertex)

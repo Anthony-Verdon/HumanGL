@@ -168,7 +168,7 @@ void Game::updateScene()
     shader->setMat4("projection", projection);
     AlgOps::mat4 view = AlgOps::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(), camera.getUpDirection());
     shader->setMat4("view", view);
-    shader->setVec3("aLightColor", light.GetColor());
+    shader->setVec3("lightColor", light.GetColor());
 
     AlgOps::vec3 lightPos;
     float posValues[] = {0, 0, -3};
@@ -248,7 +248,7 @@ void Game::updateShader()
     AlgOps::mat4 view = AlgOps::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(),
                                  camera.getUpDirection());
     shader->setMat4("view", view);
-    shader->setVec3("aLightColor", light.GetColor());
+    shader->setVec3("lightColor", light.GetColor());
 }
 
 void scroll_callback(GLFWwindow *window, double xOffset, double yOffset)

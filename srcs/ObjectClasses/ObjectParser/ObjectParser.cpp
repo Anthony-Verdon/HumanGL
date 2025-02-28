@@ -151,8 +151,24 @@ void ObjectParser::defineNormalVertex(ObjectData &objectData, const std::string 
 {
     clock_t start = clock();
 
-    (void)objectData;
-    (void)line;
+    Vertex normalVertex;
+    std::vector<std::string> words;
+
+    words = Utils::splitLine(line, " ");
+    if (words.size() != 4)
+        throw(std::runtime_error(parseError("DEFINE_VERTEX_TEXTURE", "INVALID_NUMBER_OF_ARGUMENTS", line)));
+
+    for (size_t i = 1; i < words.size(); i++)
+    {
+        if (!Utils::isFloat(words[i]))
+            throw(std::runtime_error(parseError("DEFINE_VERTEX_TEXTURE", "INVALID_ARGUMENT", line)));
+        float value = std::stof(words[i]);
+        if (value < -1 || value > 1)
+            throw(std::runtime_error(parseError("DEFINE_VERTEX_TEXTURE", "INVALID_ARGUMENT", line)));
+        normalVertex.push_back(value);
+    }
+
+    objectData.addNormalVertex(normalVertex);
 
     clock_t end = clock();
     normalVertexTime += ((double) (end - start)) / CLOCKS_PER_SEC;
@@ -182,9 +198,10 @@ void ObjectParser::defineFace(ObjectData &objectData, const std::string &line)
         if (vertices.size() != 3)
             throw(std::runtime_error(parseError("DEFINE_FACE", "INVALID_ARGUMENT", line)));
 
-        size_t vertexIndex = CalculateVertexIndex(objectData, vertices[0], CLASSIC, line);
+        size_t vertexIndex = CalculateVertexIndex(objectData, vertices[0], POSITION, line);
         size_t textureVertexIndex = CalculateVertexIndex(objectData, vertices[1], TEXTURE, line);
-        face.push_back(CombineVertices(objectData, vertexIndex, textureVertexIndex));
+        size_t normalVertexIndex = CalculateVertexIndex(objectData, vertices[2], NORMAL, line);
+        face.push_back(CombineVertices(objectData, vertexIndex, textureVertexIndex, normalVertexIndex));
     }
     triangulate(objectData, face);
 
@@ -198,22 +215,38 @@ size_t ObjectParser::CalculateVertexIndex(ObjectData &objectData, const std::str
     int nbVertices;
     std::string errorMessage;
 
-    if (vertexType == CLASSIC)
+    switch (vertexType)
     {
-        nbVertices = objectData.getVertices().size();
-        errorMessage = "INVALID_VERTEX_INDEX";
-    }
-    else
-    {
-        nbVertices = objectData.getTextureVertices().size();
-        errorMessage = "INVALID_TEXTURE_VERTEX_INDEX";
+        case POSITION:
+        {
+            nbVertices = objectData.getVertices().size();
+            errorMessage = "INVALID_VERTEX_INDEX";
+            break;
+        }
+        case TEXTURE:
+        {
+            nbVertices = objectData.getTextureVertices().size();
+            errorMessage = "INVALID_TEXTURE_VERTEX_INDEX";
+            break;
+        }
+        case NORMAL:
+        {
+            nbVertices = objectData.getNormalVertices().size();
+            errorMessage = "INVALID_NORMAL_VERTEX_INDEX";
+            break;
+        }
+        default:
+            break;
     }
 
     if (!Utils::isInt(vertex))
         throw(std::runtime_error(parseError("DEFINE_FACE", "INVALID_ARGUMENT", line)));
     int vertexIndex = std::stoi(vertex);
     if (vertexIndex < -nbVertices || vertexIndex > nbVertices || vertexIndex == 0)
+    {
+        std::cout << vertexIndex << " " << nbVertices << std::endl;
         throw(std::runtime_error(parseError("DEFINE_FACE", errorMessage, line)));
+    }
 
     if (vertexIndex < 0)
         vertexIndex = nbVertices + 1 + vertexIndex;
@@ -221,11 +254,12 @@ size_t ObjectParser::CalculateVertexIndex(ObjectData &objectData, const std::str
     return (vertexIndex);
 }
 
-size_t ObjectParser::CombineVertices(ObjectData &objectData, size_t vertexIndex, size_t textureVertexIndex)
+size_t ObjectParser::CombineVertices(ObjectData &objectData, size_t vertexIndex, size_t textureVertexIndex, size_t normalVertexIndex)
 {
     Vertex vertex = objectData.getVertex(vertexIndex - 1);
     Vertex textureVertex = objectData.getTextureVertex(textureVertexIndex - 1);
-    Vertex combinedVertex(10);
+    Vertex normalVertex = objectData.getNormalVertex(normalVertexIndex - 1);
+    Vertex combinedVertex(13);
 
     for (size_t i = 0; i < 4; i++)
         combinedVertex[i + 0] = vertex[i];
@@ -233,6 +267,8 @@ size_t ObjectParser::CombineVertices(ObjectData &objectData, size_t vertexIndex,
         combinedVertex[i + 4] = textureVertex[i];
     for (size_t i = 0; i < 3; i++)
         combinedVertex[i + 7] = objectData.getMaterial().getColor(2)[i];
+    for (size_t i = 0; i < 3; i++)
+        combinedVertex[i + 10] = normalVertex[i];
 
     std::vector<Vertex> combinedVertices = objectData.getCombinedVertices();
     auto it = std::find(combinedVertices.begin(), combinedVertices.end(), combinedVertex);

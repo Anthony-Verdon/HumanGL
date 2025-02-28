@@ -8,6 +8,7 @@ add_cxxflags("-Wall")
 add_cxxflags("-Werror")
 add_cxxflags("-Wextra")
 add_cxxflags("-O3")
+add_cxxflags("-g")
 
 add_requires("glfw")
 add_requires("glad")
