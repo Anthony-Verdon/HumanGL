@@ -1,6 +1,6 @@
-#include "classes/Game/Game.hpp"
-#include "classes/Matrix/Matrix.hpp"
-#include "classes/WindowManager/WindowManager.hpp"
+#include "Game/Game.hpp"
+#include "Matrix/Matrix.hpp"
+#include "WindowManager/WindowManager.hpp"
 #include "globals.hpp"
 #include <cstdlib>
 #include <iostream>
