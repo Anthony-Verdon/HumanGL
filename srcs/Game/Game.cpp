@@ -170,6 +170,20 @@ void Game::updateScene()
     shader->setMat4("view", view);
     shader->setVec3("aLightColor", light.GetColor());
 
+    AlgOps::vec3 lightPos;
+    float posValues[] = {0, 0, -3};
+    lightPos.setData(posValues, 3);
+    AlgOps::vec3 lightScale;
+    float scale = 0.5f;
+    float scaleValues[] = {scale, scale, scale};
+    lightScale.setData(scaleValues, 3);
+
+    AlgOps::mat4 model;
+    model.identity();
+    model = AlgOps::translate(model, lightPos);
+    model = AlgOps::scale(model, lightScale); 
+    shader->setMat4("model", model);
+
     light.Draw();
 }
 

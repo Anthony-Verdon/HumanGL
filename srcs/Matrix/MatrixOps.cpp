@@ -112,4 +112,24 @@ namespace AlgOps
             result.setData(values, 16);
         return (result);
     }
+
+    mat4 translate(const mat4 &instance, const vec3 &vector)
+    {
+        mat4 result = instance;
+
+        for (int i = 0; i < 3; i++)
+            result.setData(3, i, result.getData(3, i) + vector.getData(i, 0)); // should be pos i, 3
+		
+        return result;
+    }
+
+    mat4 scale(const mat4 &instance, const vec3 &vector)
+    {
+        mat4 result = instance;
+
+        for (int i = 0; i < 3; i++)
+            result.setData(i, i, result.getData(i, i) * vector.getData(i, 0));
+		
+        return result;
+    }
 }

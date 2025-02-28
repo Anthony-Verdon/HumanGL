@@ -45,12 +45,6 @@ namespace AlgOps
     typedef Matrix<3, 3> mat3;
     typedef Matrix<4, 4> mat4;
     
-    mat4 rotate(const mat4 &instance, float angle, const vec3 &vector);
-    mat4 perspective(float fov, float aspect, float near, float far);
-    vec3 normalize(const vec3 &vector);
-    vec3 crossProduct(const vec3 &vectorA, const vec3 &vectorB);
-    float dotProduct(const vec3 &vectorA, const vec3 &vectorB);
-    mat4 lookAt(const vec3 &position, const vec3 &target, const vec3 &initialUpVector);
     template <size_t R, size_t C>
     Matrix<R, C> Zero(const Matrix<R, C> &instance);
     
@@ -62,6 +56,17 @@ namespace AlgOps
 
     template <size_t R1, size_t C1, size_t R2, size_t C2>
     Matrix<R1, C2> operator*(const Matrix<R1, C1> &matA, const Matrix<R2, C2> &matB);
+
+    // matrix operations
+    mat4 rotate(const mat4 &instance, float angle, const vec3 &vector);
+    mat4 perspective(float fov, float aspect, float near, float far);
+    vec3 normalize(const vec3 &vector);
+    vec3 crossProduct(const vec3 &vectorA, const vec3 &vectorB);
+    float dotProduct(const vec3 &vectorA, const vec3 &vectorB);
+    mat4 lookAt(const vec3 &position, const vec3 &target, const vec3 &initialUpVector);
+    mat4 translate(const mat4 &instance, const vec3 &vector);
+    mat4 scale(const mat4 &instance, const vec3 &vector);
+    
 }
   
 #include "Matrix.tpp"
