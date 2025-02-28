@@ -18,8 +18,3 @@ target("scop")
     add_includedirs("srcs")
     add_packages("glfw")
     add_packages("glad")
-
-target("Matrix")
-    set_kind("binary")
-    add_files("mainMatrix.cpp")
-    add_includedirs("srcs")
