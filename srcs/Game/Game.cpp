@@ -33,6 +33,7 @@ Game::Game()
     WindowManager::SetScrollCallback(scroll_callback);
 
     RessourceManager::AddShader("basic_shader", "shaders/shader.vs", "shaders/shader.fs");
+    RessourceManager::AddShader("light", "shaders/lightShader.vs", "shaders/lightShader.fs");
     RessourceManager::AddTexture("my_little_pony", "textures/myLittlePony.ppm");
 }
 
@@ -159,6 +160,17 @@ void Game::updateScene()
 
     for (size_t i = 0; i < objects.size(); i++)
         renderObject(objects[i]);
+
+    // light
+    auto shader = RessourceManager::GetShader("light");
+    shader->use();
+    AlgOps::mat4 projection = AlgOps::perspective(camera.getFov(), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
+    shader->setMat4("projection", projection);
+    AlgOps::mat4 view = AlgOps::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(), camera.getUpDirection());
+    shader->setMat4("view", view);
+    shader->setVec3("aLightColor", light.GetColor());
+
+    light.Draw();
 }
 
 void Game::updateCameraView()
@@ -222,6 +234,7 @@ void Game::updateShader()
     AlgOps::mat4 view = AlgOps::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(),
                                  camera.getUpDirection());
     shader->setMat4("view", view);
+    shader->setVec3("aLightColor", light.GetColor());
 }
 
 void scroll_callback(GLFWwindow *window, double xOffset, double yOffset)

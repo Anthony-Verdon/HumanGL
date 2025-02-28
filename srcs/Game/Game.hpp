@@ -5,6 +5,7 @@
 #include "Camera/Camera.hpp"
 #include "Texture/Texture.hpp"
 #include "Shader/Shader.hpp"
+#include "Light/Light.hpp"
 
 typedef enum axis
 {
@@ -23,7 +24,8 @@ class Game: public AProgram
         float sceneRotation[3];
         float inputRotation[3];
         AlgOps::vec3 axis[3];
-
+        Light light;
+        
         void ProcessInput();
         void updateCamera();
         void updateSceneOrientation();

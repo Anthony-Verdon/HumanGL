@@ -39,11 +39,6 @@ void WindowManager::InitWindow(const std::string &name, unsigned int width, unsi
 
     glClearColor(0.5f, 0.5f, 0.5f, 0.5f);
 
-    // cull face enabled make openGL draw only on one side
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_FRONT);
-    glFrontFace(GL_CW);
-
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
