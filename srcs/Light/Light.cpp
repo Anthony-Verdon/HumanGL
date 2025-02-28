@@ -57,8 +57,14 @@ Light::Light()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    float values[] = {1, 1, 1};
-    color.setData(values, 3);
+    float colorValues[] = {1, 1, 1};
+    color.setData(colorValues, 3);
+
+    float posValues[] = {0, 0, -3};
+    pos.setData(posValues, 3);
+
+    float scaleValues[] = {0.5, 0.5, 0.5};
+    scale.setData(scaleValues, 3);
 }
 
 Light::~Light()

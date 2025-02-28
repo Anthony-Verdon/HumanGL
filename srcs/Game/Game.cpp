@@ -170,18 +170,10 @@ void Game::updateScene()
     shader->setMat4("view", view);
     shader->setVec3("lightColor", light.GetColor());
 
-    AlgOps::vec3 lightPos;
-    float posValues[] = {0, 0, -3};
-    lightPos.setData(posValues, 3);
-    AlgOps::vec3 lightScale;
-    float scale = 0.5f;
-    float scaleValues[] = {scale, scale, scale};
-    lightScale.setData(scaleValues, 3);
-
     AlgOps::mat4 model;
     model.identity();
-    model = AlgOps::translate(model, lightPos);
-    model = AlgOps::scale(model, lightScale); 
+    model = AlgOps::translate(model, light.GetPos());
+    model = AlgOps::scale(model, light.GetScale()); 
     shader->setMat4("model", model);
 
     light.Draw();
@@ -248,7 +240,13 @@ void Game::updateShader()
     AlgOps::mat4 view = AlgOps::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(),
                                  camera.getUpDirection());
     shader->setMat4("view", view);
+    AlgOps::mat4 model;
+    model.identity();
+    shader->setMat4("model", model);
+
     shader->setVec3("lightColor", light.GetColor());
+    shader->setVec3("lightPos", light.GetPos());
+    shader->setVec3("viewPos", camera.getPosition());
 }
 
 void scroll_callback(GLFWwindow *window, double xOffset, double yOffset)
