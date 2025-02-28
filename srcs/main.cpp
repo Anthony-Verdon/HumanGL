@@ -11,7 +11,6 @@
  * create the shader program,
  * and start the update loop
  */
-
 int main(int argc, char **argv)
 {
     try

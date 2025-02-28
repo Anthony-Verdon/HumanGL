@@ -9,8 +9,8 @@ class WindowManager
 {
   private:
     static GLFWwindow *window;
-    static Matrix windowSize;
-    static Matrix mousePosition;
+    static AlgOps::vec2 windowSize;
+    static AlgOps::vec2 mousePosition;
 
     WindowManager() = delete;
     ~WindowManager() = delete;
@@ -26,11 +26,11 @@ class WindowManager
     
     static GLFWwindow *GetWindow();
 
-    static Matrix GetWindowSize();
+    static AlgOps::vec2 GetWindowSize();
     static unsigned int GetWindowWidth();
     static unsigned int GetWindowHeight();
 
-    static Matrix GetMousePosition();
+    static AlgOps::vec2 GetMousePosition();
     static void SetMousePosition(double xPos, double yPos);
 
     static void SetUserPointer(void *ptr);

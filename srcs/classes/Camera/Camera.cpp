@@ -2,16 +2,9 @@
 
 Camera::Camera()
 {
-    position = Matrix(3, 1);
-    frontDirection = Matrix(3, 1);
-    rightDirection = Matrix(3, 1);
-    upDirection = Matrix(3, 1);
-
     float positionValues[] = {0.0f, 0.0f, 3.0f};
     position.setData(positionValues, 3);
-    frontDirection = Matrix(3, 1);
     frontDirection.uniform(1.0f);
-    rightDirection = Matrix(3, 1);
     rightDirection.uniform(1.0f);
     float upDirectionValues[] = {0.0f, 1.0f, 0.0f};
     upDirection.setData(upDirectionValues, 3);
@@ -23,13 +16,11 @@ Camera::Camera()
     speed = 2.5f;
 }
 
-Camera::Camera(const Matrix &position, const Matrix &upDirection, float yaw, float pitch, float roll, float fov,
+Camera::Camera(const AlgOps::vec3 &position, const AlgOps::vec3 &upDirection, float yaw, float pitch, float roll, float fov,
                float speed)
 {
     this->position = position;
-    frontDirection = Matrix(3, 1);
     frontDirection.uniform(1.0f);
-    rightDirection = Matrix(3, 1);
     rightDirection.uniform(1.0f);
     this->upDirection = upDirection;
     this->yaw = yaw;
@@ -65,22 +56,22 @@ Camera::~Camera()
 {
 }
 
-Matrix Camera::getPosition() const
+AlgOps::vec3 Camera::getPosition() const
 {
     return (position);
 }
 
-Matrix Camera::getFrontDirection() const
+AlgOps::vec3 Camera::getFrontDirection() const
 {
     return (frontDirection);
 }
 
-Matrix Camera::getRightDirection() const
+AlgOps::vec3 Camera::getRightDirection() const
 {
     return (rightDirection);
 }
 
-Matrix Camera::getUpDirection() const
+AlgOps::vec3 Camera::getUpDirection() const
 {
     return (upDirection);
 }
@@ -108,14 +99,14 @@ float Camera::getSpeed() const
     return (speed);
 }
 
-void Camera::setPosition(const Matrix &position)
+void Camera::setPosition(const AlgOps::vec3 &position)
 {
     if (position.getRows() != 3 || position.getColumns() != 1)
         throw(Exception("SET_POSITION", "INVALID_SIZE", position));
 
     this->position = position;
 }
-void Camera::setFrontDirection(const Matrix &frontDirection)
+void Camera::setFrontDirection(const AlgOps::vec3 &frontDirection)
 {
     if (frontDirection.getRows() != 3 || frontDirection.getColumns() != 1)
         throw(Exception("SET_FRONT_DIRECTION", "INVALID_SIZE", frontDirection));
@@ -123,7 +114,7 @@ void Camera::setFrontDirection(const Matrix &frontDirection)
     this->frontDirection = frontDirection;
 }
 
-void Camera::setRightDirection(const Matrix &rightDirection)
+void Camera::setRightDirection(const AlgOps::vec3 &rightDirection)
 {
     if (rightDirection.getRows() != 3 || rightDirection.getColumns() != 1)
         throw(Exception("SET_RIGHT_DIRECTION", "INVALID_SIZE", rightDirection));
@@ -131,7 +122,7 @@ void Camera::setRightDirection(const Matrix &rightDirection)
     this->rightDirection = rightDirection;
 }
 
-void Camera::setUpDirection(const Matrix &upDirection)
+void Camera::setUpDirection(const AlgOps::vec3 &upDirection)
 {
     if (upDirection.getRows() != 3 || upDirection.getColumns() != 1)
         throw(Exception("SET_UP_DIRECTION", "INVALID_SIZE", upDirection));
@@ -164,7 +155,7 @@ void Camera::setSpeed(float speed)
     this->speed = speed;
 }
 
-void Camera::addToPosition(const Matrix &position)
+void Camera::addToPosition(const AlgOps::vec3 &position)
 {
     if (position.getRows() != 3 || position.getColumns() != 1)
         throw(Exception("ADD_TO_POSITION", "INVALID_SIZE", position));
@@ -187,7 +178,7 @@ void Camera::addToFov(float fov)
     this->fov += fov;
 }
 
-Camera::Exception::Exception(const std::string &functionName, const std::string &errorMessage, const Matrix &position)
+Camera::Exception::Exception(const std::string &functionName, const std::string &errorMessage, const AlgOps::vec3 &position)
 {
     this->errorMessage = "CAMERA::" + functionName + "::" + errorMessage;
     this->errorMessage +=

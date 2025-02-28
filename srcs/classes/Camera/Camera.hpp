@@ -5,10 +5,10 @@
 class Camera
 {
   private:
-    Matrix position;
-    Matrix frontDirection;
-    Matrix rightDirection;
-    Matrix upDirection;
+    AlgOps::vec3 position;
+    AlgOps::vec3 frontDirection;
+    AlgOps::vec3 rightDirection;
+    AlgOps::vec3 upDirection;
     float yaw;   // x-axis by euler
     float pitch; // y-axis by euler
     float roll;  // z-axis by euler
@@ -18,7 +18,7 @@ class Camera
     class Exception : public std::exception
     {
       public:
-        Exception(const std::string &functionName, const std::string &errorMessage, const Matrix &position);
+        Exception(const std::string &functionName, const std::string &errorMessage, const AlgOps::vec3 &position);
         const char *what(void) const throw();
 
       private:
@@ -27,33 +27,33 @@ class Camera
 
   public:
     Camera();
-    Camera(const Matrix &position, const Matrix &upDirection, float yaw, float pitch, float roll, float fov,
+    Camera(const AlgOps::vec3 &position, const AlgOps::vec3 &upDirection, float yaw, float pitch, float roll, float fov,
            float speed);
     Camera(const Camera &copy);
     Camera &operator=(const Camera &copy);
     ~Camera();
 
-    Matrix getPosition() const;
-    Matrix getFrontDirection() const;
-    Matrix getRightDirection() const;
-    Matrix getUpDirection() const;
+    AlgOps::vec3 getPosition() const;
+    AlgOps::vec3 getFrontDirection() const;
+    AlgOps::vec3 getRightDirection() const;
+    AlgOps::vec3 getUpDirection() const;
     float getYaw() const;
     float getPitch() const;
     float getRoll() const;
     float getFov() const;
     float getSpeed() const;
 
-    void setPosition(const Matrix &position);
-    void setFrontDirection(const Matrix &frontDirection);
-    void setRightDirection(const Matrix &rightDirection);
-    void setUpDirection(const Matrix &upDirection);
+    void setPosition(const AlgOps::vec3 &position);
+    void setFrontDirection(const AlgOps::vec3 &frontDirection);
+    void setRightDirection(const AlgOps::vec3 &rightDirection);
+    void setUpDirection(const AlgOps::vec3 &upDirection);
     void setYaw(float yaw);
     void setPitch(float pitch);
     void setRoll(float roll);
     void setFov(float fov);
     void setSpeed(float speed);
 
-    void addToPosition(const Matrix &position);
+    void addToPosition(const AlgOps::vec3 &position);
     void addToYaw(float yaw);
     void addToPitch(float pitch);
     void addToFov(float fov);

@@ -17,7 +17,6 @@ Game::Game()
     {
         inputRotation[i] = 0;
         sceneRotation[i] = 0;
-        axis[i] = Matrix(3, 1);
     }
     float values[3] = {0};
     values[0] = 1;
@@ -86,7 +85,7 @@ void Game::updateCamera()
     // orientation
     const float sensitivity = 0.1f;
 
-    Matrix mousePos = WindowManager::GetMousePosition();
+    AlgOps::vec2 mousePos = WindowManager::GetMousePosition();
     static float lastX = mousePos.getX();
     static float lastY = mousePos.getY();
 
@@ -163,14 +162,14 @@ void Game::updateScene(const Texture &texture, const Shader &shader)
 
 void Game::updateCameraView()
 {
-    Matrix direction(3, 1);
+    AlgOps::vec3 direction;
     float directionValues[] = {cosf(Utils::DegToRad(camera.getYaw())) * cosf(Utils::DegToRad(camera.getPitch())),
                                sinf(Utils::DegToRad(camera.getPitch())),
                                sinf(Utils::DegToRad(camera.getYaw())) * cosf(Utils::DegToRad(camera.getPitch()))};
     direction.setData(directionValues, 3);
-    camera.setFrontDirection(Matrix::normalize(direction));
+    camera.setFrontDirection(AlgOps::normalize(direction));
     camera.setRightDirection(
-        Matrix::normalize(Matrix::crossProduct(camera.getFrontDirection(), camera.getUpDirection())));
+        AlgOps::normalize(AlgOps::crossProduct(camera.getFrontDirection(), camera.getUpDirection())));
 }
 
 void Game::updateTexture()
@@ -207,17 +206,17 @@ void Game::updateShader(const Texture &texture, const Shader &shader)
     sceneRotation[X_AXIS] += inputRotation[X_AXIS] * Time::getDeltaTime();
     sceneRotation[Y_AXIS] += inputRotation[Y_AXIS] * Time::getDeltaTime();
     sceneRotation[Z_AXIS] += inputRotation[Z_AXIS] * Time::getDeltaTime();
-    Matrix rotation(4, 4);
+    AlgOps::mat4 rotation;
     rotation.uniform(1);
-    rotation = Matrix::rotate(rotation, sceneRotation[X_AXIS], axis[X_AXIS]) *
-               Matrix::rotate(rotation, sceneRotation[Y_AXIS], axis[Y_AXIS]) *
-               Matrix::rotate(rotation, sceneRotation[Z_AXIS], axis[Z_AXIS]);
+    rotation = AlgOps::rotate(rotation, sceneRotation[X_AXIS], axis[X_AXIS]) *
+                AlgOps::rotate(rotation, sceneRotation[Y_AXIS], axis[Y_AXIS]) *
+                AlgOps::rotate(rotation, sceneRotation[Z_AXIS], axis[Z_AXIS]);
     shader.setMat4("rotation", rotation);
 
-    Matrix projection = Matrix::perspective(camera.getFov(), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
+    AlgOps::mat4 projection = AlgOps::perspective(camera.getFov(), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
     shader.setMat4("projection", projection);
 
-    Matrix view = Matrix::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(),
+    AlgOps::mat4 view = AlgOps::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(),
                                  camera.getUpDirection());
     shader.setMat4("view", view);
 }

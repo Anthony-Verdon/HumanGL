@@ -22,7 +22,7 @@ class Game: public AProgram
         float mixedValue;
         float sceneRotation[3];
         float inputRotation[3];
-        Matrix axis[3];
+        AlgOps::vec3 axis[3];
 
         void ProcessInput();
         void updateCamera();
