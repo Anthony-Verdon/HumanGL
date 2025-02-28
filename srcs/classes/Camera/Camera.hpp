@@ -15,16 +15,6 @@ class Camera
     float fov;
     float speed;
 
-    class Exception : public std::exception
-    {
-      public:
-        Exception(const std::string &functionName, const std::string &errorMessage, const AlgOps::vec3 &position);
-        const char *what(void) const throw();
-
-      private:
-        std::string errorMessage;
-    };
-
   public:
     Camera();
     Camera(const AlgOps::vec3 &position, const AlgOps::vec3 &upDirection, float yaw, float pitch, float roll, float fov,

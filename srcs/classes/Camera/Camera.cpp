@@ -101,32 +101,20 @@ float Camera::getSpeed() const
 
 void Camera::setPosition(const AlgOps::vec3 &position)
 {
-    if (position.getRows() != 3 || position.getColumns() != 1)
-        throw(Exception("SET_POSITION", "INVALID_SIZE", position));
-
     this->position = position;
 }
 void Camera::setFrontDirection(const AlgOps::vec3 &frontDirection)
 {
-    if (frontDirection.getRows() != 3 || frontDirection.getColumns() != 1)
-        throw(Exception("SET_FRONT_DIRECTION", "INVALID_SIZE", frontDirection));
-
     this->frontDirection = frontDirection;
 }
 
 void Camera::setRightDirection(const AlgOps::vec3 &rightDirection)
 {
-    if (rightDirection.getRows() != 3 || rightDirection.getColumns() != 1)
-        throw(Exception("SET_RIGHT_DIRECTION", "INVALID_SIZE", rightDirection));
-
     this->rightDirection = rightDirection;
 }
 
 void Camera::setUpDirection(const AlgOps::vec3 &upDirection)
 {
-    if (upDirection.getRows() != 3 || upDirection.getColumns() != 1)
-        throw(Exception("SET_UP_DIRECTION", "INVALID_SIZE", upDirection));
-
     this->upDirection = upDirection;
 }
 
@@ -157,9 +145,6 @@ void Camera::setSpeed(float speed)
 
 void Camera::addToPosition(const AlgOps::vec3 &position)
 {
-    if (position.getRows() != 3 || position.getColumns() != 1)
-        throw(Exception("ADD_TO_POSITION", "INVALID_SIZE", position));
-
     this->position = this->position + position;
 }
 
@@ -176,17 +161,4 @@ void Camera::addToPitch(float pitch)
 void Camera::addToFov(float fov)
 {
     this->fov += fov;
-}
-
-Camera::Exception::Exception(const std::string &functionName, const std::string &errorMessage, const AlgOps::vec3 &position)
-{
-    this->errorMessage = "CAMERA::" + functionName + "::" + errorMessage;
-    this->errorMessage +=
-        "\n|\n| " + std::to_string(position.getRows()) + " * " + std::to_string(position.getColumns()) + "\n|";
-    this->errorMessage += "\n| should be: 3 * 1\n|";
-}
-
-const char *Camera::Exception::what(void) const throw()
-{
-    return (errorMessage.c_str());
 }

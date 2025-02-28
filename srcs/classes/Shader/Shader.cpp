@@ -96,8 +96,6 @@ void Shader::setFloat(const std::string &name, float value) const
 
 void Shader::setVec2(const std::string &name, const AlgOps::vec2 &vector) const
 {
-    if (vector.getRows() != 2 || vector.getColumns() != 1)
-        throw(Exception("SET_VEC2", "INVALID_SIZE", vector));
     glUniform2fv(glGetUniformLocation(ID, name.c_str()), 1, vector.getData());
 }
 
@@ -108,8 +106,6 @@ void Shader::setVec2(const std::string &name, float x, float y) const
 
 void Shader::setVec3(const std::string &name, const AlgOps::vec3 &vector) const
 {
-    if (vector.getRows() != 3 || vector.getColumns() != 1)
-        throw(Exception("SET_VEC3", "INVALID_SIZE", vector));
     glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, vector.getData());
 }
 
@@ -120,8 +116,6 @@ void Shader::setVec3(const std::string &name, float x, float y, float z) const
 
 void Shader::setVec4(const std::string &name, const AlgOps::vec4 &vector) const
 {
-    if (vector.getRows() != 4 || vector.getColumns() != 1)
-        throw(Exception("SET_VEC4", "INVALID_SIZE", vector));
     glUniform4fv(glGetUniformLocation(ID, name.c_str()), 1, vector.getData());
 }
 
@@ -132,22 +126,16 @@ void Shader::setVec4(const std::string &name, float x, float y, float z, float w
 
 void Shader::setMat2(const std::string &name, const AlgOps::mat2 &matrix) const
 {
-    if (matrix.getRows() != 2 || matrix.getColumns() != 2)
-        throw(Exception("SET_MAT2", "INVALID_SIZE", matrix));
     glUniformMatrix2fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, matrix.getData());
 }
 
 void Shader::setMat3(const std::string &name, const AlgOps::mat3 &matrix) const
 {
-    if (matrix.getRows() != 3 || matrix.getColumns() != 3)
-        throw(Exception("SET_MAT3", "INVALID_SIZE", matrix));
     glUniformMatrix3fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, matrix.getData());
 }
 
 void Shader::setMat4(const std::string &name, const AlgOps::mat4 &matrix) const
 {
-    if (matrix.getRows() != 4 || matrix.getColumns() != 4)
-        throw(Exception("SET_MAT4", "INVALID_SIZE", matrix));
     glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, matrix.getData());
 }
 

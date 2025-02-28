@@ -46,8 +46,6 @@ namespace AlgOps
       float getY() const;
       float getZ() const;
       float getW() const;
-      unsigned int getRows() const;
-      unsigned int getColumns() const;
       
       void setData(unsigned int rowIndex, unsigned int columnIndex, float value);
       void setData(float *values, unsigned int size);

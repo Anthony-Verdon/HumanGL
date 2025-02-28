@@ -26,8 +26,8 @@ namespace AlgOps
     {
         if (&copy != this)
         {
-            rows = copy.getRows();
-            columns = copy.getColumns();
+            rows = R;
+            columns = C;
             data = std::make_unique<float[]>(rows * columns);
             setData(copy.getData(), rows * columns);
         }
@@ -42,8 +42,6 @@ namespace AlgOps
     template <size_t R, size_t C>
     bool Matrix<R, C>::operator!=(const Matrix<R, C> &instance)
     {
-        if (rows != instance.getRows() || columns != instance.getColumns())
-            return (true);
         for (size_t i = 0; i < rows * columns; i++)
         {
             if (data[i] != instance.getData()[i])
@@ -66,9 +64,6 @@ namespace AlgOps
         Matrix<R, C> result;
         float value;
         
-        if (rows != instance.getRows() || columns != instance.getColumns())
-            throw(Exception("OPERATOR +", "MATRIX_INCOMPATIBLE", *this, instance));
-
         for (size_t x = 0; x < rows; x++)
         {
             for (size_t y = 0; y < columns; y++)
@@ -86,9 +81,6 @@ namespace AlgOps
         Matrix<R, C> result;
         float value;
         
-        if (rows != instance.getRows() || columns != instance.getColumns())
-            throw(Exception("OPERATOR -", "MATRIX_INCOMPATIBLE", *this, instance));
-
         for (size_t x = 0; x < rows; x++)
         {
             for (size_t y = 0; y < columns; y++)
@@ -113,12 +105,12 @@ namespace AlgOps
             //throw(Exception("OPERATOR *", "MATRIX_INCOMPATIBLE", matA, matB));
         }
 
-        for (size_t y = 0; y < result.getRows(); y++)
+        for (size_t y = 0; y < R1; y++)
         {
-            for (size_t x = 0; x < result.getColumns(); x++)
+            for (size_t x = 0; x < C2; x++)
             {
                 value = 0;
-                for (size_t i = 0; i < matB.getRows(); i++)
+                for (size_t i = 0; i < R2; i++)
                     value += matA.getData(y, i) * matB.getData(i, x);
                 result.setData(y, x, value);
             }
@@ -132,9 +124,9 @@ namespace AlgOps
         Matrix<R, C> result;
         float value;
         
-        for (size_t y = 0; y < result.getRows(); y++)
+        for (size_t y = 0; y < R; y++)
         {
-            for (size_t x = 0; x < result.getColumns(); x++)
+            for (size_t x = 0; x < C; x++)
             {
                 value = getData(y, x) * number;
                 result.setData(y, x, value);
@@ -146,18 +138,7 @@ namespace AlgOps
     template <size_t R, size_t C>
     Matrix<R, C> operator*(float number, const Matrix<R, C> &instance)
     {
-        Matrix<R, C> result;
-        float value;
-        
-        for (size_t y = 0; y < result.getRows(); y++)
-        {
-            for (size_t x = 0; x < result.getColumns(); x++)
-            {
-                value = instance.getData(y, x) * number;
-                result.setData(y, x, value);
-            }
-        }
-        return (result);
+        return (instance * number);
     }
 
     template <size_t R, size_t C>
@@ -216,18 +197,6 @@ namespace AlgOps
     }
 
     template <size_t R, size_t C>
-    unsigned int Matrix<R, C>::getRows() const
-    {
-        return (rows);
-    }
-
-    template <size_t R, size_t C>
-    unsigned int Matrix<R, C>::getColumns() const
-    {
-        return (columns);
-    }
-
-    template <size_t R, size_t C>
     void Matrix<R, C>::setData(unsigned int rowIndex, unsigned int columnIndex, float value)
     {
         if (rowIndex >= rows || columnIndex >= columns)
@@ -277,9 +246,10 @@ namespace AlgOps
     template <size_t R, size_t C>
     Matrix<R, C>::Exception::Exception(const std::string &functionName, const std::string &errorMessage, const Matrix<R, C> &matrix)
     {
+        (void)matrix;
         this->errorMessage = "MATRIX::" + functionName + "::" + errorMessage;
         this->errorMessage += "\n|\n| ";
-        this->errorMessage += "matrix: " + std::to_string(matrix.getRows()) + " * " + std::to_string(matrix.getColumns());
+        this->errorMessage += "matrix: " + std::to_string(R) + " * " + std::to_string(C);
         this->errorMessage += "\n|";
     }
 
@@ -287,9 +257,10 @@ namespace AlgOps
     template <size_t R, size_t C>
     Matrix<R, C>::Exception::Exception(const std::string &functionName, const std::string &errorMessage, const Matrix<R, C> &matrix, unsigned int size)
     {
+        (void)matrix;
         this->errorMessage = "MATRIX::" + functionName + "::" + errorMessage;
         this->errorMessage += "\n|\n| ";
-        this->errorMessage += "matrix: " + std::to_string(matrix.getRows()) + " * " + std::to_string(matrix.getColumns());
+        this->errorMessage += "matrix: " + std::to_string(R) + " * " + std::to_string(C);
         this->errorMessage += "\n|";
         this->errorMessage += "size: " + std::to_string(size);
         this->errorMessage += "\n|";
@@ -298,9 +269,10 @@ namespace AlgOps
     template <size_t R, size_t C>
     Matrix<R, C>::Exception::Exception(const std::string &functionName, const std::string &errorMessage, const Matrix<R, C> &matrix, unsigned int rows, unsigned int columns)
     {
+        (void)matrix;
         this->errorMessage = "MATRIX::" + functionName + "::" + errorMessage;
         this->errorMessage += "\n|\n| ";
-        this->errorMessage += "matrix: " + std::to_string(matrix.getRows()) + " * " + std::to_string(matrix.getColumns());
+        this->errorMessage += "matrix: " + std::to_string(R) + " * " + std::to_string(C);
         this->errorMessage += "\n|";
         this->errorMessage += "rows and columns: " + std::to_string(rows) + " * " + std::to_string(columns);
         this->errorMessage += "\n|";
@@ -338,9 +310,9 @@ namespace AlgOps
     std::ostream &operator<<(std::ostream &os, const Matrix<R, C> &instance)
     {
         os << std::endl;
-        for (size_t y = 0; y < instance.getRows(); y++)
+        for (size_t y = 0; y < R; y++)
         {
-            for (size_t x = 0; x < instance.getColumns(); x++)
+            for (size_t x = 0; x < C; x++)
                 os << instance.getData(y, x) << " ";
             os << std::endl;
         }
