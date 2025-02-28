@@ -8,11 +8,10 @@ namespace AlgOps
     template<size_t R, size_t C>
     Matrix<R, C>::Matrix()
     {
-        rows = R;
-        columns = C;
-        if (rows == 0 || columns == 0)
-            throw(Exception("OPERATOR *", "INVALID_SIZE", rows, columns));
-        data = std::make_unique<float[]>(rows * columns);
+        if (R == 0 || R == 0)
+            throw(Exception("OPERATOR *", "INVALID_SIZE", R, C));
+        size = R * C;
+        data = std::make_unique<float[]>(R * C);
     }
 
     template <size_t R, size_t C>
@@ -26,10 +25,9 @@ namespace AlgOps
     {
         if (&copy != this)
         {
-            rows = R;
-            columns = C;
-            data = std::make_unique<float[]>(rows * columns);
-            setData(copy.getData(), rows * columns);
+            size = R * C;
+            data = std::make_unique<float[]>(R * C);
+            setData(copy.getData(), R * C);
         }
         return (*this);
     }
@@ -42,7 +40,7 @@ namespace AlgOps
     template <size_t R, size_t C>
     bool Matrix<R, C>::operator!=(const Matrix<R, C> &instance)
     {
-        for (size_t i = 0; i < rows * columns; i++)
+        for (size_t i = 0; i < R * C; i++)
         {
             if (data[i] != instance.getData()[i])
             return (true);
@@ -53,9 +51,7 @@ namespace AlgOps
     template <size_t R, size_t C>
     bool Matrix<R, C>::operator==(const Matrix<R, C> &instance)
     {
-        if (*this != instance)
-            return (false);
-        return (true);
+        return (!(*this != instance));
     }
 
     template <size_t R, size_t C>
@@ -64,11 +60,11 @@ namespace AlgOps
         Matrix<R, C> result;
         float value;
         
-        for (size_t x = 0; x < rows; x++)
+        for (size_t x = 0; x < R; x++)
         {
-            for (size_t y = 0; y < columns; y++)
+            for (size_t y = 0; y < C; y++)
             {
-                value = data[x * columns + y] + instance.getData()[x * columns + y];
+                value = data[x * C + y] + instance.getData()[x * C + y];
                 result.setData(x, y, value);
             }
         }
@@ -81,11 +77,11 @@ namespace AlgOps
         Matrix<R, C> result;
         float value;
         
-        for (size_t x = 0; x < rows; x++)
+        for (size_t x = 0; x < R; x++)
         {
-            for (size_t y = 0; y < columns; y++)
+            for (size_t y = 0; y < C; y++)
             {
-                value = data[x * columns + y] - instance.getData()[x * columns + y];
+                value = data[x * C + y] - instance.getData()[x * C + y];
                 result.setData(x, y, value);
             }
         }
@@ -150,17 +146,17 @@ namespace AlgOps
     template <size_t R, size_t C>
     float Matrix<R, C>::getData(unsigned int rowIndex, unsigned int columnIndex) const
     {
-        if (rowIndex >= rows || columnIndex >= columns)
+        if (rowIndex >= R || columnIndex >= C)
             throw(Exception("GET_DATA", "INVALID_INDEX", *this, rowIndex, columnIndex));
 
-        return (data[rowIndex * columns + columnIndex]);
+        return (data[rowIndex * C + columnIndex]);
     }
 
     // only for vector
     template <size_t R, size_t C>
     float Matrix<R, C>::getX() const
     {
-        if (rows < 1 || rows > 4 || columns != 1)
+        if (R < 1 || R > 4 || C != 1)
             throw(Exception("GET_X", "INVALID_SIZE", *this));
 
         return (getData(0, 0));
@@ -170,7 +166,7 @@ namespace AlgOps
     template <size_t R, size_t C>
     float Matrix<R, C>::getY() const
     {
-        if (rows < 2 || rows > 4 || columns != 1)
+        if (R < 2 || R > 4 || C != 1)
             throw(Exception("GET_Y", "INVALID_SIZE", *this));
 
         return (getData(1, 0));
@@ -180,7 +176,7 @@ namespace AlgOps
     template <size_t R, size_t C>
     float Matrix<R, C>::getZ() const
     {
-        if (rows < 3 || rows > 4 || columns != 1)
+        if (R < 3 || R > 4 || C != 1)
             throw(Exception("GET_Z", "INVALID_SIZE", *this));
 
         return (getData(2, 0));
@@ -190,7 +186,7 @@ namespace AlgOps
     template <size_t R, size_t C>
     float Matrix<R, C>::getW() const
     {
-        if (rows != 4 || columns != 1)
+        if (R != 4 || C != 1)
             throw(Exception("GET_W", "INVALID_SIZE", *this));
 
         return (getData(3, 0));
@@ -199,16 +195,16 @@ namespace AlgOps
     template <size_t R, size_t C>
     void Matrix<R, C>::setData(unsigned int rowIndex, unsigned int columnIndex, float value)
     {
-        if (rowIndex >= rows || columnIndex >= columns)
+        if (rowIndex >= R || columnIndex >= C)
             throw(Exception("SET_DATA", "INVALID_INDEX", *this, rowIndex, columnIndex));
 
-        data[rowIndex * columns + columnIndex] = value;
+        data[rowIndex * C + columnIndex] = value;
     }
 
     template <size_t R, size_t C>
     void Matrix<R, C>::setData(float *values, unsigned int size)
     {
-        if (size != rows * columns)
+        if (size != this->size)
             throw(Exception("SET_DATA", "INVALID_SIZE", *this, size));
 
         for (size_t i = 0; i < size; i++)
@@ -218,18 +214,18 @@ namespace AlgOps
     template <size_t R, size_t C>
     void Matrix<R, C>::uniform(float value)
     {
-        for (size_t i = 0; i < rows * columns; i++)
+        for (size_t i = 0; i < size; i++)
             data[i] = value;
     }
 
     template <size_t R, size_t C>
     void Matrix<R, C>::identity()
     {
-        if (rows != columns)
+        if (R != C)
             throw(Exception("IDENTITY", "INVALID_SIZE", *this));
 
         uniform(0);
-        for (size_t i = 0; i < rows; i++)
+        for (size_t i = 0; i < R; i++)
             setData(i, i, 1);
     }
         
@@ -300,7 +296,7 @@ namespace AlgOps
     template <size_t R, size_t C>
     Matrix<R, C> Zero(const Matrix<R, C> &instance)
     {
-        Matrix result(instance);
+        Matrix<R, C> result = instance;
         
         result.uniform(0);
         return (result);

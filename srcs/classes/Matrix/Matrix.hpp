@@ -11,8 +11,7 @@ namespace AlgOps
   {
     private:
       std::unique_ptr<float[]> data;
-      unsigned int rows;
-      unsigned int columns;
+      size_t size;
       
       class Exception : public std::exception
       {
@@ -79,4 +78,4 @@ namespace AlgOps
     Matrix<R1, C2> operator*(const Matrix<R1, C1> &matA, const Matrix<R2, C2> &matB);
 }
   
-#include "classes/Matrix/Matrix.tpp"
+#include "Matrix.tpp"
