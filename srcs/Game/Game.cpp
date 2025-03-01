@@ -244,9 +244,16 @@ void Game::updateShader()
     model.identity();
     shader->setMat4("model", model);
 
-    shader->setVec3("lightColor", light.GetColor());
-    shader->setVec3("lightPos", light.GetPos());
     shader->setVec3("viewPos", camera.getPosition());
+
+    shader->setVec3("material.ambient", 0.5f, 0.5f, 0.5f);
+    shader->setVec3("material.diffuse", 1.0f, 1.0f, 1.0f);
+    shader->setVec3("material.specular", 0.5f, 0.5f, 0.5f);
+    shader->setFloat("material.shininess", 32.0f);
+    shader->setVec3("light.position", light.GetPos()); 
+    shader->setVec3("light.ambient",  light.GetColor());
+    shader->setVec3("light.diffuse",  0.5f, 0.5f, 0.5f);
+    shader->setVec3("light.specular", 1.0f, 1.0f, 1.0f); 
 }
 
 void scroll_callback(GLFWwindow *window, double xOffset, double yOffset)
