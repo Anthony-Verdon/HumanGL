@@ -42,7 +42,8 @@ class ObjectData
     std::unique_ptr<unsigned int[]> getFacesIntoArray() const;
     unsigned int getSmoothShadingGroup() const;
     unsigned int getVAO() const;
-    Material getMaterial() const;
+    std::vector<Material> getMaterials() const;
+    size_t getMaterialIndex(const std::string &name) const;
 
     void reset();
     void setName(const std::string &name);
@@ -52,7 +53,7 @@ class ObjectData
     void setCombinedVertices(const std::vector<Vertex> &vertices);
     void setFaces(const std::vector<TriangleFace> &faces) { this->faces = faces; }
     void setSmoothShadingGroup(unsigned int smoothShading);
-    void setMaterial(const Material &material);
+    void addMaterial(const Material &material);
 
     void addVertex(const Vertex &vertex);
     void addTextureVertex(const Vertex &vertex);
@@ -68,5 +69,5 @@ class ObjectData
     std::vector<Vertex> combinedVertices;
     std::vector<TriangleFace> faces;
     unsigned smoothShadingGroup;
-    std::optional<Material> material;
+    std::vector<Material> materials;
 };

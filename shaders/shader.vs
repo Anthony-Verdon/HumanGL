@@ -3,6 +3,7 @@ layout (location = 0) in vec4 aPos;
 layout (location = 1) in vec3 aTexCoord;
 layout (location = 2) in vec3 aColor;
 layout (location = 3) in vec3 aNormal;
+layout (location = 4) in float aMaterialIndex;
 
 uniform mat4 rotation;
 uniform mat4 view;
@@ -13,6 +14,7 @@ out vec2 TexCoord;
 out vec3 color;
 out vec3 Normal;
 out vec3 FragPos; 
+out float MaterialIndex; 
 
 void main()
 {
@@ -21,4 +23,5 @@ void main()
     color = aColor;
     Normal = mat3(transpose(inverse(rotation *model))) * aNormal; 
     FragPos = vec3(model * aPos);
+    MaterialIndex = aMaterialIndex;
 }

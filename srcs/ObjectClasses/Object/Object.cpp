@@ -10,7 +10,7 @@ Object::Object(const ObjectData &data)
     combinedVertices = data.getCombinedVertices();
     faces = data.getFaces();
     smoothShadingGroup = data.getSmoothShadingGroup();
-    material = data.getMaterial();
+    materials = data.getMaterials();
     VAOInit = false;
 }
 
@@ -30,7 +30,7 @@ Object &Object::operator=(const Object &copy)
         faces = copy.getFaces();
         name = copy.getName();
         smoothShadingGroup = copy.getSmoothShadingGroup();
-        material = copy.getMaterial();
+        materials = copy.getMaterials();
         VAOInit = false;
     }
     return (*this);
@@ -68,17 +68,19 @@ void Object::initVAO()
     std::unique_ptr<float[]> verticesArray = getCombinedVerticesIntoArray();
     std::unique_ptr<unsigned int[]> facesArray = getFacesIntoArray();
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * combinedVertices.size() * 13, &verticesArray[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * combinedVertices.size() * 14, &verticesArray[0], GL_STATIC_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * faces.size() * 3, &facesArray[0], GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 13 * sizeof(float), (void *)0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 13 * sizeof(float), (void *)(4 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void *)(4 * sizeof(float)));
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 13 * sizeof(float), (void *)(7 * sizeof(float)));
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void *)(7 * sizeof(float)));
     glEnableVertexAttribArray(2);
-    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 13 * sizeof(float), (void *)(10 * sizeof(float)));
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void *)(10 * sizeof(float)));
     glEnableVertexAttribArray(3);
+    glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void *)(13 * sizeof(float)));
+    glEnableVertexAttribArray(4);
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);

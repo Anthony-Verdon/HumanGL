@@ -108,7 +108,7 @@ bool ObjectData::CombinedVertexExist(const Vertex &v) const
 
 std::unique_ptr<float[]> ObjectData::getCombinedVerticesIntoArray() const
 {
-    const size_t combinedVertexSize = 13;
+    const size_t combinedVertexSize = 14;
     size_t j;
     std::unique_ptr<float[]> array;
 
@@ -149,15 +149,22 @@ std::string ObjectData::getName() const
         return ("");
 }
 
-Material ObjectData::getMaterial() const
+std::vector<Material> ObjectData::getMaterials() const
 {
-    if (material.has_value())
-        return (material.value());
-    else
-    {
-        return (Material());
-    }
+    return (materials);
 }
+
+size_t ObjectData::getMaterialIndex(const std::string &name) const
+{
+    for (size_t i = 0; i < materials.size(); i++)
+    {
+        if (materials[i].getName() == name)
+            return (i);
+    }
+
+    return (-1);
+}
+
 unsigned int ObjectData::getSmoothShadingGroup() const
 {
     return (smoothShadingGroup);
@@ -172,7 +179,7 @@ void ObjectData::reset()
     combinedVertices.clear();
     faces.clear();
     smoothShadingGroup = 0;
-    material.reset();
+    materials.clear();
 }
 
 void ObjectData::setName(const std::string &name)
@@ -205,9 +212,10 @@ void ObjectData::setSmoothShadingGroup(unsigned int smoothShadingGroup)
     this->smoothShadingGroup = smoothShadingGroup;
 }
 
-void ObjectData::setMaterial(const Material &material)
+void ObjectData::addMaterial(const Material &material)
 {
-    this->material = material;
+    if (std::find(materials.begin(), materials.end(), material) == materials.end())
+        materials.push_back(material);
 }
 
 void ObjectData::addVertex(const Vertex &vertex)

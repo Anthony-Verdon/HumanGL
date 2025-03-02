@@ -36,7 +36,7 @@ class Game: public AProgram
         void updateCameraView();
         void updateTexture();
         void renderObject(const Object &object);
-        void updateShader();
+        void updateShader(const Object &object);
     
     public:
         Game();

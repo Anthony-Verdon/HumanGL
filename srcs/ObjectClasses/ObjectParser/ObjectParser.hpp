@@ -23,6 +23,7 @@ class ObjectParser
     std::string path;
     unsigned int lineIndex;
     std::vector<Material> materials;
+    unsigned int materialIndex;
   
     size_t CalculateVertexIndex(ObjectData &objectData, const std::string &vertex, e_vertexType vertexType, const std::string &line);
     size_t CombineVertices(ObjectData &objectData, size_t vertexIndex, size_t textureVertexIndex, size_t normalVertexIndex);

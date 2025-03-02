@@ -259,16 +259,17 @@ size_t ObjectParser::CombineVertices(ObjectData &objectData, size_t vertexIndex,
     Vertex vertex = objectData.getVertex(vertexIndex - 1);
     Vertex textureVertex = objectData.getTextureVertex(textureVertexIndex - 1);
     Vertex normalVertex = objectData.getNormalVertex(normalVertexIndex - 1);
-    Vertex combinedVertex(13);
+    Vertex combinedVertex(14);
 
     for (size_t i = 0; i < 4; i++)
         combinedVertex[i + 0] = vertex[i];
     for (size_t i = 0; i < 3; i++)
         combinedVertex[i + 4] = textureVertex[i];
     for (size_t i = 0; i < 3; i++)
-        combinedVertex[i + 7] = objectData.getMaterial().getColor(2)[i];
+        combinedVertex[i + 7] = objectData.getMaterials()[materialIndex].getColor(2)[i];
     for (size_t i = 0; i < 3; i++)
         combinedVertex[i + 10] = normalVertex[i];
+    combinedVertex[13] = (float)materialIndex;
 
     std::vector<Vertex> combinedVertices = objectData.getCombinedVertices();
     auto it = std::find(combinedVertices.begin(), combinedVertices.end(), combinedVertex);
@@ -399,7 +400,8 @@ void ObjectParser::defineMTL(ObjectData &objectData, const std::string &line)
     {
         if (materials[i].getName() == words[1])
         {
-            objectData.setMaterial(materials[i]);
+            objectData.addMaterial(materials[i]);
+            materialIndex = objectData.getMaterialIndex(materials[i].getName());
             return;
         }
     }

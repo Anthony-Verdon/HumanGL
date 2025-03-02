@@ -209,12 +209,12 @@ void Game::updateTexture()
 
 void Game::renderObject(const Object &object)
 {
-    updateShader();
+    updateShader(object);
     glBindVertexArray(object.getVAO());
     glDrawElements(GL_TRIANGLES, object.getFaces().size() * 3, GL_UNSIGNED_INT, 0);
 }
 
-void Game::updateShader()
+void Game::updateShader(const Object &object)
 {
     auto shader = RessourceManager::GetShader("basic_shader");
     auto texture = RessourceManager::GetTexture("my_little_pony");
@@ -246,10 +246,19 @@ void Game::updateShader()
 
     shader->setVec3("viewPos", camera.getPosition());
 
-    shader->setVec3("material.ambient", 0.5f, 0.5f, 0.5f);
-    shader->setVec3("material.diffuse", 1.0f, 1.0f, 1.0f);
-    shader->setVec3("material.specular", 0.5f, 0.5f, 0.5f);
-    shader->setFloat("material.shininess", 32.0f);
+    std::vector<Material> materials = object.getMaterials();
+    for (size_t i = 0; i < materials.size(); i++)
+    {
+        AlgOps::vec3 color;
+        color.setData(materials[i].getColor(AMBIANT_COLOR).data(), 3);
+        shader->setVec3("materials[" + std::to_string(i) + "].ambient", color);
+        color.setData(materials[i].getColor(DIFFUSE_COLOR).data(), 3);
+        shader->setVec3("materials[" + std::to_string(i) + "].diffuse", color);
+        color.setData(materials[i].getColor(SPECULAR_COLOR).data(), 3);
+        shader->setVec3("materials[" + std::to_string(i) + "].specular", color);
+        shader->setFloat("materials[" + std::to_string(i) + "].shininess", 32.0f);
+    }
+    
     shader->setVec3("light.position", light.GetPos()); 
     shader->setVec3("light.ambient",  light.GetColor());
     shader->setVec3("light.diffuse",  0.5f, 0.5f, 0.5f);

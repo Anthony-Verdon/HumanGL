@@ -45,6 +45,16 @@ Material::~Material()
 {
 }
 
+bool Material::operator==(const Material &instance)
+{
+    return (name == instance.getName()
+            && colors == instance.getColors()
+            && specularExponent == instance.getSpecularExponent()
+            && refractionIndex == instance.getRefractionIndex()
+            && opacity == instance.getOpacity()
+            && illum == instance.getIllum());
+}
+
 std::ostream &operator<<(std::ostream &os, const Material &instance)
 {
     os << "name: " << instance.getName() << std::endl;
