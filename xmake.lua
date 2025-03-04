@@ -12,6 +12,7 @@ add_cxxflags("-g")
 
 add_requires("glfw")
 add_requires("glad")
+includes("GlbParser")
 
 target("scop")
     set_kind("binary")
@@ -19,3 +20,5 @@ target("scop")
     add_includedirs("srcs")
     add_packages("glfw")
     add_packages("glad")
+    add_deps("GlbParser")
+    add_includedirs("GlbParser/srcs")
