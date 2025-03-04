@@ -2,6 +2,7 @@
 #include "ObjectClasses/ObjectParser/ObjectParser.hpp"
 #include "WindowManager/WindowManager.hpp"
 #include "RessourceManager/RessourceManager.hpp"
+#include "Mesh/MeshLoader/MeshLoader.hpp"
 #include "Time/Time.hpp"
 #include "Utils/Utils.hpp"
 #include "globals.hpp"
@@ -45,12 +46,17 @@ void Game::LoadObjects(int argc, char **argv)
 {
     for (int i = 1; i < argc; i++)
     {
-        std::vector<Object> newObjects = ObjectParser().parseObjectFile(argv[i]);
-        objects.insert(objects.end(), newObjects.begin(), newObjects.end());
+        if (Utils::checkExtension(argv[i], ".obj"))
+        {
+            std::vector<Object> newObjects = ObjectParser().parseObjectFile(argv[i]);
+            for (size_t i = 0; i < newObjects.size(); i++)
+                newObjects[i].initVAO();
+            objects.insert(objects.end(), newObjects.begin(), newObjects.end());
+        }
+        else if (Utils::checkExtension(argv[i], ".glb"))
+            MeshLoader::LoadMesh(argv[i]);
     }
 
-    for (size_t i = 0; i < objects.size(); i++)
-        objects[i].initVAO();
 }
 
 void Game::Run()
