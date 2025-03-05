@@ -119,15 +119,9 @@ namespace MeshLoader
             float yaw = atan2(2 * (quat.getW() * quat.getZ() + quat.getX() * quat.getY()), 1 - 2 * (pow(quat.getY(), 2) + pow(quat.getZ(), 2)));
 
             AlgOps::vec3 axis[3];
-            float values[3] = {0};
-            values[0] = 1;
-            axis[0].setData(values, 3);
-            values[0] = 0;
-            values[1] = 1;
-            axis[1].setData(values, 3);
-            values[1] = 0;
-            values[2] = 1;
-            axis[2].setData(values, 3);
+            axis[0] = {1, 0, 0};
+            axis[1] = {0, 1, 0};
+            axis[2] = {0, 0, 1};
             
             AlgOps::mat4 rotate;
             rotate.uniform(1);

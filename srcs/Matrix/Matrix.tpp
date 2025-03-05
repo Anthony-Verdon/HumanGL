@@ -15,6 +15,19 @@ namespace AlgOps
         data = std::make_unique<float[]>(size);
     }
 
+    template<size_t R, size_t C>
+    Matrix<R, C>::Matrix(const std::vector<float> &values)
+    {
+        if (R == 0 || C == 0)
+            throw(std::runtime_error(ERROR_MESSAGE));
+        size = R * C;
+        if (size != values.size())
+            throw(std::runtime_error(ERROR_MESSAGE));
+
+        data = std::make_unique<float[]>(size);
+        setData(values.data(), values.size());
+    }
+
     template <size_t R, size_t C>
     Matrix<R, C>::Matrix(const Matrix<R, C> &copy)
     {
@@ -30,6 +43,15 @@ namespace AlgOps
             data = std::make_unique<float[]>(size);
             setData(copy.getData(), size);
         }
+        return (*this);
+    }
+
+    template <size_t R, size_t C>
+    Matrix<R, C> &Matrix<R, C>::operator=(const std::vector<float> &values)
+    {
+        if (size != values.size())
+            throw(std::runtime_error(ERROR_MESSAGE));
+        setData(values.data(), values.size());
         return (*this);
     }
 
@@ -202,7 +224,7 @@ namespace AlgOps
     }
 
     template <size_t R, size_t C>
-    void Matrix<R, C>::setData(float *values, unsigned int size)
+    void Matrix<R, C>::setData(const float *values, unsigned int size)
     {
         if (this->size != size)
             throw(std::runtime_error(ERROR_MESSAGE));

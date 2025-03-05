@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <memory>
-
+#include <vector>
 
 namespace AlgOps
 {
@@ -15,8 +15,10 @@ namespace AlgOps
         
     public:
       Matrix();
+      Matrix(const std::vector<float> &values);
       Matrix(const Matrix &copy);
       Matrix &operator=(const Matrix &copy);
+      Matrix &operator=(const std::vector<float> &values);
       ~Matrix();
       
       bool operator==(const Matrix &copy);
@@ -33,7 +35,7 @@ namespace AlgOps
       float getW() const;
       
       void setData(unsigned int rowIndex, unsigned int columnIndex, float value);
-      void setData(float *values, unsigned int size);
+      void setData(const float *values, unsigned int size);
       void uniform(float value);
       void identity();
     };
