@@ -65,8 +65,25 @@ namespace MeshLoader
                 else if (it.key() == "NORMAL")
                     vn = vector;
             }
-
+            
             MeshData data;
+
+            {
+
+                size_t indicesIndex = mesh["primitives"][0]["indices"];
+                auto accessor = gltfJson["accessors"][indicesIndex];
+                size_t bufferViewIndex = accessor["bufferView"];
+                size_t count = accessor["count"];
+                
+                auto bufferView = gltfJson["bufferViews"][bufferViewIndex];
+                size_t byteOffset = bufferView["byteOffset"];
+                unsigned short* buffer = (unsigned short*)(binStr.data() + byteOffset);
+                std::vector<unsigned short> indices;
+                for (size_t i = 0; i < count; i++)
+                    indices.push_back(buffer[i]);
+                data.SetIndices(indices);
+            }
+
             size_t count = v.size() / 3;
             std::vector<float> vector;
             vector.reserve(count * (3 + 2 + 3));
