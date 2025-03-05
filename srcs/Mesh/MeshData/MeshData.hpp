@@ -10,6 +10,7 @@ class MeshData
         ~MeshData();
 
         void SetVertices(const std::vector<float> &vertices) { this->vertices = vertices; }
-    private:
+    
+    protected:
         std::vector<float> vertices;
 };

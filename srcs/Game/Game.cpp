@@ -34,6 +34,7 @@ Game::Game()
     WindowManager::SetScrollCallback(scroll_callback);
 
     RessourceManager::AddShader("basic_shader", "shaders/shader.vs", "shaders/shader.fs");
+    RessourceManager::AddShader("mesh_shader", "shaders/meshShader.vs", "shaders/meshShader.fs");
     RessourceManager::AddShader("light", "shaders/lightShader.vs", "shaders/lightShader.fs");
     RessourceManager::AddTexture("my_little_pony", "textures/myLittlePony.ppm");
 }
@@ -49,13 +50,13 @@ void Game::LoadObjects(int argc, char **argv)
         if (Utils::checkExtension(argv[i], ".obj"))
         {
             std::vector<Object> newObjects = ObjectParser().parseObjectFile(argv[i]);
-            for (size_t i = 0; i < newObjects.size(); i++)
-                newObjects[i].initVAO();
             objects.insert(objects.end(), newObjects.begin(), newObjects.end());
         }
         else if (Utils::checkExtension(argv[i], ".glb"))
-            MeshLoader::LoadMesh(argv[i]);
+            meshes = MeshLoader::LoadMesh(argv[i]);
     }
+    for (size_t i = 0; i < objects.size(); i++)
+        objects[i].initVAO();
 
 }
 
@@ -166,6 +167,33 @@ void Game::updateScene()
 
     for (size_t i = 0; i < objects.size(); i++)
         renderObject(objects[i]);
+    
+    for (size_t i = 0; i < meshes.size(); i++)
+    {
+        auto shader = RessourceManager::GetShader("mesh_shader");
+        shader->use();
+
+        sceneRotation[X_AXIS] += inputRotation[X_AXIS] * Time::getDeltaTime();
+        sceneRotation[Y_AXIS] += inputRotation[Y_AXIS] * Time::getDeltaTime();
+        sceneRotation[Z_AXIS] += inputRotation[Z_AXIS] * Time::getDeltaTime();
+        AlgOps::mat4 rotation;
+        rotation.uniform(1);
+        rotation = AlgOps::rotate(rotation, sceneRotation[X_AXIS], axis[X_AXIS]) *
+                    AlgOps::rotate(rotation, sceneRotation[Y_AXIS], axis[Y_AXIS]) *
+                    AlgOps::rotate(rotation, sceneRotation[Z_AXIS], axis[Z_AXIS]);
+        shader->setMat4("rotation", rotation);
+
+        AlgOps::mat4 projection = AlgOps::perspective(camera.getFov(), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
+        shader->setMat4("projection", projection);
+
+        AlgOps::mat4 view = AlgOps::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(),
+                                    camera.getUpDirection());
+        shader->setMat4("view", view);
+        AlgOps::mat4 model;
+        model.identity();
+        shader->setMat4("model", model);
+        meshes[i].Draw();
+    }
 
     // light
     auto shader = RessourceManager::GetShader("light");

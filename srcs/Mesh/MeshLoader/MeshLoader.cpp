@@ -5,16 +5,22 @@
 
 namespace MeshLoader
 {
-    std::vector<MeshData> LoadMesh(const std::string &path)
+    std::vector<MeshRenderer> LoadMesh(const std::string &path)
     {
+        std::vector<MeshData> meshesData;
         if (Utils::checkExtension(path, ".glb"))
-            return LoadMeshFromGlb(path);
-        throw(std::runtime_error("extension unknown"));
+            meshesData = LoadMeshDataFromGlb(path);
+        
+        std::vector<MeshRenderer> meshesRenderer;
+        for (size_t i = 0; i < meshesData.size(); i++)
+            meshesRenderer.push_back(MeshRenderer(meshesData[i]));
+
+        return (meshesRenderer);
     }
 
-    std::vector<MeshData> LoadMeshFromGlb(const std::string &path)
+    std::vector<MeshData> LoadMeshDataFromGlb(const std::string &path)
     {
-        auto [gltfJson, binStr] = GlbParser::ParseFile(path);
+        auto [gltfJson, binStr] = GlbParser::ParseFile(path, true);
 
         std::vector<MeshData> meshes;
         for (auto mesh: gltfJson["meshes"])
