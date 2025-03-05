@@ -1,6 +1,7 @@
 #include "Mesh/MeshLoader/MeshLoader.hpp"
 #include "GlbParser/GlbParser.hpp"
 #include "Utils/Utils.hpp"
+#include "Matrix/Matrix.hpp"
 #include <iostream>
 
 namespace MeshLoader
@@ -23,8 +24,14 @@ namespace MeshLoader
         auto [gltfJson, binStr] = GlbParser::ParseFile(path, true);
 
         std::vector<MeshData> meshes;
-        for (auto mesh: gltfJson["meshes"])
+        size_t rootSceneIndex = gltfJson["scene"];
+        auto rootScene = gltfJson["scenes"][rootSceneIndex];
+
+        for (size_t nodeIndex: rootScene["nodes"])
         {
+            auto node = gltfJson["nodes"][nodeIndex];
+            size_t meshIndex = node["mesh"];
+            auto mesh = gltfJson["meshes"][meshIndex];
             std::vector<float> v;
             std::vector<float> vt;
             std::vector<float> vn;
@@ -69,7 +76,6 @@ namespace MeshLoader
             MeshData data;
 
             {
-
                 size_t indicesIndex = mesh["primitives"][0]["indices"];
                 auto accessor = gltfJson["accessors"][indicesIndex];
                 size_t bufferViewIndex = accessor["bufferView"];
@@ -84,14 +90,18 @@ namespace MeshLoader
                 data.SetIndices(indices);
             }
 
+            AlgOps::vec3 scale;
+            scale.uniform(1);
+            for (int i = 0; i < 3; i++)
+                scale.setData(i, 0, node["scale"][i]);
             size_t count = v.size() / 3;
             std::vector<float> vector;
             vector.reserve(count * (3 + 2 + 3));
             for (size_t i = 0; i < count; i++)
             {
-                vector.push_back(v[i * 3 + 0]);
-                vector.push_back(v[i * 3 + 1]);
-                vector.push_back(v[i * 3 + 2]);
+                vector.push_back(v[i * 3 + 0] * scale.getX());
+                vector.push_back(v[i * 3 + 1] * scale.getY());
+                vector.push_back(v[i * 3 + 2] * scale.getZ());
                 vector.push_back(vt[i * 2 + 0]);
                 vector.push_back(vt[i * 2 + 1]);
                 vector.push_back(vn[i * 3 + 0]);
@@ -101,7 +111,6 @@ namespace MeshLoader
             data.SetVertices(vector);
             meshes.push_back(data);
         }
-
         return (meshes);
     }
 }
