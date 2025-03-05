@@ -5,29 +5,26 @@
 
 namespace MeshLoader
 {
-    MeshData LoadMesh(const std::string &path)
+    std::vector<MeshData> LoadMesh(const std::string &path)
     {
         if (Utils::checkExtension(path, ".glb"))
-            LoadMeshFromGlb(path);
-        return (MeshData());
+            return LoadMeshFromGlb(path);
+        throw(std::runtime_error("extension unknown"));
     }
 
-    void LoadMeshFromGlb(const std::string &path)
+    std::vector<MeshData> LoadMeshFromGlb(const std::string &path)
     {
         auto [gltfJson, binStr] = GlbParser::ParseFile(path);
 
+        std::vector<MeshData> meshes;
         for (auto mesh: gltfJson["meshes"])
         {
             std::vector<float> v;
             std::vector<float> vt;
             std::vector<float> vn;
 
-            std::cout << mesh["name"] << std::endl;
-            std::cout << mesh["primitives"][0]["attributes"] << std::endl;
             for (auto it = mesh["primitives"][0]["attributes"].begin(); it != mesh["primitives"][0]["attributes"].end(); it++)
             {
-                
-                std::cout << it.key() << std::endl;
                 auto accessor = gltfJson["accessors"][it.value()];
                 size_t bufferViewIndex = accessor["bufferView"];
                 size_t count = accessor["count"];
@@ -63,12 +60,25 @@ namespace MeshLoader
                     vn = vector;
             }
 
-            for (size_t i = 0; i < v.size(); i += 3)
-                std::cout << "(" << v[i] << ", " << v[i + 1] << ", " << v[i + 2] << ")" << std::endl;
-            for (size_t i = 0; i < vt.size(); i += 2)
-                std::cout << "(" << vt[i] << ", " << vt[i + 1] << ")" << std::endl;
-            for (size_t i = 0; i < vn.size(); i += 3)
-                std::cout << "(" << vn[i] << ", " << vn[i + 1] << ", " << vn[i + 2] << ")" << std::endl;
+            MeshData data;
+            size_t count = v.size() / 3;
+            std::vector<float> vector;
+            vector.reserve(count * (3 + 2 + 3));
+            for (size_t i = 0; i < count; i++)
+            {
+                vector.push_back(v[i * 3 + 0]);
+                vector.push_back(v[i * 3 + 1]);
+                vector.push_back(v[i * 3 + 2]);
+                vector.push_back(vt[i * 2 + 0]);
+                vector.push_back(vt[i * 2 + 1]);
+                vector.push_back(vn[i * 3 + 0]);
+                vector.push_back(vn[i * 3 + 1]);
+                vector.push_back(vn[i * 3 + 2]);
+            }
+            data.SetVertices(vector);
+            meshes.push_back(data);
         }
+
+        return (meshes);
     }
 }

@@ -5,6 +5,6 @@
 
 namespace MeshLoader
 {
-    MeshData LoadMesh(const std::string &path);
-    void LoadMeshFromGlb(const std::string &path);
+    std::vector<MeshData> LoadMesh(const std::string &path);
+    std::vector<MeshData> LoadMeshFromGlb(const std::string &path);
 }
