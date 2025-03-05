@@ -103,8 +103,40 @@ namespace MeshLoader
             if (node.KeyExist("translation"))
             {
                 for (int i = 0; i < 3; i++)
-                translate.setData(i, 0, node["translation"][i]);
+                    translate.setData(i, 0, node["translation"][i]);
             }
+
+            AlgOps::vec4 quat;
+            translate.uniform(0);
+            if (node.KeyExist("rotation"))
+            {
+                for (int i = 0; i < 4; i++)
+                    quat.setData(i, 0, node["rotation"][i]);
+            }
+
+            float roll = atan2(2 * (quat.getW() * quat.getX() + quat.getY() * quat.getZ()), 1 - 2 * (pow(quat.getX(), 2) + pow(quat.getX(), 2)));
+            float pitch = asin(2 * (quat.getW() * quat.getY() - quat.getZ() * quat.getX()));
+            float yaw = atan2(2 * (quat.getW() * quat.getZ() + quat.getX() * quat.getY()), 1 - 2 * (pow(quat.getY(), 2) + pow(quat.getZ(), 2)));
+
+            AlgOps::vec3 axis[3];
+            float values[3] = {0};
+            values[0] = 1;
+            axis[0].setData(values, 3);
+            values[0] = 0;
+            values[1] = 1;
+            axis[1].setData(values, 3);
+            values[1] = 0;
+            values[2] = 1;
+            axis[2].setData(values, 3);
+            
+            AlgOps::mat4 rotate;
+            rotate.uniform(1);
+            rotate = AlgOps::rotate(rotate, roll, axis[0]) *
+                    AlgOps::rotate(rotate, pitch, axis[1]) *
+                    AlgOps::rotate(rotate, yaw, axis[2]);
+
+            std::cout << rotate << std::endl;
+            data.SetInitialRotation(rotate);
 
             size_t count = v.size() / 3;
             std::vector<float> vector;

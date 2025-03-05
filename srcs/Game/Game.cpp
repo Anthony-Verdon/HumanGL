@@ -178,9 +178,11 @@ void Game::updateScene()
         sceneRotation[Z_AXIS] += inputRotation[Z_AXIS] * Time::getDeltaTime();
         AlgOps::mat4 rotation;
         rotation.uniform(1);
-        rotation = AlgOps::rotate(rotation, sceneRotation[X_AXIS], axis[X_AXIS]) *
+        rotation = meshes[i].GetInitialRotation() *
+                    AlgOps::rotate(rotation, sceneRotation[X_AXIS], axis[X_AXIS]) *
                     AlgOps::rotate(rotation, sceneRotation[Y_AXIS], axis[Y_AXIS]) *
                     AlgOps::rotate(rotation, sceneRotation[Z_AXIS], axis[Z_AXIS]);
+
         shader->setMat4("rotation", rotation);
 
         AlgOps::mat4 projection = AlgOps::perspective(camera.getFov(), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);

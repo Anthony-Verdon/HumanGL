@@ -20,6 +20,7 @@ MeshRenderer &MeshRenderer::operator=(const MeshRenderer &instance)
         DestroyRenderer();
         vertices = instance.GetVertices();
         indices = instance.GetIndices();
+        initialRotation = instance.GetInitialRotation();
         InitRenderer();
     }
 
