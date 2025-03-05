@@ -92,8 +92,12 @@ namespace MeshLoader
 
             AlgOps::vec3 scale;
             scale.uniform(1);
-            for (int i = 0; i < 3; i++)
-                scale.setData(i, 0, node["scale"][i]);
+            if (node.KeyExist("scale"))
+            {
+                for (int i = 0; i < 3; i++)
+                   scale.setData(i, 0, node["scale"][i]);
+            }
+
             size_t count = v.size() / 3;
             std::vector<float> vector;
             vector.reserve(count * (3 + 2 + 3));
