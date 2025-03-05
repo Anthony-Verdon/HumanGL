@@ -98,14 +98,22 @@ namespace MeshLoader
                    scale.setData(i, 0, node["scale"][i]);
             }
 
+            AlgOps::vec3 translate;
+            translate.uniform(0);
+            if (node.KeyExist("translation"))
+            {
+                for (int i = 0; i < 3; i++)
+                translate.setData(i, 0, node["translation"][i]);
+            }
+
             size_t count = v.size() / 3;
             std::vector<float> vector;
             vector.reserve(count * (3 + 2 + 3));
             for (size_t i = 0; i < count; i++)
             {
-                vector.push_back(v[i * 3 + 0] * scale.getX());
-                vector.push_back(v[i * 3 + 1] * scale.getY());
-                vector.push_back(v[i * 3 + 2] * scale.getZ());
+                vector.push_back(v[i * 3 + 0] * scale.getX() + translate.getX());
+                vector.push_back(v[i * 3 + 1] * scale.getY() + translate.getY());
+                vector.push_back(v[i * 3 + 2] * scale.getZ() + translate.getY());
                 vector.push_back(vt[i * 2 + 0]);
                 vector.push_back(vt[i * 2 + 1]);
                 vector.push_back(vn[i * 3 + 0]);
