@@ -135,7 +135,6 @@ namespace MeshLoader
                     AlgOps::rotate(rotate, pitch, axis[1]) *
                     AlgOps::rotate(rotate, yaw, axis[2]);
 
-            std::cout << rotate << std::endl;
             data.SetInitialRotation(rotate);
 
             size_t count = v.size() / 3;
