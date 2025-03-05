@@ -177,10 +177,22 @@ void Game::updateScene()
         sceneRotation[Y_AXIS] += inputRotation[Y_AXIS] * Time::getDeltaTime();
         sceneRotation[Z_AXIS] += inputRotation[Z_AXIS] * Time::getDeltaTime();
         AlgOps::mat4 rotation;
+        std::cout << "quat: " << meshes[i].quat << std::endl;
+        for (int j = 0; j < 4; j++)
+        {
+            std::cout << meshes[i].quat.getData(j, 0) << std::endl;
+        }
         rotation.uniform(1);
-        rotation = AlgOps::rotate(rotation, sceneRotation[X_AXIS], axis[X_AXIS]) *
-                    AlgOps::rotate(rotation, sceneRotation[Y_AXIS], axis[Y_AXIS]) *
-                    AlgOps::rotate(rotation, sceneRotation[Z_AXIS], axis[Z_AXIS]);
+        float roll = atan2(2 * (meshes[i].quat.getW() * meshes[i].quat.getX() + meshes[i].quat.getY() * meshes[i].quat.getZ()), 1 - 2 * (pow(meshes[i].quat.getX(), 2) + pow(meshes[i].quat.getX(), 2)));
+        float pitch = asin(2 * (meshes[i].quat.getW() * meshes[i].quat.getY() - meshes[i].quat.getZ() * meshes[i].quat.getX()));
+        float yaw = atan2(2 * (meshes[i].quat.getW() * meshes[i].quat.getZ() + meshes[i].quat.getX() * meshes[i].quat.getY()), 1 - 2 * (pow(meshes[i].quat.getY(), 2) + pow(meshes[i].quat.getZ(), 2)));
+        std::cout << roll << std::endl;
+        std::cout << pitch << std::endl;
+        std::cout << yaw << std::endl;
+        std::cout  << std::endl;
+        rotation = AlgOps::rotate(rotation, roll + sceneRotation[X_AXIS], axis[X_AXIS]) *
+                    AlgOps::rotate(rotation, pitch + sceneRotation[Y_AXIS], axis[Y_AXIS]) *
+                    AlgOps::rotate(rotation, yaw + sceneRotation[Z_AXIS], axis[Z_AXIS]);
         shader->setMat4("rotation", rotation);
 
         AlgOps::mat4 projection = AlgOps::perspective(camera.getFov(), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);

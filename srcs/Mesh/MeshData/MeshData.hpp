@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-
+#include "Matrix/Matrix.hpp"
 
 class MeshData
 {
@@ -17,6 +17,7 @@ class MeshData
         void SetIndices(const std::vector<unsigned short> &indices) { this->indices = indices; }
         std::vector<unsigned short> GetIndices() const { return (indices); }
     
+        AlgOps::vec4 quat;
     protected:
         std::vector<float> vertices;
         std::vector<unsigned short> indices;

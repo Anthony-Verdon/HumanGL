@@ -103,9 +103,19 @@ namespace MeshLoader
             if (node.KeyExist("translation"))
             {
                 for (int i = 0; i < 3; i++)
-                translate.setData(i, 0, node["translation"][i]);
+                    translate.setData(i, 0, node["translation"][i]);
             }
 
+            for (int i = 0; i < 4; i++)
+                data.quat.setData(i, 0, 0);
+            if (node.KeyExist("rotation"))
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    std::cout << node["rotation"][i] << std::endl;
+                    data.quat.setData(i, 0, node["rotation"][i]);
+                }
+            }
             size_t count = v.size() / 3;
             std::vector<float> vector;
             vector.reserve(count * (3 + 2 + 3));
