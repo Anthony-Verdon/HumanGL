@@ -37,11 +37,11 @@ std::string MaterialData::getName() const
     return (name);
 }
 
-std::array<std::array<float, 3>, 3> MaterialData::getColors() const
+std::array<std::vector<float>, 3> MaterialData::getColors() const
 {
     return (colors);
 }
-std::array<float, 3> MaterialData::getColor(unsigned int colorIndex) const
+std::vector<float> MaterialData::getColor(unsigned int colorIndex) const
 {
     if (colorIndex >= 3)
         throw(Exception("GET_COLOR", "INVALID_INDEX", colorIndex));
@@ -82,11 +82,11 @@ void MaterialData::setName(std::string name)
 {
     this->name = name;
 }
-void MaterialData::setColors(std::array<std::array<float, 3>, 3> colors)
+void MaterialData::setColors(std::array<std::vector<float>, 3> colors)
 {
     this->colors = colors;
 }
-void MaterialData::setColor(unsigned int colorIndex, std::array<float, 3> color)
+void MaterialData::setColor(unsigned int colorIndex, std::vector<float> color)
 {
     if (colorIndex >= 3)
         throw(Exception("sET_COLOR", "INVALID_INDEX", colorIndex));

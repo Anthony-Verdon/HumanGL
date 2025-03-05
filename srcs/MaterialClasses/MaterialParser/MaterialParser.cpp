@@ -69,7 +69,7 @@ void MaterialParser::defineAmbiantColor(MaterialData &materialData, const std::s
     if (words.size() != 4)
         throw(Exception("DEFINE_AMBIANT_COLOR", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
-    std::array<float, 3> ambiantColor;
+    std::vector<float> ambiantColor;
     for (size_t i = 0; i < 3; i++)
     {
         if (!Utils::isFloat(words[i + 1]))
@@ -89,7 +89,7 @@ void MaterialParser::defineSpecularColor(MaterialData &materialData, const std::
     if (words.size() != 4)
         throw(Exception("DEFINE_SPECULAR_COLOR", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
-    std::array<float, 3> specularColor;
+    std::vector<float> specularColor;
     for (size_t i = 0; i < 3; i++)
     {
         if (!Utils::isFloat(words[i + 1]))
@@ -109,7 +109,7 @@ void MaterialParser::defineDiffuseColor(MaterialData &materialData, const std::s
     if (words.size() != 4)
         throw(Exception("DEFINE_DIFFUSE_COLOR", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
-    std::array<float, 3> diffuseColor;
+    std::vector<float> diffuseColor;
     for (size_t i = 0; i < 3; i++)
     {
         if (!Utils::isFloat(words[i + 1]))

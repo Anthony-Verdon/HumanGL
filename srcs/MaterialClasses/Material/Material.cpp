@@ -59,7 +59,7 @@ std::ostream &operator<<(std::ostream &os, const Material &instance)
 {
     os << "name: " << instance.getName() << std::endl;
     os << "ambiant color: ";
-    std::array<float, 3> color = instance.getColor(AMBIANT_COLOR);
+    std::vector<float> color = instance.getColor(AMBIANT_COLOR);
     for (size_t i = 0; i < 3; i++)
         os << color[i] << " ";
     os << std::endl;

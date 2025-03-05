@@ -46,8 +46,7 @@ void WindowManager::InitWindow(const std::string &name, unsigned int width, unsi
 
     glfwSetCursorPosCallback(window, mouse_callback);
 
-    windowSize.setData(0, 0, width);
-    windowSize.setData(1, 0, height);
+    windowSize = {(float)width, (float)height};
 }
 
 void WindowManager::DestructWindowManager()
@@ -105,8 +104,7 @@ unsigned int WindowManager::GetWindowHeight()
 
 void WindowManager::SetMousePosition(double xPos, double yPos)
 {
-    mousePosition.setData(0, 0, xPos);
-    mousePosition.setData(1, 0, yPos);
+    mousePosition = {(float)xPos, (float)yPos};
 }
 
 AlgOps::vec2 WindowManager::GetMousePosition()

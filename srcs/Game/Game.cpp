@@ -20,15 +20,9 @@ Game::Game()
         inputRotation[i] = 0;
         sceneRotation[i] = 0;
     }
-    float values[3] = {0};
-    values[0] = 1;
-    axis[X_AXIS].setData(values, 3);
-    values[0] = 0;
-    values[1] = 1;
-    axis[Y_AXIS].setData(values, 3);
-    values[1] = 0;
-    values[2] = 1;
-    axis[Z_AXIS].setData(values, 3);
+    axis[X_AXIS] = {1, 0, 0};
+    axis[Y_AXIS] = {0, 1, 0};
+    axis[Z_AXIS] = {0, 0, 1};
 
     WindowManager::SetUserPointer(&camera);
     WindowManager::SetScrollCallback(scroll_callback);
@@ -217,11 +211,9 @@ void Game::updateScene()
 
 void Game::updateCameraView()
 {
-    AlgOps::vec3 direction;
-    float directionValues[] = {cosf(Utils::DegToRad(camera.getYaw())) * cosf(Utils::DegToRad(camera.getPitch())),
-                               sinf(Utils::DegToRad(camera.getPitch())),
-                               sinf(Utils::DegToRad(camera.getYaw())) * cosf(Utils::DegToRad(camera.getPitch()))};
-    direction.setData(directionValues, 3);
+    AlgOps::vec3 direction({cosf(Utils::DegToRad(camera.getYaw())) * cosf(Utils::DegToRad(camera.getPitch())),
+                    sinf(Utils::DegToRad(camera.getPitch())),
+                    sinf(Utils::DegToRad(camera.getYaw())) * cosf(Utils::DegToRad(camera.getPitch()))});
     camera.setFrontDirection(AlgOps::normalize(direction));
     camera.setRightDirection(
         AlgOps::normalize(AlgOps::crossProduct(camera.getFrontDirection(), camera.getUpDirection())));
@@ -285,13 +277,9 @@ void Game::updateShader(const Object &object)
     std::vector<Material> materials = object.getMaterials();
     for (size_t i = 0; i < materials.size(); i++)
     {
-        AlgOps::vec3 color;
-        color.setData(materials[i].getColor(AMBIANT_COLOR).data(), 3);
-        shader->setVec3("materials[" + std::to_string(i) + "].ambient", color);
-        color.setData(materials[i].getColor(DIFFUSE_COLOR).data(), 3);
-        shader->setVec3("materials[" + std::to_string(i) + "].diffuse", color);
-        color.setData(materials[i].getColor(SPECULAR_COLOR).data(), 3);
-        shader->setVec3("materials[" + std::to_string(i) + "].specular", color);
+        shader->setVec3("materials[" + std::to_string(i) + "].ambient", materials[i].getColor(AMBIANT_COLOR));
+        shader->setVec3("materials[" + std::to_string(i) + "].diffuse", materials[i].getColor(DIFFUSE_COLOR));
+        shader->setVec3("materials[" + std::to_string(i) + "].specular", materials[i].getColor(SPECULAR_COLOR));
         shader->setFloat("materials[" + std::to_string(i) + "].shininess", 32.0f);
     }
     

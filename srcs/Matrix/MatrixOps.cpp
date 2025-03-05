@@ -9,7 +9,7 @@ namespace AlgOps
         
         float cosAngle = cosf(angle);
         float sinAngle = sinf(angle);
-        float rotationMatrixValues[] = {
+        result = {
             cosAngle + powf(vectorNormalized.getX(), 2) * (1 - cosAngle),
             vectorNormalized.getX() * vectorNormalized.getY() * (1 - cosAngle) - vectorNormalized.getZ() * sinAngle,
             vectorNormalized.getX() * vectorNormalized.getZ() * (1 - cosAngle) + vectorNormalized.getY() * sinAngle, 0,
@@ -24,7 +24,6 @@ namespace AlgOps
             // new line
             0, 0, 0, 1
         };
-        result.setData(rotationMatrixValues, 16);
         return (result);
     }
 
@@ -46,14 +45,13 @@ namespace AlgOps
         add a minus for (0, 0)
         swap (2, 3) and (3, 2)
         */
-        float perspectiveMatrixValues[] = {-((2 * near) / (right - left)), 0, (right + left) / (right - left), 0,
+        result = {-((2 * near) / (right - left)), 0, (right + left) / (right - left), 0,
             // new line
             0, (2 * near) / (top - bottom), (top + bottom) / (top - bottom), 0,
             // new line
             0, 0, (-(far + near)) / (far - near), -1,
             // new line
             0, 0, (-2 * far * near) / (far - near), 0};
-        result.setData(perspectiveMatrixValues, 16);
         return (result);
     }
         
@@ -64,11 +62,7 @@ namespace AlgOps
         
         length = sqrt(powf(vector.getX(), 2) + powf(vector.getY(), 2) + powf(vector.getZ(), 2));
         if (length != 0)
-        {
-            result.setData(0, 0, vector.getX() / length);
-            result.setData(1, 0, vector.getY() / length);
-            result.setData(2, 0, vector.getZ() / length);
-        }
+            result = {vector.getX() / length, vector.getY() / length, vector.getZ() / length};
         return (result);
     }
 
@@ -82,10 +76,9 @@ namespace AlgOps
 
         float vectorIJ[] = {pointJ[0] - pointI[0], pointJ[1] - pointI[1], pointJ[2] - pointI[2]};
 
-        float crossValues[] = {vectorA.getY() * vectorIJ[2] - vectorA.getZ() * vectorIJ[1],
-        vectorA.getZ() * vectorIJ[0] - vectorA.getX() * vectorIJ[2],
-        vectorA.getX() * vectorIJ[1] - vectorA.getY() * vectorIJ[0]};
-        result.setData(crossValues, 3);
+        result = {vectorA.getY() * vectorIJ[2] - vectorA.getZ() * vectorIJ[1],
+                    vectorA.getZ() * vectorIJ[0] - vectorA.getX() * vectorIJ[2],
+                    vectorA.getX() * vectorIJ[1] - vectorA.getY() * vectorIJ[0]};
         return (result);
     }
 
@@ -102,14 +95,11 @@ namespace AlgOps
         vec3 translation;
         mat4 result;
         
-        translation.setData(0, 0, dotProduct(position, right));
-        translation.setData(1, 0, dotProduct(position, up));
-        translation.setData(2, 0, dotProduct(position, front));
+        translation = {dotProduct(position, right), dotProduct(position, up), dotProduct(position, front)};
         
-        float values[] = {
+        result = {
             right.getX(), up.getX(), front.getX(), 0, right.getY(),        up.getY(),           front.getY(),        0,
             right.getZ(), up.getZ(), front.getZ(), 0, -translation.getX(), -translation.getY(), -translation.getZ(), 1};
-            result.setData(values, 16);
         return (result);
     }
 

@@ -2,12 +2,10 @@
 
 Camera::Camera()
 {
-    float positionValues[] = {0.0f, 0.0f, 3.0f};
-    position.setData(positionValues, 3);
+    position = {0.0f, 0.0f, 3.0f};
     frontDirection.uniform(1.0f);
     rightDirection.uniform(1.0f);
-    float upDirectionValues[] = {0.0f, 1.0f, 0.0f};
-    upDirection.setData(upDirectionValues, 3);
+    upDirection = {0.0f, 1.0f, 0.0f};
 
     yaw = -90.0f;
     pitch = 0.0f;

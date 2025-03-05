@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <vector>
 #include <string>
 
 typedef enum colors
@@ -19,8 +20,8 @@ class MaterialData
     ~MaterialData();
 
     std::string getName() const;
-    std::array<std::array<float, 3>, 3> getColors() const;
-    std::array<float, 3> getColor(unsigned int colorIndex) const;
+    std::array<std::vector<float>, 3> getColors() const;
+    std::vector<float> getColor(unsigned int colorIndex) const;
     float getSpecularExponent() const;
     float getRefractionIndex() const;
     float getOpacity() const;
@@ -28,8 +29,8 @@ class MaterialData
 
     void reset();
     void setName(std::string name);
-    void setColors(std::array<std::array<float, 3>, 3> colors);
-    void setColor(unsigned int colorIndex, std::array<float, 3> color);
+    void setColors(std::array<std::vector<float>, 3> colors);
+    void setColor(unsigned int colorIndex, std::vector<float> color);
     void setSpecularExponent(float specularExponent);
     void setRefractionIndex(float refractionIndex);
     void setOpacity(float opacity);
@@ -37,7 +38,7 @@ class MaterialData
 
   protected:
     std::string name;
-    std::array<std::array<float, 3>, 3> colors;
+    std::array<std::vector<float>, 3> colors;
     float specularExponent;
     float refractionIndex;
     float opacity;

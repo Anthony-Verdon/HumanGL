@@ -93,26 +93,17 @@ namespace MeshLoader
             AlgOps::vec3 scale;
             scale.uniform(1);
             if (node.KeyExist("scale"))
-            {
-                for (int i = 0; i < 3; i++)
-                   scale.setData(i, 0, node["scale"][i]);
-            }
+                scale = {node["scale"][0], node["scale"][1], node["scale"][2]};
 
             AlgOps::vec3 translate;
             translate.uniform(0);
             if (node.KeyExist("translation"))
-            {
-                for (int i = 0; i < 3; i++)
-                    translate.setData(i, 0, node["translation"][i]);
-            }
+                translate = {node["translation"][0], node["translation"][1], node["translation"][2]};
 
             AlgOps::vec4 quat;
-            translate.uniform(0);
+            quat.uniform(0);
             if (node.KeyExist("rotation"))
-            {
-                for (int i = 0; i < 4; i++)
-                    quat.setData(i, 0, node["rotation"][i]);
-            }
+                quat = {node["rotation"][0], node["rotation"][1], node["rotation"][2], node["rotation"][3]};
 
             float roll = atan2(2 * (quat.getW() * quat.getX() + quat.getY() * quat.getZ()), 1 - 2 * (pow(quat.getX(), 2) + pow(quat.getX(), 2)));
             float pitch = asin(2 * (quat.getW() * quat.getY() - quat.getZ() * quat.getX()));
