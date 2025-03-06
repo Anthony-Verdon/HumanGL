@@ -151,16 +151,22 @@ namespace MeshLoader
                 AlgOps::rotate(rotate, pitch, axis[1]) *
                 AlgOps::rotate(rotate, yaw, axis[2]);
 
-        data.SetInitialRotation(rotate);
+        AlgOps::mat4 model;
+        model.identity();
+        model = AlgOps::translate(model, translate)
+                * rotate
+                * AlgOps::scale(model, scale);  
+        
+        data.SetLocalTransform(model);
 
         size_t count = v.size() / 3;
         std::vector<float> vector;
         vector.reserve(count * (3 + 2 + 3));
         for (size_t i = 0; i < count; i++)
         {
-            vector.push_back(v[i * 3 + 0] * scale.getX() + translate.getX());
-            vector.push_back(v[i * 3 + 1] * scale.getY() + translate.getY());
-            vector.push_back(v[i * 3 + 2] * scale.getZ() + translate.getY());
+            vector.push_back(v[i * 3 + 0]);
+            vector.push_back(v[i * 3 + 1]);
+            vector.push_back(v[i * 3 + 2]);
             vector.push_back(vt[i * 2 + 0]);
             vector.push_back(vt[i * 2 + 1]);
             vector.push_back(vn[i * 3 + 0]);

@@ -172,8 +172,7 @@ void Game::updateScene()
         sceneRotation[Z_AXIS] += inputRotation[Z_AXIS] * Time::getDeltaTime();
         AlgOps::mat4 rotation;
         rotation.uniform(1);
-        rotation = meshes[i].GetInitialRotation() *
-                    AlgOps::rotate(rotation, sceneRotation[X_AXIS], axis[X_AXIS]) *
+        rotation =  AlgOps::rotate(rotation, sceneRotation[X_AXIS], axis[X_AXIS]) *
                     AlgOps::rotate(rotation, sceneRotation[Y_AXIS], axis[Y_AXIS]) *
                     AlgOps::rotate(rotation, sceneRotation[Z_AXIS], axis[Z_AXIS]);
 
@@ -187,7 +186,7 @@ void Game::updateScene()
         shader->setMat4("view", view);
         AlgOps::mat4 model;
         model.identity();
-        shader->setMat4("model", model);
+        shader->setMat4("model", meshes[i].GetLocalTransfrom());
         if ( RessourceManager::TextureExist(meshes[i].GetTexture()))
         {
             glActiveTexture(GL_TEXTURE0);    

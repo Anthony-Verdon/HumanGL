@@ -17,8 +17,8 @@ class MeshData
         void SetIndices(const std::vector<unsigned short> &indices) { this->indices = indices; }
         std::vector<unsigned short> GetIndices() const { return (indices); }
 
-        void SetInitialRotation(const AlgOps::mat4 &initialRotation) { this->initialRotation = initialRotation; }
-        AlgOps::mat4 GetInitialRotation() const { return (initialRotation); }
+        void SetLocalTransform(const AlgOps::mat4 &localTransform) { this->localTransform = localTransform; }
+        AlgOps::mat4 GetLocalTransfrom() const { return (localTransform); }
 
         void SetTexture(const std::string &texture) { this->texture = texture; }
         std::string GetTexture() const { return (texture); }
@@ -26,8 +26,8 @@ class MeshData
     protected:
         std::vector<float> vertices;
         std::vector<unsigned short> indices;
-        AlgOps::mat4 initialRotation;
-
+        AlgOps::mat4 localTransform;
+        
         // material
         std::string texture;
 };
