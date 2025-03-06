@@ -167,7 +167,6 @@ void Game::updateScene()
         renderObject(objects[i]);
     
     {
-
         sceneRotation[X_AXIS] += inputRotation[X_AXIS] * Time::getDeltaTime();
         sceneRotation[Y_AXIS] += inputRotation[Y_AXIS] * Time::getDeltaTime();
         sceneRotation[Z_AXIS] += inputRotation[Z_AXIS] * Time::getDeltaTime();
@@ -182,7 +181,7 @@ void Game::updateScene()
         AlgOps::mat4 view = AlgOps::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(),
         camera.getUpDirection());
         for (size_t i = 0; i < meshes.size(); i++)
-            meshes[i].Draw(rotation, projection, view);
+            meshes[i].Draw(rotation, projection, view, meshes[i].GetLocalTransfrom());
     }
 
     // light

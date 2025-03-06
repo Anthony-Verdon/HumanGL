@@ -13,7 +13,7 @@ class MeshRenderer: public MeshData
         void InitRenderer();
         void DestroyRenderer();
         
-        void Draw(const AlgOps::mat4 &rotation, const AlgOps::mat4 &projection, const AlgOps::mat4 &view) const;
+        void Draw(const AlgOps::mat4 &rotation, const AlgOps::mat4 &projection, const AlgOps::mat4 &view, const AlgOps::mat4 &model) const;
     
     private:
         unsigned int VAO;

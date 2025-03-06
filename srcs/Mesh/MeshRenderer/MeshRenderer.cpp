@@ -77,8 +77,9 @@ void MeshRenderer::DestroyRenderer()
         VAO = 0;
     }
 }
-void MeshRenderer::Draw(const AlgOps::mat4 &rotation, const AlgOps::mat4 &projection, const AlgOps::mat4 &view) const
+void MeshRenderer::Draw(const AlgOps::mat4 &rotation, const AlgOps::mat4 &projection, const AlgOps::mat4 &view, const AlgOps::mat4 &model) const
 {
+    AlgOps::mat4 globalTransform = model * localTransform;
     if (texture != "")
     {
         auto shader = RessourceManager::GetShader("mesh_shader");
@@ -86,7 +87,7 @@ void MeshRenderer::Draw(const AlgOps::mat4 &rotation, const AlgOps::mat4 &projec
         shader->setMat4("rotation", rotation);
         shader->setMat4("projection", projection);
         shader->setMat4("view", view);
-        shader->setMat4("model", localTransform);
+        shader->setMat4("model", globalTransform);
 
         glActiveTexture(GL_TEXTURE0);    
         glBindTexture(GL_TEXTURE_2D, RessourceManager::GetTexture(texture)->getID()); 
@@ -94,5 +95,5 @@ void MeshRenderer::Draw(const AlgOps::mat4 &rotation, const AlgOps::mat4 &projec
         glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, 0);
     }
     for (size_t i = 0; i < childrenRenderer.size(); i++)
-        childrenRenderer[i].Draw(rotation, projection, view);
+        childrenRenderer[i].Draw(rotation, projection, view, globalTransform);
 }
