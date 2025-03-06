@@ -170,21 +170,30 @@ namespace MeshLoader
         data.SetVertices(vector);
 
         size_t materialIndex = mesh["material"];
-        size_t textureIndex = gltfJson["materials"][materialIndex]["pbrMetallicRoughness"]["baseColorTexture"]["index"];
-        size_t imageIndex = gltfJson["textures"][textureIndex]["source"];
-        auto image = gltfJson["images"][imageIndex];
-
-        std::string texture = image["name"];
-        data.SetTexture(texture);
-        if (!RessourceManager::TextureExist(texture))
+        auto material = gltfJson["materials"][materialIndex];
+        if (material["pbrMetallicRoughness"].KeyExist("baseColorTexture"))
         {
-            size_t bufferViewIndex = image["bufferView"];
-            auto bufferView = gltfJson["bufferViews"][bufferViewIndex];
-            size_t byteOffset = bufferView["byteOffset"];
-            size_t byteLength = bufferView["byteLength"];
-            unsigned char* buffer = (unsigned char*)(binStr.data() + byteOffset);
+            size_t textureIndex = material["pbrMetallicRoughness"]["baseColorTexture"]["index"];
+            size_t imageIndex = gltfJson["textures"][textureIndex]["source"];
+            auto image = gltfJson["images"][imageIndex];
             
-            RessourceManager::AddTexture(image["name"], buffer, byteLength);
+            std::string texture = image["name"];
+            data.SetTexture(texture);
+            if (!RessourceManager::TextureExist(texture))
+            {
+                size_t bufferViewIndex = image["bufferView"];
+                auto bufferView = gltfJson["bufferViews"][bufferViewIndex];
+                size_t byteOffset = bufferView["byteOffset"];
+                size_t byteLength = bufferView["byteLength"];
+                
+                unsigned char* buffer = (unsigned char*)(binStr.data() + byteOffset);
+                
+                RessourceManager::AddTexture(image["name"], buffer, byteLength);
+            }
+        }
+        else
+        {
+            data.SetTexture("");
         }
         
         return (data);
