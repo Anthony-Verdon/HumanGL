@@ -35,6 +35,8 @@ Game::Game()
 
 Game::~Game() 
 {
+    for (size_t i = 0; i < meshes.size(); i++)
+        meshes[i].DestroyRenderer();
 }
 
 void Game::LoadObjects(int argc, char **argv)
@@ -47,10 +49,12 @@ void Game::LoadObjects(int argc, char **argv)
             objects.insert(objects.end(), newObjects.begin(), newObjects.end());
         }
         else if (Utils::checkExtension(argv[i], ".glb"))
-            meshes = MeshLoader::LoadMesh(argv[i]);
+            meshes.push_back(MeshLoader::LoadMesh(argv[i]));
     }
     for (size_t i = 0; i < objects.size(); i++)
         objects[i].initVAO();
+    for (size_t i = 0; i < meshes.size(); i++)
+        meshes[i].InitRenderer();
 
 }
 
@@ -162,10 +166,7 @@ void Game::updateScene()
     for (size_t i = 0; i < objects.size(); i++)
         renderObject(objects[i]);
     
-    for (size_t i = 0; i < meshes.size(); i++)
     {
-        auto shader = RessourceManager::GetShader("mesh_shader");
-        shader->use();
 
         sceneRotation[X_AXIS] += inputRotation[X_AXIS] * Time::getDeltaTime();
         sceneRotation[Y_AXIS] += inputRotation[Y_AXIS] * Time::getDeltaTime();
@@ -173,26 +174,15 @@ void Game::updateScene()
         AlgOps::mat4 rotation;
         rotation.uniform(1);
         rotation =  AlgOps::rotate(rotation, sceneRotation[X_AXIS], axis[X_AXIS]) *
-                    AlgOps::rotate(rotation, sceneRotation[Y_AXIS], axis[Y_AXIS]) *
-                    AlgOps::rotate(rotation, sceneRotation[Z_AXIS], axis[Z_AXIS]);
-
-        shader->setMat4("rotation", rotation);
-
+        AlgOps::rotate(rotation, sceneRotation[Y_AXIS], axis[Y_AXIS]) *
+        AlgOps::rotate(rotation, sceneRotation[Z_AXIS], axis[Z_AXIS]);
+        
         AlgOps::mat4 projection = AlgOps::perspective(camera.getFov(), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
-        shader->setMat4("projection", projection);
-
+        
         AlgOps::mat4 view = AlgOps::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(),
-                                    camera.getUpDirection());
-        shader->setMat4("view", view);
-        AlgOps::mat4 model;
-        model.identity();
-        shader->setMat4("model", meshes[i].GetLocalTransfrom());
-        if ( RessourceManager::TextureExist(meshes[i].GetTexture()))
-        {
-            glActiveTexture(GL_TEXTURE0);    
-            glBindTexture(GL_TEXTURE_2D, RessourceManager::GetTexture(meshes[i].GetTexture())->getID()); //@todo check
-        }
-        meshes[i].Draw();
+        camera.getUpDirection());
+        for (size_t i = 0; i < meshes.size(); i++)
+            meshes[i].Draw(rotation, projection, view);
     }
 
     // light

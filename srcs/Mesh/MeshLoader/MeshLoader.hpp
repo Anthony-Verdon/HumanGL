@@ -7,8 +7,8 @@
 
 namespace MeshLoader
 {
-    std::vector<MeshRenderer> LoadMesh(const std::string &path);
-    std::vector<MeshData> LoadMeshDataFromGlb(const std::string &path);
-    std::vector<MeshData> LoadNode(JsonParser::JsonValue &gltfJson, const std::string &binStr, size_t nodeIndex);
-    MeshData LoadMesh(JsonParser::JsonValue &gltfJson, const std::string &binStr, JsonParser::JsonValue &node);
+    MeshRenderer LoadMesh(const std::string &path);
+    MeshData LoadMeshDataFromGlb(const std::string &path);
+    MeshData LoadNode(JsonParser::JsonValue &gltfJson, const std::string &binStr, size_t nodeIndex);
+    void LoadMesh(MeshData &data, JsonParser::JsonValue &gltfJson, const std::string &binStr, JsonParser::JsonValue &node);
 }

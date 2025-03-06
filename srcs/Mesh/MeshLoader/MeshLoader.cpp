@@ -7,62 +7,53 @@
 
 namespace MeshLoader
 {
-    std::vector<MeshRenderer> LoadMesh(const std::string &path)
+    MeshRenderer LoadMesh(const std::string &path)
     {
         std::vector<MeshData> meshesData;
         if (Utils::checkExtension(path, ".glb"))
-            meshesData = LoadMeshDataFromGlb(path);
+            return (LoadMeshDataFromGlb(path));
         
-        std::vector<MeshRenderer> meshesRenderer;
-        for (size_t i = 0; i < meshesData.size(); i++)
-            meshesRenderer.push_back(MeshRenderer(meshesData[i]));
-
-        return (meshesRenderer);
+        throw(std::runtime_error("unknown extension"));
     }
 
-    std::vector<MeshData> LoadMeshDataFromGlb(const std::string &path)
+    MeshData LoadMeshDataFromGlb(const std::string &path)
     {
         auto [gltfJson, binStr] = GlbParser::ParseFile(path, true);
 
-        std::vector<MeshData> meshes;
+        MeshData data;
         size_t rootSceneIndex = gltfJson["scene"];
         auto rootScene = gltfJson["scenes"][rootSceneIndex];
+        data.SetName(rootScene["name"]);
 
         for (size_t nodeIndex: rootScene["nodes"])
-        {
-            auto node = gltfJson["nodes"][nodeIndex];
-            std::vector<MeshData> newMeshes = LoadNode(gltfJson, binStr, nodeIndex);
-            meshes.insert(meshes.end(), newMeshes.begin(), newMeshes.end());
-            
-        }
-        return (meshes);
+            data.AddChild(LoadNode(gltfJson, binStr, nodeIndex));
+        
+        return (data);
     }
 
-    std::vector<MeshData> LoadNode(JsonParser::JsonValue &gltfJson, const std::string &binStr, size_t nodeIndex)
+    MeshData LoadNode(JsonParser::JsonValue &gltfJson, const std::string &binStr, size_t nodeIndex)
     {
-        std::vector<MeshData> meshes;
+        MeshData data;
         
         auto node = gltfJson["nodes"][nodeIndex];
-        //std::cout << node << std::endl << "----------------------------------------------" << std::endl;
+        data.SetName(node["name"]);
         if (node.KeyExist("children"))
         {
             for (size_t child : node["children"])
-            {
-                std::vector<MeshData> newMeshes = LoadNode(gltfJson, binStr, child);
-                meshes.insert(meshes.end(), newMeshes.begin(), newMeshes.end());
-            }
+                data.AddChild(LoadNode(gltfJson, binStr, child));
         }
 
         if (node.KeyExist("mesh"))
-            meshes.push_back(LoadMesh(gltfJson, binStr, node));
-        
-        return (meshes);
+            LoadMesh(data, gltfJson, binStr, node);
+            
+        return (data);
     }
 
-    MeshData LoadMesh(JsonParser::JsonValue &gltfJson, const std::string &binStr, JsonParser::JsonValue &node)
+    void LoadMesh(MeshData &data, JsonParser::JsonValue &gltfJson, const std::string &binStr, JsonParser::JsonValue &node)
     {
         size_t meshIndex = node["mesh"];
         auto mesh = gltfJson["meshes"][meshIndex];
+        data.SetName(mesh["name"]);
         std::vector<float> v;
         std::vector<float> vt;
         std::vector<float> vn;
@@ -104,8 +95,6 @@ namespace MeshLoader
                 vn = vector;
         }
         
-        MeshData data;
-
         {
             size_t indicesIndex = mesh["primitives"][0]["indices"];
             auto accessor = gltfJson["accessors"][indicesIndex];
@@ -201,7 +190,5 @@ namespace MeshLoader
         {
             data.SetTexture("");
         }
-        
-        return (data);
     }
 }

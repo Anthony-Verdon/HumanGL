@@ -20,14 +20,22 @@ class MeshData
         void SetLocalTransform(const AlgOps::mat4 &localTransform) { this->localTransform = localTransform; }
         AlgOps::mat4 GetLocalTransfrom() const { return (localTransform); }
 
+        void AddChild(const MeshData &child) { children.push_back(child); }
+        std::vector<MeshData> GetChildren() const { return (children); }
+
         void SetTexture(const std::string &texture) { this->texture = texture; }
         std::string GetTexture() const { return (texture); }
+
+        void SetName(const std::string &name) { this->name = name; }
+        std::string GetName() const { return (name); }
     
     protected:
+        std::string name;
         std::vector<float> vertices;
         std::vector<unsigned short> indices;
         AlgOps::mat4 localTransform;
-        
+        std::vector<MeshData> children;
+
         // material
         std::string texture;
 };

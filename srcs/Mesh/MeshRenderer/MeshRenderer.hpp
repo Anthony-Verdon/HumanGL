@@ -5,18 +5,21 @@
 class MeshRenderer: public MeshData
 {
     public:
-    MeshRenderer(const MeshData &data);
-    MeshRenderer(const MeshRenderer &instance);
-    MeshRenderer &operator=(const MeshRenderer &instance);
-    ~MeshRenderer();
+        MeshRenderer(const MeshData &data);
+        MeshRenderer(const MeshRenderer &instance);
+        MeshRenderer &operator=(const MeshRenderer &instance);
+        ~MeshRenderer();
 
-    void Draw() const;
+        void InitRenderer();
+        void DestroyRenderer();
+        
+        void Draw(const AlgOps::mat4 &rotation, const AlgOps::mat4 &projection, const AlgOps::mat4 &view) const;
     
     private:
         unsigned int VAO;
         unsigned int VBO;
         unsigned int EBO;
 
-        void InitRenderer();
-        void DestroyRenderer();
+        std::vector<MeshRenderer> childrenRenderer;
+
 };
