@@ -28,45 +28,38 @@ namespace MeshLoader
         size_t rootSceneIndex = gltfJson["scene"];
         auto rootScene = gltfJson["scenes"][rootSceneIndex];
 
-        AlgOps::vec3 translate;
-        translate.uniform(0);
         for (size_t nodeIndex: rootScene["nodes"])
         {
             auto node = gltfJson["nodes"][nodeIndex];
-            std::vector<MeshData> newMeshes = LoadNode(gltfJson, binStr, nodeIndex, translate);
+            std::vector<MeshData> newMeshes = LoadNode(gltfJson, binStr, nodeIndex);
             meshes.insert(meshes.end(), newMeshes.begin(), newMeshes.end());
             
         }
         return (meshes);
     }
 
-    std::vector<MeshData> LoadNode(JsonParser::JsonValue &gltfJson, const std::string &binStr, size_t nodeIndex, AlgOps::vec3 translate)
+    std::vector<MeshData> LoadNode(JsonParser::JsonValue &gltfJson, const std::string &binStr, size_t nodeIndex)
     {
         std::vector<MeshData> meshes;
         
         auto node = gltfJson["nodes"][nodeIndex];
-
+        //std::cout << node << std::endl << "----------------------------------------------" << std::endl;
         if (node.KeyExist("children"))
         {
             for (size_t child : node["children"])
             {
-                AlgOps::vec3 addToTranslate;
-                addToTranslate.uniform(0);
-                if (node.KeyExist("translation"))
-                    addToTranslate = {node["translation"][0], node["translation"][1], node["translation"][2]};
-                
-                std::vector<MeshData> newMeshes = LoadNode(gltfJson, binStr, child, translate + addToTranslate);
+                std::vector<MeshData> newMeshes = LoadNode(gltfJson, binStr, child);
                 meshes.insert(meshes.end(), newMeshes.begin(), newMeshes.end());
             }
         }
 
         if (node.KeyExist("mesh"))
-            meshes.push_back(LoadMesh(gltfJson, binStr, node, translate));
+            meshes.push_back(LoadMesh(gltfJson, binStr, node));
         
         return (meshes);
     }
 
-    MeshData LoadMesh(JsonParser::JsonValue &gltfJson, const std::string &binStr, JsonParser::JsonValue &node, AlgOps::vec3 addToTranslate)
+    MeshData LoadMesh(JsonParser::JsonValue &gltfJson, const std::string &binStr, JsonParser::JsonValue &node)
     {
         size_t meshIndex = node["mesh"];
         auto mesh = gltfJson["meshes"][meshIndex];
@@ -137,8 +130,7 @@ namespace MeshLoader
         translate.uniform(0);
         if (node.KeyExist("translation"))
             translate = {node["translation"][0], node["translation"][1], node["translation"][2]};
-        translate = translate + addToTranslate;
-        
+
         AlgOps::vec4 quat;
         quat.uniform(0);
         if (node.KeyExist("rotation"))
@@ -168,7 +160,7 @@ namespace MeshLoader
         {
             vector.push_back(v[i * 3 + 0] * scale.getX() + translate.getX());
             vector.push_back(v[i * 3 + 1] * scale.getY() + translate.getY());
-            vector.push_back(v[i * 3 + 2] * scale.getZ() + translate.getZ());
+            vector.push_back(v[i * 3 + 2] * scale.getZ() + translate.getY());
             vector.push_back(vt[i * 2 + 0]);
             vector.push_back(vt[i * 2 + 1]);
             vector.push_back(vn[i * 3 + 0]);
