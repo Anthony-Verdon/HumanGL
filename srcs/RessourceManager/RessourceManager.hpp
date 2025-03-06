@@ -18,6 +18,8 @@ class RessourceManager
     
     public:
         static void AddTexture(const std::string &name, const std::string &texturePath);
+        static void AddTexture(const std::string &name, const unsigned char *buffer, size_t length);
+        static bool TextureExist(const std::string &name);
         static std::shared_ptr<Texture> GetTexture(const std::string &name);
 
         static void AddShader(const std::string &name, const std::string &vertexPath, const std::string &fragmentPath);

@@ -30,6 +30,7 @@ class Texture
 
   public:
     Texture(const std::string &texturePath);
+    Texture(const unsigned char* buffer, size_t length);
     Texture(const Texture &copy);
     Texture &operator=(const Texture &copy);
     ~Texture();

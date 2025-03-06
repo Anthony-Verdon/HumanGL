@@ -8,6 +8,16 @@ void RessourceManager::AddTexture(const std::string &name, const std::string &te
     textures[name] = std::make_shared<Texture>(texturePath);
 }
 
+void RessourceManager::AddTexture(const std::string &name, const unsigned char *buffer, size_t length)
+{
+    textures[name] = std::make_shared<Texture>(buffer, length);
+}
+
+bool RessourceManager::TextureExist(const std::string &name)
+{
+    return (textures.find(name) != textures.end());
+}
+
 std::shared_ptr<Texture> RessourceManager::GetTexture(const std::string &name)
 {
     return (textures[name]);

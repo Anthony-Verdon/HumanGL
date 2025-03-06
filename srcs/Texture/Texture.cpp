@@ -1,6 +1,8 @@
 #include "Texture.hpp"
 #include <glad/glad.h>
 #include "Utils/Utils.hpp"
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb/stb_image.h>
 
 bool Texture::textureInit = false;
 
@@ -16,6 +18,31 @@ Texture::Texture(const std::string &texturePath)
     glBindTexture(GL_TEXTURE_2D, ID);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, &data[0]);
     glGenerateMipmap(GL_TEXTURE_2D);
+}
+
+Texture::Texture(const unsigned char *buffer, size_t length)
+{
+    if (!textureInit)
+        initTexParameter();
+
+    int width;
+    int height;
+    int nrChannels;
+    stbi_set_flip_vertically_on_load(false);
+    unsigned char *data = stbi_load_from_memory(buffer, length, &width, &height, &nrChannels, 0);
+
+    unsigned int format = 0;
+    if (nrChannels == 3)
+        format = GL_RGB;
+    else if (nrChannels == 4)
+        format = GL_RGBA;
+
+    glGenTextures(1, &ID);
+    glBindTexture(GL_TEXTURE_2D, ID);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, format, GL_UNSIGNED_BYTE, &data[0]);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    stbi_image_free(data);
 }
 
 Texture::Texture(const Texture &copy)

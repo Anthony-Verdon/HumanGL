@@ -21,6 +21,7 @@ MeshRenderer &MeshRenderer::operator=(const MeshRenderer &instance)
         vertices = instance.GetVertices();
         indices = instance.GetIndices();
         initialRotation = instance.GetInitialRotation();
+        texture = instance.GetTexture();
         InitRenderer();
     }
 

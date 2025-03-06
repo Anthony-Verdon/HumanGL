@@ -188,6 +188,8 @@ void Game::updateScene()
         AlgOps::mat4 model;
         model.identity();
         shader->setMat4("model", model);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, RessourceManager::GetTexture(meshes[i].GetTexture())->getID()); //@todo check
         meshes[i].Draw();
     }
 

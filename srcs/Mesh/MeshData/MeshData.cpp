@@ -17,6 +17,7 @@ MeshData &MeshData::operator=(const MeshData &instance)
         vertices = instance.GetVertices();
         indices = instance.GetIndices();
         initialRotation = instance.GetInitialRotation();
+        texture = instance.GetTexture();
     }
 
     return (*this);

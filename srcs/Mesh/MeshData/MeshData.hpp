@@ -19,9 +19,15 @@ class MeshData
 
         void SetInitialRotation(const AlgOps::mat4 &initialRotation) { this->initialRotation = initialRotation; }
         AlgOps::mat4 GetInitialRotation() const { return (initialRotation); }
+
+        void SetTexture(const std::string &texture) { this->texture = texture; }
+        std::string GetTexture() const { return (texture); }
     
     protected:
         std::vector<float> vertices;
         std::vector<unsigned short> indices;
         AlgOps::mat4 initialRotation;
+
+        // material
+        std::string texture;
 };
