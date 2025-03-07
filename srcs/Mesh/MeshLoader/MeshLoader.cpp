@@ -39,46 +39,9 @@ namespace MeshLoader
         MeshData data;
         
         auto node = gltfJson["nodes"][nodeIndex];
+        
         data.SetName(node["name"]);
-        {
-            AlgOps::vec3 scale;
-            scale.uniform(1);
-            if (node.KeyExist("scale"))
-                scale = {node["scale"][0], node["scale"][1], node["scale"][2]};
-
-            AlgOps::vec3 translate;
-            translate.uniform(0);
-            if (node.KeyExist("translation"))
-                translate = {node["translation"][0], node["translation"][1], node["translation"][2]};
-
-            AlgOps::vec4 quat;
-            quat.uniform(0);
-            if (node.KeyExist("rotation"))
-                quat = {node["rotation"][0], node["rotation"][1], node["rotation"][2], node["rotation"][3]};
-
-            float roll = atan2(2 * (quat.getW() * quat.getX() + quat.getY() * quat.getZ()), 1 - 2 * (pow(quat.getX(), 2) + pow(quat.getX(), 2)));
-            float pitch = asin(2 * (quat.getW() * quat.getY() - quat.getZ() * quat.getX()));
-            float yaw = atan2(2 * (quat.getW() * quat.getZ() + quat.getX() * quat.getY()), 1 - 2 * (pow(quat.getY(), 2) + pow(quat.getZ(), 2)));
-
-            AlgOps::vec3 axis[3];
-            axis[0] = {1, 0, 0};
-            axis[1] = {0, 1, 0};
-            axis[2] = {0, 0, 1};
-            
-            AlgOps::mat4 rotate;
-            rotate.uniform(1);
-            rotate = AlgOps::rotate(rotate, roll, axis[0]) *
-                    AlgOps::rotate(rotate, pitch, axis[1]) *
-                    AlgOps::rotate(rotate, yaw, axis[2]);
-
-            AlgOps::mat4 model;
-            model.identity();
-            model = AlgOps::translate(model, translate)
-                    * rotate
-                    * AlgOps::scale(model, scale);  
-            
-            data.SetLocalTransform(model);
-        }
+        data.SetLocalTransform(CalculateLocalTransform(node));
 
         if (node.KeyExist("children"))
         {
@@ -90,6 +53,47 @@ namespace MeshLoader
             LoadMesh(data, gltfJson, binStr, node);
             
         return (data);
+    }
+
+    AlgOps::mat4 CalculateLocalTransform(JsonParser::JsonValue &node)
+    {
+        AlgOps::vec3 scale;
+        scale.uniform(1);
+        if (node.KeyExist("scale"))
+            scale = {node["scale"][0], node["scale"][1], node["scale"][2]};
+
+        AlgOps::vec3 translate;
+        translate.uniform(0);
+        if (node.KeyExist("translation"))
+            translate = {node["translation"][0], node["translation"][1], node["translation"][2]};
+
+        AlgOps::vec4 quat;
+        quat.uniform(0);
+        if (node.KeyExist("rotation"))
+            quat = {node["rotation"][0], node["rotation"][1], node["rotation"][2], node["rotation"][3]};
+
+        float roll = atan2(2 * (quat.getW() * quat.getX() + quat.getY() * quat.getZ()), 1 - 2 * (pow(quat.getX(), 2) + pow(quat.getX(), 2)));
+        float pitch = asin(2 * (quat.getW() * quat.getY() - quat.getZ() * quat.getX()));
+        float yaw = atan2(2 * (quat.getW() * quat.getZ() + quat.getX() * quat.getY()), 1 - 2 * (pow(quat.getY(), 2) + pow(quat.getZ(), 2)));
+
+        AlgOps::vec3 axis[3];
+        axis[0] = {1, 0, 0};
+        axis[1] = {0, 1, 0};
+        axis[2] = {0, 0, 1};
+        
+        AlgOps::mat4 rotate;
+        rotate.uniform(1);
+        rotate = AlgOps::rotate(rotate, roll, axis[0]) *
+                AlgOps::rotate(rotate, pitch, axis[1]) *
+                AlgOps::rotate(rotate, yaw, axis[2]);
+
+        AlgOps::mat4 model;
+        model.identity();
+        model = AlgOps::translate(model, translate)
+                * rotate
+                * AlgOps::scale(model, scale);  
+        
+        return (model);
     }
 
     void LoadMesh(MeshData &data, JsonParser::JsonValue &gltfJson, const std::string &binStr, JsonParser::JsonValue &node)
