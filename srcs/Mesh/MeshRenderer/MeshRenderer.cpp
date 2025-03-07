@@ -44,22 +44,22 @@ void MeshRenderer::InitRenderer()
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
         
-        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(VertexStruct) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short) * indices.size(), indices.data(), GL_STATIC_DRAW);
         
-        glVertexAttribPointer(0, nbFloatPerPosition, GL_FLOAT, GL_FALSE, nbFloatPerVertex * sizeof(float), (void *)0);
+        glVertexAttribPointer(0, nbFloatPerPosition, GL_FLOAT, GL_FALSE, sizeof(VertexStruct), (void *)0);
         glEnableVertexAttribArray(0);
         
-        glVertexAttribPointer(1, nbFloatPerTexCoord, GL_FLOAT, GL_FALSE, nbFloatPerVertex * sizeof(float), (void *)(nbFloatPerPosition * sizeof(float)));
+        glVertexAttribPointer(1, nbFloatPerTexCoord, GL_FLOAT, GL_FALSE, sizeof(VertexStruct), (void *)offsetof(VertexStruct, z));
         glEnableVertexAttribArray(1);
 
-        glVertexAttribPointer(2, nbFloatPerNormal, GL_FLOAT, GL_FALSE, nbFloatPerVertex * sizeof(float), (void *)((nbFloatPerPosition + nbFloatPerTexCoord) * sizeof(float)));
+        glVertexAttribPointer(2, nbFloatPerNormal, GL_FLOAT, GL_FALSE, sizeof(VertexStruct), (void *)offsetof(VertexStruct, v));
         glEnableVertexAttribArray(2);
         
-        glVertexAttribPointer(3, nbFloatPerJoint, GL_FLOAT, GL_FALSE, nbFloatPerVertex * sizeof(float), (void *)((nbFloatPerPosition + nbFloatPerTexCoord + nbFloatPerNormal) * sizeof(float)));
+        glVertexAttribPointer(3, nbFloatPerJoint, GL_UNSIGNED_SHORT, GL_FALSE, sizeof(VertexStruct), (void *)offsetof(VertexStruct, nz));
         glEnableVertexAttribArray(3);
 
-        glVertexAttribPointer(4, nbFloatPerWeight, GL_FLOAT, GL_FALSE, nbFloatPerVertex * sizeof(float), (void *)((nbFloatPerPosition + nbFloatPerTexCoord + nbFloatPerNormal + nbFloatPerJoint) * sizeof(float)));
+        glVertexAttribPointer(4, nbFloatPerWeight, GL_FLOAT, GL_FALSE,sizeof(VertexStruct), (void *)offsetof(VertexStruct, j4));
         glEnableVertexAttribArray(4);
         
         glBindVertexArray(0);

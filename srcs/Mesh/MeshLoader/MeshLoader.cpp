@@ -103,7 +103,8 @@ namespace MeshLoader
 
         LoadVertices(data, gltfJson, binStr, mesh["primitives"][0]["attributes"]);
         LoadIndices(data, gltfJson, binStr, mesh["primitives"][0]["indices"]);
-        LoadMaterial(data, gltfJson, binStr, mesh["material"]);
+        if (mesh.KeyExist("material"))
+            LoadMaterial(data, gltfJson, binStr, mesh["material"]);
     }
 
     void LoadVertices(MeshData &data, JsonParser::JsonValue &gltfJson, const std::string &binStr, JsonParser::JsonValue &attributes)
@@ -111,7 +112,7 @@ namespace MeshLoader
         std::vector<float> positions;
         std::vector<float> textureCoords;
         std::vector<float> normals;
-        std::vector<float> joints;
+        std::vector<uint16_t> joints;
         std::vector<float> weights;
 
         for (auto it = attributes.begin(); it != attributes.end(); it++)
@@ -119,6 +120,7 @@ namespace MeshLoader
             auto accessor = gltfJson["accessors"][it.value()];
             size_t bufferViewIndex = accessor["bufferView"];
             size_t count = accessor["count"];
+            size_t componentType = accessor["componentType"];
             std::string type = accessor["type"];
             
             size_t nbFloat = 0;
@@ -133,53 +135,91 @@ namespace MeshLoader
             
             auto bufferView = gltfJson["bufferViews"][bufferViewIndex];
             size_t byteOffset = bufferView["byteOffset"];
-            float* buffer = (float*)(binStr.data() + byteOffset);
+            void* buffer = (void*)(binStr.data() + byteOffset);
 
             size_t size = count * nbFloat;
-            std::vector<float> vector(size);
-            for (size_t i = 0; i < size; i++)
-                vector[i] = buffer[i];
-
             if (it.key() == "POSITION")
-                positions = vector;
+            {
+                float *data = (float*)buffer;
+                positions.reserve(size);
+                for (size_t i = 0; i < size; i++)
+                    positions.push_back(data[i]);
+            }
             else if (it.key() == "TEXCOORD_0")
-                textureCoords = vector;
+            {
+                float *data = (float*)buffer;
+                textureCoords.reserve(size);
+                for (size_t i = 0; i < size; i++)
+                    textureCoords.push_back(data[i]);
+            }
             else if (it.key() == "NORMAL")
-                normals = vector;
+            {
+                float *data = (float*)buffer;
+                normals.reserve(size);
+                for (size_t i = 0; i < size; i++)
+                    normals.push_back(data[i]);
+            }
             else if (it.key() == "JOINTS_0")
-                joints = vector;
+            {
+                joints.reserve(size);
+                if (componentType == GL_UNSIGNED_BYTE)
+                {
+                    uint8_t *data = (uint8_t*)buffer;
+                    for (size_t i = 0; i < size; i++)
+                        joints.push_back((uint16_t)data[i]);
+                }
+                else if (componentType == GL_UNSIGNED_SHORT)
+                {
+                    uint16_t *data = (uint16_t*)buffer;
+                    for (size_t i = 0; i < size; i++)
+                        joints.push_back(data[i]);
+                }
+            }
             else if (it.key() == "WEIGHTS_0")
-                weights = vector;
+            {
+                float *data = (float*)buffer;
+                weights.reserve(size);
+                for (size_t i = 0; i < size; i++)
+                    weights.push_back(data[i]);
+            }
         }
         
         size_t count = positions.size() / 3;
-        std::vector<float> vertices(count * nbFloatPerVertex, 0);
-        size_t verticesIndex = 0;
+        std::vector<VertexStruct> vertices(count);
+        std::cout << positions.size() << std::endl;
         for (size_t i = 0; i < count; i++)
         {
-            AddElementsToVertices(vertices, verticesIndex, positions, nbFloatPerPosition, i * nbFloatPerPosition);
-            AddElementsToVertices(vertices, verticesIndex, textureCoords, nbFloatPerTexCoord, i * nbFloatPerTexCoord);
-            AddElementsToVertices(vertices, verticesIndex, normals, nbFloatPerNormal, i * nbFloatPerNormal);
-            AddElementsToVertices(vertices, verticesIndex, joints, nbFloatPerJoint, i * nbFloatPerJoint);
-            AddElementsToVertices(vertices, verticesIndex, weights, nbFloatPerWeight, i * nbFloatPerWeight);
+            vertices[i].x = positions[i * nbFloatPerPosition + 0];
+            vertices[i].y = positions[i * nbFloatPerPosition + 1];
+            vertices[i].z = positions[i * nbFloatPerPosition + 2];
+            if (textureCoords.size() != 0)
+            {
+                vertices[i].u = textureCoords[i * nbFloatPerTexCoord + 0];
+                vertices[i].v = textureCoords[i * nbFloatPerTexCoord + 1];
+            }
+            if (normals.size() != 0)
+            {
+                vertices[i].nx = normals[i * nbFloatPerNormal + 0];
+                vertices[i].ny = normals[i * nbFloatPerNormal + 1];
+                vertices[i].nz = normals[i * nbFloatPerNormal + 2];
+            }
+            if (joints.size() != 0)
+            {
+                vertices[i].j1 = joints[i * nbFloatPerJoint + 0];
+                vertices[i].j2 = joints[i * nbFloatPerJoint + 1];
+                vertices[i].j3 = joints[i * nbFloatPerJoint + 2];
+                vertices[i].j4 = joints[i * nbFloatPerJoint + 3];
+            }
+            if (weights.size() != 0)
+            {
+                vertices[i].w1 = weights[i * nbFloatPerWeight + 0];
+                vertices[i].w2 = weights[i * nbFloatPerWeight + 1];
+                vertices[i].w3 = weights[i * nbFloatPerWeight + 2];
+                vertices[i].w4 = weights[i * nbFloatPerWeight + 3];
+            }
+
         }
         data.SetVertices(vertices);
-    }
-
-    void AddElementsToVertices(std::vector<float> &vertices, size_t &verticesIndex, const std::vector<float> &elements, size_t nbElementToAdd, size_t elementsIndex)
-    {
-        if (elements.size() != 0)
-        {
-            for (size_t j = 0; j < nbElementToAdd; j++)
-            {
-                vertices[verticesIndex] = elements[elementsIndex + j];
-                verticesIndex++;
-            }
-        }
-        else
-        {
-            verticesIndex += nbElementToAdd;
-        }
     }
 
     void LoadIndices(MeshData &data, JsonParser::JsonValue &gltfJson, const std::string &binStr, int indiceIndex)

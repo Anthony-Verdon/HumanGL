@@ -3,6 +3,15 @@
 #include <vector>
 #include "Matrix/Matrix.hpp"
 
+struct VertexStruct
+{
+    float x,y,z;
+    float u,v;
+    float nx, ny, nz;
+    uint16_t j1, j2, j3, j4;
+    float w1, w2, w3, w4;
+};
+
 constexpr int nbFloatPerPosition = 3;
 constexpr int nbFloatPerTexCoord = 2;
 constexpr int nbFloatPerNormal = 3;
@@ -18,8 +27,8 @@ class MeshData
         MeshData &operator=(const MeshData &instance);
         ~MeshData();
 
-        void SetVertices(const std::vector<float> &vertices) { this->vertices = vertices; }
-        std::vector<float> GetVertices() const { return (vertices); }
+        void SetVertices(const std::vector<VertexStruct> &vertices) { this->vertices = vertices; }
+        std::vector<VertexStruct> GetVertices() const { return (vertices); }
 
         void SetIndices(const std::vector<unsigned short> &indices) { this->indices = indices; }
         std::vector<unsigned short> GetIndices() const { return (indices); }
@@ -38,7 +47,7 @@ class MeshData
     
     protected:
         std::string name;
-        std::vector<float> vertices;
+        std::vector<VertexStruct> vertices;
         std::vector<unsigned short> indices;
         AlgOps::mat4 localTransform;
         std::vector<MeshData> children;
