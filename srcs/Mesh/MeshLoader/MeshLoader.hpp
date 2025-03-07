@@ -13,4 +13,7 @@ namespace MeshLoader
     MeshData LoadNode(JsonParser::JsonValue &gltfJson, const std::string &binStr, size_t nodeIndex);
     AlgOps::mat4 CalculateLocalTransform(JsonParser::JsonValue &node);
     void LoadMesh(MeshData &data, JsonParser::JsonValue &gltfJson, const std::string &binStr, JsonParser::JsonValue &node);
+    void LoadVertices(MeshData &data, JsonParser::JsonValue &gltfJson, const std::string &binStr, JsonParser::JsonValue &attributes);
+    void LoadIndices(MeshData &data, JsonParser::JsonValue &gltfJson, const std::string &binStr, int indiceIndex);
+    void LoadMaterial(MeshData &data, JsonParser::JsonValue &gltfJson, const std::string &binStr, int materialIndex);
 }

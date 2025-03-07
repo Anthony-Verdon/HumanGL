@@ -99,13 +99,20 @@ namespace MeshLoader
     void LoadMesh(MeshData &data, JsonParser::JsonValue &gltfJson, const std::string &binStr, JsonParser::JsonValue &node)
     {
         size_t meshIndex = node["mesh"];
-        auto mesh = gltfJson["meshes"][meshIndex];
-        data.SetName(mesh["name"]);
+        auto mesh  = gltfJson["meshes"][meshIndex];
+
+        LoadVertices(data, gltfJson, binStr, mesh["primitives"][0]["attributes"]);
+        LoadIndices(data, gltfJson, binStr, mesh["primitives"][0]["indices"]);
+        LoadMaterial(data, gltfJson, binStr, mesh["material"]);
+    }
+
+    void LoadVertices(MeshData &data, JsonParser::JsonValue &gltfJson, const std::string &binStr, JsonParser::JsonValue &attributes)
+    {
         std::vector<float> v;
         std::vector<float> vt;
         std::vector<float> vn;
 
-        for (auto it = mesh["primitives"][0]["attributes"].begin(); it != mesh["primitives"][0]["attributes"].end(); it++)
+        for (auto it = attributes.begin(); it != attributes.end(); it++)
         {
             auto accessor = gltfJson["accessors"][it.value()];
             size_t bufferViewIndex = accessor["bufferView"];
@@ -142,20 +149,6 @@ namespace MeshLoader
                 vn = vector;
         }
         
-        {
-            size_t indicesIndex = mesh["primitives"][0]["indices"];
-            auto accessor = gltfJson["accessors"][indicesIndex];
-            size_t bufferViewIndex = accessor["bufferView"];
-            size_t count = accessor["count"];
-            
-            auto bufferView = gltfJson["bufferViews"][bufferViewIndex];
-            size_t byteOffset = bufferView["byteOffset"];
-            unsigned short* buffer = (unsigned short*)(binStr.data() + byteOffset);
-            std::vector<unsigned short> indices;
-            for (size_t i = 0; i < count; i++)
-                indices.push_back(buffer[i]);
-            data.SetIndices(indices);
-        }
 
         size_t count = v.size() / 3;
         std::vector<float> vector;
@@ -172,8 +165,25 @@ namespace MeshLoader
             vector.push_back(vn[i * 3 + 2]);
         }
         data.SetVertices(vector);
+    }
 
-        size_t materialIndex = mesh["material"];
+    void LoadIndices(MeshData &data, JsonParser::JsonValue &gltfJson, const std::string &binStr, int indiceIndex)
+    {
+        auto accessor = gltfJson["accessors"][indiceIndex];
+        size_t bufferViewIndex = accessor["bufferView"];
+        size_t count = accessor["count"];
+        
+        auto bufferView = gltfJson["bufferViews"][bufferViewIndex];
+        size_t byteOffset = bufferView["byteOffset"];
+        unsigned short* buffer = (unsigned short*)(binStr.data() + byteOffset);
+        std::vector<unsigned short> indices;
+        for (size_t i = 0; i < count; i++)
+            indices.push_back(buffer[i]);
+        data.SetIndices(indices);
+    }
+
+    void LoadMaterial(MeshData &data, JsonParser::JsonValue &gltfJson, const std::string &binStr, int materialIndex)
+    {
         auto material = gltfJson["materials"][materialIndex];
         if (material["pbrMetallicRoughness"].KeyExist("baseColorTexture"))
         {
