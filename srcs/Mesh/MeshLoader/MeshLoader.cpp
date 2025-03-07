@@ -108,9 +108,11 @@ namespace MeshLoader
 
     void LoadVertices(MeshData &data, JsonParser::JsonValue &gltfJson, const std::string &binStr, JsonParser::JsonValue &attributes)
     {
-        std::vector<float> v;
-        std::vector<float> vt;
-        std::vector<float> vn;
+        std::vector<float> positions;
+        std::vector<float> textureCoords;
+        std::vector<float> normals;
+        std::vector<float> joints;
+        std::vector<float> weights;
 
         for (auto it = attributes.begin(); it != attributes.end(); it++)
         {
@@ -124,47 +126,60 @@ namespace MeshLoader
                 nbFloat = 2;
             else if (type == "VEC3")
                 nbFloat = 3;
+            else if (type == "VEC4")
+                nbFloat = 4;
             else
-                std::cout << "type unknown:" << type << std::endl;
+                std::cerr << "type unknown: " << type << std::endl;
             
             auto bufferView = gltfJson["bufferViews"][bufferViewIndex];
             size_t byteOffset = bufferView["byteOffset"];
             float* buffer = (float*)(binStr.data() + byteOffset);
 
-            std::vector<float> vector;
-            vector.reserve(count * nbFloat);
-            for (size_t i = 0; i < count; i++)
-            {
-                for (size_t j = 0; j < nbFloat; j++)
-                {
-                    vector.push_back(buffer[i * nbFloat + j]);
-                }
-            }
+            size_t size = count * nbFloat;
+            std::vector<float> vector(size);
+            for (size_t i = 0; i < size; i++)
+                vector[i] = buffer[i];
 
             if (it.key() == "POSITION")
-                v = vector;
+                positions = vector;
             else if (it.key() == "TEXCOORD_0")
-                vt = vector;
+                textureCoords = vector;
             else if (it.key() == "NORMAL")
-                vn = vector;
+                normals = vector;
+            else if (it.key() == "JOINTS_0")
+                joints = vector;
+            else if (it.key() == "WEIGHTS_0")
+                weights = vector;
         }
         
-
-        size_t count = v.size() / 3;
-        std::vector<float> vector;
-        vector.reserve(count * (3 + 2 + 3));
+        size_t count = positions.size() / 3;
+        std::vector<float> vertices(count * nbFloatPerVertex, 0);
+        size_t verticesIndex = 0;
         for (size_t i = 0; i < count; i++)
         {
-            vector.push_back(v[i * 3 + 0]);
-            vector.push_back(v[i * 3 + 1]);
-            vector.push_back(v[i * 3 + 2]);
-            vector.push_back(vt[i * 2 + 0]);
-            vector.push_back(vt[i * 2 + 1]);
-            vector.push_back(vn[i * 3 + 0]);
-            vector.push_back(vn[i * 3 + 1]);
-            vector.push_back(vn[i * 3 + 2]);
+            AddElementsToVertices(vertices, verticesIndex, positions, nbFloatPerPosition, i * nbFloatPerPosition);
+            AddElementsToVertices(vertices, verticesIndex, textureCoords, nbFloatPerTexCoord, i * nbFloatPerTexCoord);
+            AddElementsToVertices(vertices, verticesIndex, normals, nbFloatPerNormal, i * nbFloatPerNormal);
+            AddElementsToVertices(vertices, verticesIndex, joints, nbFloatPerJoint, i * nbFloatPerJoint);
+            AddElementsToVertices(vertices, verticesIndex, weights, nbFloatPerWeight, i * nbFloatPerWeight);
         }
-        data.SetVertices(vector);
+        data.SetVertices(vertices);
+    }
+
+    void AddElementsToVertices(std::vector<float> &vertices, size_t &verticesIndex, const std::vector<float> &elements, size_t nbElementToAdd, size_t elementsIndex)
+    {
+        if (elements.size() != 0)
+        {
+            for (size_t j = 0; j < nbElementToAdd; j++)
+            {
+                vertices[verticesIndex] = elements[elementsIndex + j];
+                verticesIndex++;
+            }
+        }
+        else
+        {
+            verticesIndex += nbElementToAdd;
+        }
     }
 
     void LoadIndices(MeshData &data, JsonParser::JsonValue &gltfJson, const std::string &binStr, int indiceIndex)

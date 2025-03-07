@@ -3,6 +3,13 @@
 #include <vector>
 #include "Matrix/Matrix.hpp"
 
+constexpr int nbFloatPerPosition = 3;
+constexpr int nbFloatPerTexCoord = 2;
+constexpr int nbFloatPerNormal = 3;
+constexpr int nbFloatPerJoint = 4;
+constexpr int nbFloatPerWeight = 4;
+constexpr int nbFloatPerVertex = nbFloatPerPosition + nbFloatPerTexCoord + nbFloatPerNormal + nbFloatPerJoint + nbFloatPerWeight;
+
 class MeshData
 {
     public:

@@ -47,13 +47,20 @@ void MeshRenderer::InitRenderer()
         glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short) * indices.size(), indices.data(), GL_STATIC_DRAW);
         
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
+        glVertexAttribPointer(0, nbFloatPerPosition, GL_FLOAT, GL_FALSE, nbFloatPerVertex * sizeof(float), (void *)0);
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
         
+        glVertexAttribPointer(1, nbFloatPerTexCoord, GL_FLOAT, GL_FALSE, nbFloatPerVertex * sizeof(float), (void *)(nbFloatPerPosition * sizeof(float)));
         glEnableVertexAttribArray(1);
-        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(5 * sizeof(float)));
+
+        glVertexAttribPointer(2, nbFloatPerNormal, GL_FLOAT, GL_FALSE, nbFloatPerVertex * sizeof(float), (void *)((nbFloatPerPosition + nbFloatPerTexCoord) * sizeof(float)));
         glEnableVertexAttribArray(2);
+        
+        glVertexAttribPointer(3, nbFloatPerJoint, GL_FLOAT, GL_FALSE, nbFloatPerVertex * sizeof(float), (void *)((nbFloatPerPosition + nbFloatPerTexCoord + nbFloatPerNormal) * sizeof(float)));
+        glEnableVertexAttribArray(3);
+
+        glVertexAttribPointer(4, nbFloatPerWeight, GL_FLOAT, GL_FALSE, nbFloatPerVertex * sizeof(float), (void *)((nbFloatPerPosition + nbFloatPerTexCoord + nbFloatPerNormal + nbFloatPerJoint) * sizeof(float)));
+        glEnableVertexAttribArray(4);
         
         glBindVertexArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
