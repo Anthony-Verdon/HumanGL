@@ -34,7 +34,7 @@ MeshRenderer::~MeshRenderer()
 
 void MeshRenderer::InitRenderer()
 {
-    if (texture != "")
+    if (indices.size() != 0)
     {
         glGenVertexArrays(1, &VAO);
         glGenBuffers(1, &VBO);
@@ -80,7 +80,7 @@ void MeshRenderer::DestroyRenderer()
 void MeshRenderer::Draw(const AlgOps::mat4 &rotation, const AlgOps::mat4 &projection, const AlgOps::mat4 &view, const AlgOps::mat4 &model) const
 {
     AlgOps::mat4 globalTransform = model * localTransform;
-    if (texture != "")
+    if (indices.size() != 0)
     {
         auto shader = RessourceManager::GetShader("mesh_shader");
         shader->use();
@@ -88,9 +88,13 @@ void MeshRenderer::Draw(const AlgOps::mat4 &rotation, const AlgOps::mat4 &projec
         shader->setMat4("projection", projection);
         shader->setMat4("view", view);
         shader->setMat4("model", globalTransform);
-
-        glActiveTexture(GL_TEXTURE0);    
-        glBindTexture(GL_TEXTURE_2D, RessourceManager::GetTexture(texture)->getID()); 
+        bool useTexCoord = (texture != "");
+        shader->setInt("useTexCoord", useTexCoord);
+        if (useTexCoord)
+        {
+            glActiveTexture(GL_TEXTURE0);    
+            glBindTexture(GL_TEXTURE_2D, RessourceManager::GetTexture(texture)->getID()); 
+        }
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, 0);
     }
