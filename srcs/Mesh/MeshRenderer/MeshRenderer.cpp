@@ -50,16 +50,16 @@ void MeshRenderer::InitRenderer()
         glVertexAttribPointer(0, nbFloatPerPosition, GL_FLOAT, GL_FALSE, sizeof(VertexStruct), (void *)0);
         glEnableVertexAttribArray(0);
         
-        glVertexAttribPointer(1, nbFloatPerTexCoord, GL_FLOAT, GL_FALSE, sizeof(VertexStruct), (void *)offsetof(VertexStruct, z));
+        glVertexAttribPointer(1, nbFloatPerTexCoord, GL_FLOAT, GL_FALSE, sizeof(VertexStruct), (void *)(sizeof(float) * 3));
         glEnableVertexAttribArray(1);
 
-        glVertexAttribPointer(2, nbFloatPerNormal, GL_FLOAT, GL_FALSE, sizeof(VertexStruct), (void *)offsetof(VertexStruct, v));
+        glVertexAttribPointer(2, nbFloatPerNormal, GL_FLOAT, GL_FALSE, sizeof(VertexStruct), (void *)(sizeof(float) * 5));
         glEnableVertexAttribArray(2);
         
-        glVertexAttribPointer(3, nbFloatPerJoint, GL_UNSIGNED_SHORT, GL_FALSE, sizeof(VertexStruct), (void *)offsetof(VertexStruct, nz));
+        glVertexAttribPointer(3, nbFloatPerJoint, GL_UNSIGNED_SHORT, GL_FALSE, sizeof(VertexStruct), (void *)(sizeof(float) * 8));
         glEnableVertexAttribArray(3);
 
-        glVertexAttribPointer(4, nbFloatPerWeight, GL_FLOAT, GL_FALSE,sizeof(VertexStruct), (void *)offsetof(VertexStruct, j4));
+        glVertexAttribPointer(4, nbFloatPerWeight, GL_FLOAT, GL_FALSE,sizeof(VertexStruct), (void *)(sizeof(float) * 8 + sizeof(uint16_t) * 4));
         glEnableVertexAttribArray(4);
         
         glBindVertexArray(0);

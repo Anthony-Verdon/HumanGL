@@ -99,12 +99,13 @@ namespace MeshLoader
     void LoadMesh(MeshData &data, JsonParser::JsonValue &gltfJson, const std::string &binStr, JsonParser::JsonValue &node)
     {
         size_t meshIndex = node["mesh"];
-        auto mesh  = gltfJson["meshes"][meshIndex];
+        auto mesh = gltfJson["meshes"][meshIndex];
+        auto primitives = mesh["primitives"][0];
 
-        LoadVertices(data, gltfJson, binStr, mesh["primitives"][0]["attributes"]);
-        LoadIndices(data, gltfJson, binStr, mesh["primitives"][0]["indices"]);
-        if (mesh.KeyExist("material"))
-            LoadMaterial(data, gltfJson, binStr, mesh["material"]);
+        LoadVertices(data, gltfJson, binStr, primitives["attributes"]);
+        LoadIndices(data, gltfJson, binStr, primitives["indices"]);
+        if (primitives.KeyExist("material"))
+            LoadMaterial(data, gltfJson, binStr, primitives["material"]);
     }
 
     void LoadVertices(MeshData &data, JsonParser::JsonValue &gltfJson, const std::string &binStr, JsonParser::JsonValue &attributes)
@@ -186,7 +187,6 @@ namespace MeshLoader
         
         size_t count = positions.size() / 3;
         std::vector<VertexStruct> vertices(count);
-        std::cout << positions.size() << std::endl;
         for (size_t i = 0; i < count; i++)
         {
             vertices[i].x = positions[i * nbFloatPerPosition + 0];
@@ -239,6 +239,7 @@ namespace MeshLoader
 
     void LoadMaterial(MeshData &data, JsonParser::JsonValue &gltfJson, const std::string &binStr, int materialIndex)
     {
+        // need to complete parsing
         auto material = gltfJson["materials"][materialIndex];
         if (material["pbrMetallicRoughness"].KeyExist("baseColorTexture"))
         {
