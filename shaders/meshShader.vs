@@ -9,13 +9,20 @@ uniform mat4 rotation;
 uniform mat4 view;
 uniform mat4 projection;
 uniform mat4 model;
+#define MAX_MATRICES 100
+uniform mat4 jointMat[MAX_MATRICES];
 
 out vec2 TexCoord;
 out vec3 Normal;
 
 void main()
 {
-    gl_Position = projection * view * rotation * model * vec4(aPos, 1);
+    mat4 skinMat =
+        aWeight.x * jointMat[int(aJoint.x)] +
+        aWeight.y * jointMat[int(aJoint.y)] +
+        aWeight.z * jointMat[int(aJoint.z)] +
+        aWeight.w * jointMat[int(aJoint.w)];
+    gl_Position = projection * view * rotation * model * skinMat * vec4(aPos, 1);
     TexCoord = vec2(aTexCoord.x, aTexCoord.y);
     Normal = mat3(transpose(inverse(rotation * model))) * aNormal; 
 }

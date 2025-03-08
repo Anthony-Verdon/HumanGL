@@ -2,6 +2,7 @@
 
 #include <vector>
 #include "Matrix/Matrix.hpp"
+#include <map>
 
 struct VertexStruct
 {
@@ -44,6 +45,9 @@ class MeshData
 
         void SetName(const std::string &name) { this->name = name; }
         std::string GetName() const { return (name); }
+
+        void AddJoint(int ID, const AlgOps::mat4 &joint) { joints[ID] = joint; }
+        std::map<int, AlgOps::mat4> GetJoints() const { return (joints); }
     
     protected:
         std::string name;
@@ -51,7 +55,6 @@ class MeshData
         std::vector<unsigned short> indices;
         AlgOps::mat4 localTransform;
         std::vector<MeshData> children;
-
-        // material
+        std::map<int, AlgOps::mat4> joints;
         std::string texture;
 };

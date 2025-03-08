@@ -50,7 +50,10 @@ namespace MeshLoader
         }
 
         if (node.KeyExist("mesh"))
-            LoadMesh(data, gltfJson, binStr, node);
+            LoadMesh(data, gltfJson, binStr, node["mesh"]);
+
+        if (node.KeyExist("skin"))
+            LoadSkin(data, gltfJson, binStr, node["skin"]);
             
         return (data);
     }
@@ -96,9 +99,8 @@ namespace MeshLoader
         return (model);
     }
 
-    void LoadMesh(MeshData &data, JsonParser::JsonValue &gltfJson, const std::string &binStr, JsonParser::JsonValue &node)
+    void LoadMesh(MeshData &data, JsonParser::JsonValue &gltfJson, const std::string &binStr, int meshIndex)
     {
-        size_t meshIndex = node["mesh"];
         auto mesh = gltfJson["meshes"][meshIndex];
         auto primitives = mesh["primitives"][0];
 
@@ -264,6 +266,38 @@ namespace MeshLoader
         else
         {
             data.SetTexture("");
+        }
+    }
+
+    void LoadSkin(MeshData &data, JsonParser::JsonValue &gltfJson, const std::string &binStr, int skinIndex)
+    {
+        auto skin = gltfJson["skins"][skinIndex];
+        size_t matrixIndex = skin["inverseBindMatrices"];
+
+        auto accessor = gltfJson["accessors"][matrixIndex];
+        size_t bufferViewIndex = accessor["bufferView"];
+        size_t count = accessor["count"];
+        
+        auto bufferView = gltfJson["bufferViews"][bufferViewIndex];
+        size_t byteOffset = bufferView["byteOffset"];
+        float* buffer = (float*)(binStr.data() + byteOffset);
+        
+        size_t nbFloat = 16;
+        std::vector<AlgOps::mat4> matrices;
+        matrices.reserve(count);
+        for (size_t i = 0; i < count; i++)
+        {
+            AlgOps::mat4 matrix;
+            for (size_t j = 0; j < nbFloat; j++)
+                matrix.setData(j % 4, j / 4, buffer[i * nbFloat + j]);
+            matrices.push_back(matrix);
+        }
+
+        size_t i = 0;
+        for (auto joint: skin["joints"])
+        {
+            data.AddJoint(joint, matrices[i]);
+            i++;
         }
     }
 }

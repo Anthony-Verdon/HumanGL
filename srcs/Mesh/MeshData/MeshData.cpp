@@ -20,6 +20,7 @@ MeshData &MeshData::operator=(const MeshData &instance)
         localTransform = instance.GetLocalTransfrom();
         children = instance.GetChildren();
         texture = instance.GetTexture();
+        joints = instance.GetJoints();
     }
 
     return (*this);
