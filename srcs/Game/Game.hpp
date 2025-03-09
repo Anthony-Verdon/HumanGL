@@ -2,7 +2,7 @@
 
 #include "AProgram/AProgram.hpp"
 #include "ObjectClasses/Object/Object.hpp"
-#include "Mesh/MeshRenderer/MeshRenderer.hpp"
+#include "Model/Model.hpp"
 #include "Camera/Camera.hpp"
 #include "Texture/Texture.hpp"
 #include "Shader/Shader.hpp"
@@ -20,7 +20,7 @@ class Game: public AProgram
     private:
         Camera camera;
         std::vector<Object> objects;
-        std::vector<MeshRenderer> meshes;
+        Model model;
         bool displayColor;
         float mixedValue;
         float sceneRotation[3];

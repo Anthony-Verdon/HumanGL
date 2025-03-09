@@ -1,22 +1,21 @@
-#include "Mesh/MeshLoader/MeshLoader.hpp"
+#include "ModelLoader/ModelLoader.hpp"
 #include "GlbParser/GlbParser.hpp"
 #include "RessourceManager/RessourceManager.hpp"
 #include "Toolbox.hpp"
 #include "Matrix.hpp"
 #include <iostream>
 
-namespace MeshLoader
+namespace ModelLoader
 {
-    MeshRenderer LoadMesh(const std::string &path)
+    Model LoadModel(const std::string &path)
     {
-        std::vector<MeshData> meshesData;
         if (Toolbox::checkExtension(path, ".glb"))
-            return (LoadMeshDataFromGlb(path));
+            return (LoadModelFromGlb(path));
         
         throw(std::runtime_error("unknown extension"));
     }
 
-    MeshData LoadMeshDataFromGlb(const std::string &path)
+    Model LoadModelFromGlb(const std::string &path)
     {
         auto [gltfJson, binStr] = Glb::LoadBinaryFile(path, true);
 
@@ -24,8 +23,9 @@ namespace MeshLoader
         Glb::Scene scene = data.scenes[data.rootScene];
         for (size_t i = 0; i < scene.nodes.size(); i++)
             PrintNode(data, scene.nodes[i]);
-        
-        return (MeshData());
+    
+        Model model(data, scene.nodes[0]);
+        return (model);
     }
 
     void PrintNode(const Glb::GltfData &data, int nodeIndex)

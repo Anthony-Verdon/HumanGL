@@ -2,7 +2,7 @@
 #include "ObjectClasses/ObjectParser/ObjectParser.hpp"
 #include "WindowManager/WindowManager.hpp"
 #include "RessourceManager/RessourceManager.hpp"
-#include "Mesh/MeshLoader/MeshLoader.hpp"
+#include "ModelLoader/ModelLoader.hpp"
 #include "Time/Time.hpp"
 #include "Toolbox.hpp"
 #include "globals.hpp"
@@ -30,13 +30,10 @@ Game::Game()
     RessourceManager::AddShader("basic_shader", "shaders/shader.vs", "shaders/shader.fs");
     RessourceManager::AddShader("mesh_shader", "shaders/meshShader.vs", "shaders/meshShader.fs");
     RessourceManager::AddShader("light", "shaders/lightShader.vs", "shaders/lightShader.fs");
-    RessourceManager::AddTexture("my_little_pony", "textures/myLittlePony.ppm");
 }
 
 Game::~Game() 
 {
-    for (size_t i = 0; i < meshes.size(); i++)
-        meshes[i].DestroyRenderer();
 }
 
 void Game::LoadObjects(int argc, char **argv)
@@ -49,12 +46,13 @@ void Game::LoadObjects(int argc, char **argv)
             objects.insert(objects.end(), newObjects.begin(), newObjects.end());
         }
         else if (Toolbox::checkExtension(argv[i], ".glb"))
-            meshes.push_back(MeshLoader::LoadMesh(argv[i]));
+        {
+            model = ModelLoader::LoadModel(argv[i]);
+            model.Init();
+        }
     }
     for (size_t i = 0; i < objects.size(); i++)
         objects[i].initVAO();
-    for (size_t i = 0; i < meshes.size(); i++)
-        meshes[i].InitRenderer();
 
 }
 
@@ -180,8 +178,7 @@ void Game::updateScene()
         
         AlgOps::mat4 view = AlgOps::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(),
         camera.getUpDirection());
-        for (size_t i = 0; i < meshes.size(); i++)
-            meshes[i].Draw(rotation, projection, view, meshes[i].GetLocalTransfrom());
+        model.Draw(projection, view);
     }
 
     // light

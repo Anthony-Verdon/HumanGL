@@ -1,16 +1,13 @@
 #pragma once
 
 #include <string>
-#include "Mesh/MeshData/MeshData.hpp"
-#include "Mesh/MeshRenderer/MeshRenderer.hpp"
-#include "JsonParser/JsonValue.hpp"
 #include "GlbParser/GlbParser.hpp"
+#include "Model/Model.hpp"
 
-namespace MeshLoader
+namespace ModelLoader
 {
-    MeshRenderer LoadMesh(const std::string &path);
-    
-    MeshData LoadMeshDataFromGlb(const std::string &path);
+    Model LoadModel(const std::string &path);
+    Model LoadModelFromGlb(const std::string &path);
 
     void PrintNode(const Glb::GltfData &data, int nodeIndex);
     void PrintSkin(const Glb::GltfData &data, int skinIndex);

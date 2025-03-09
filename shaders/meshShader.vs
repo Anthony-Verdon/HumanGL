@@ -17,12 +17,15 @@ out vec3 Normal;
 
 void main()
 {
+    /*
     mat4 skinMat =
         aWeight.x * jointMat[int(aJoint.x)] +
         aWeight.y * jointMat[int(aJoint.y)] +
         aWeight.z * jointMat[int(aJoint.z)] +
         aWeight.w * jointMat[int(aJoint.w)];
     gl_Position = projection * view * rotation * model * skinMat * vec4(aPos, 1);
+    */
+    gl_Position = projection * view * model * vec4(aPos, 1);
     TexCoord = vec2(aTexCoord.x, aTexCoord.y);
     Normal = mat3(transpose(inverse(rotation * model))) * aNormal; 
 }
