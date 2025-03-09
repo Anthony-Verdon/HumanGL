@@ -19,15 +19,10 @@ void Model::LoadMesh(const Glb::GltfData &data, size_t nodeIndex)
     auto node = data.nodes[nodeIndex];
 
     if (node.mesh != -1)
-    {
-        Glb::Mesh mesh = data.meshes[node.mesh];
-        meshes.push_back({mesh.vertices, mesh.indices});
-    }
+        meshes.push_back({data, data.meshes[node.mesh]});
 
     for (size_t i = 0; i < node.children.size(); i++)
-    {
         LoadMesh(data, node.children[i]);
-    }
 }
 
 void Model::Init()

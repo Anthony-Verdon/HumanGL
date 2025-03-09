@@ -5,7 +5,7 @@
 class Mesh
 {
     public:
-        Mesh(const std::vector<Glb::Vertex> &vertices, const std::vector<uint16_t> &indices);
+        Mesh(const Glb::GltfData &data, const Glb::Mesh &mesh);
         ~Mesh();
 
         void Init();
@@ -15,4 +15,5 @@ class Mesh
         unsigned int VAO, VBO, EBO;
         std::vector<Glb::Vertex> vertices;
         std::vector<uint16_t> indices;
+        std::string texture;
 };

@@ -2,10 +2,22 @@
 #include "RessourceManager/RessourceManager.hpp"
 #include <glad/glad.h>
 
-Mesh::Mesh(const std::vector<Glb::Vertex> &vertices, const std::vector<uint16_t> &indices)
+Mesh::Mesh(const Glb::GltfData &data, const Glb::Mesh &mesh)
 {
-    this->vertices = vertices;
-    this->indices = indices;
+    vertices = mesh.vertices;
+    indices = mesh.indices;
+    texture = "";
+    if (mesh.material != -1)
+    {
+        int imageIndex = data.materials[mesh.material].image;
+        if (imageIndex != -1)
+        {
+            auto image = data.images[imageIndex];
+            texture = image.name;
+            if (!RessourceManager::TextureExist(texture))
+                RessourceManager::AddTexture(texture, image.buffer, image.bufferLength);
+        }
+    }
     VAO = 0;
     VBO = 0;
     EBO = 0;
@@ -73,16 +85,14 @@ void Mesh::Draw(const AlgOps::mat4 &projection, const AlgOps::mat4 &view) const
         ReverseMatrix(matrix2);
         shader->setMat4("jointMat[" + std::to_string(it->first) + "]", matrix * matrix2);
     }
-    bool useTexCoord = (texture != "");
     */
-    shader->setInt("useTexCoord", false);
-    /*
+    bool useTexCoord = (texture != "");
+    shader->setInt("useTexCoord", useTexCoord);
     if (useTexCoord)
     {
         glActiveTexture(GL_TEXTURE0);    
         glBindTexture(GL_TEXTURE_2D, RessourceManager::GetTexture(texture)->getID()); 
     }
-    */
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, 0);
 }
