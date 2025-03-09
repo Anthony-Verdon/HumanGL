@@ -1,9 +1,9 @@
-[submodule "GlbParser"]
-	path = GlbParser
+[submodule "submodules/GlbParser"]
+	path = submodules/GlbParser
 	url = git@github.com:Anthony-Verdon/GlbParser.git
-[submodule "Toolbox"]
-	path = Toolbox
-	url = git@github.com:Anthony-Verdon/Toolbox.git
-[submodule "Matrix"]
-	path = Matrix
+[submodule "submodules/Matrix"]
+	path = submodules/Matrix
 	url = git@github.com:Anthony-Verdon/Matrix.git
+[submodule "submodules/Toolbox"]
+	path = submodules/Toolbox
+	url = git@github.com:Anthony-Verdon/Toolbox.git
