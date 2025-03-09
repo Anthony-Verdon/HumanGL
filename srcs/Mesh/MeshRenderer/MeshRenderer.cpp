@@ -146,10 +146,9 @@ void MeshRenderer::Draw(const AlgOps::mat4 &rotation, const AlgOps::mat4 &projec
         for (auto it = joints.begin(); it != joints.end(); it++)
         {
             AlgOps::mat4 matrix = GetRoot()->GetNode(it->first)->GetGlobalTransfrom();
-            ReverseMatrix(matrix);
-            if (it->first == 1)
-                matrix = AlgOps::translate(matrix, AlgOps::vec3({1, 0, 0}));
-            shader->setMat4("jointMat[" + std::to_string(it->first) + "]", matrix * it->second);
+            AlgOps::mat4 matrix2 = it->second;
+            ReverseMatrix(matrix2);
+            shader->setMat4("jointMat[" + std::to_string(it->first) + "]", matrix * matrix2);
         }
         bool useTexCoord = (texture != "");
         shader->setInt("useTexCoord", useTexCoord);
