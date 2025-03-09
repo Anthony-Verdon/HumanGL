@@ -1,6 +1,6 @@
 #include "Texture.hpp"
 #include <glad/glad.h>
-#include "Utils/Utils.hpp"
+#include "Toolbox.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
@@ -74,7 +74,7 @@ void Texture::checkHeader(const std::string &line, unsigned int nbLine)
             throw(Exception("CHECK_HEADER", "INVALID_LINE", line, nbLine + 1));
         break;
     case 1: {
-        words = Utils::splitLine(line, " ");
+        words = Toolbox::splitLine(line, " ");
         if (words.size() != 2)
             throw(Exception("CHECK_HEADER", "INVALID_LINE", line, nbLine + 1));
 
@@ -84,7 +84,7 @@ void Texture::checkHeader(const std::string &line, unsigned int nbLine)
         break;
     }
     case 2: {
-        words = Utils::splitLine(line, " ");
+        words = Toolbox::splitLine(line, " ");
         if (words.size() != 1)
             throw(Exception("CHECK_HEADER", "INVALID_LINE", line, nbLine + 1));
 
@@ -98,28 +98,28 @@ void Texture::checkHeader(const std::string &line, unsigned int nbLine)
 
 void Texture::loadImage(const std::string &texturePath)
 {
-    std::stringstream textureStream;
     std::string line;
     std::vector<std::string> words;
-    unsigned int nbLine;
     unsigned int pixel;
+    unsigned int nbLine;
 
-    nbLine = 0;
     pixel = 0;
-    textureStream = Utils::readFile(texturePath);
-    while (std::getline(textureStream, line))
+    nbLine = 0;
+    std::string file = Toolbox::readFile(texturePath);
+    std::vector<std::string> lines = Toolbox::splitLine(file, "\n");
+    for (size_t i = 0; i < lines.size(); i++)
     {
-        line = line.substr(0, line.find("#"));
+        line = lines[i].substr(0, lines[i].find("#"));
         if (line.length() == 0)
             continue;
         else if (nbLine < 3)
             checkHeader(line, nbLine);
         else
         {
-            words = Utils::splitLine(line, " ");
-            for (size_t i = 0; i < words.size(); i++)
+            words = Toolbox::splitLine(line, " ");
+            for (size_t j = 0; j < words.size(); j++)
             {
-                data[pixel] = std::stoi(words[i]);
+                data[pixel] = std::stoi(words[j]);
                 pixel++;
             }
         }

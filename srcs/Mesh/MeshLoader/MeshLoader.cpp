@@ -1,7 +1,7 @@
 #include "Mesh/MeshLoader/MeshLoader.hpp"
 #include "GlbParser/GlbParser.hpp"
 #include "RessourceManager/RessourceManager.hpp"
-#include "Utils/Utils.hpp"
+#include "Toolbox.hpp"
 #include "Matrix.hpp"
 #include <iostream>
 
@@ -10,7 +10,7 @@ namespace MeshLoader
     MeshRenderer LoadMesh(const std::string &path)
     {
         std::vector<MeshData> meshesData;
-        if (Utils::checkExtension(path, ".glb"))
+        if (Toolbox::checkExtension(path, ".glb"))
             return (LoadMeshDataFromGlb(path));
         
         throw(std::runtime_error("unknown extension"));
@@ -20,21 +20,9 @@ namespace MeshLoader
     {
         auto [gltfJson, binStr] = Glb::LoadBinaryFile(path, true);
 
-        MeshData data;
-        size_t rootSceneIndex = gltfJson["scene"];
-        auto rootScene = gltfJson["scenes"][rootSceneIndex];
-        data.SetName(rootScene["name"]);
-        data.SetID(-1);
-        data.SetParent(nullptr);
-        AlgOps::mat4 model;
-        model.identity();
-        data.SetLocalTransform(model);
-        data.SetGlobalTransform(model);
+        Glb::GltfData data = Glb::LoadGltf(gltfJson, binStr);
 
-        for (size_t nodeIndex: rootScene["nodes"])
-            data.AddChild(LoadNode(gltfJson, binStr, nodeIndex, &data));
-        
-        return (data);
+        return (MeshData());
     }
 
     MeshData LoadNode(JsonParser::JsonValue &gltfJson, const std::string &binStr, size_t nodeIndex, MeshData *parent)

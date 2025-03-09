@@ -4,7 +4,7 @@
 #include "RessourceManager/RessourceManager.hpp"
 #include "Mesh/MeshLoader/MeshLoader.hpp"
 #include "Time/Time.hpp"
-#include "Utils/Utils.hpp"
+#include "Toolbox.hpp"
 #include "globals.hpp"
 #include <cmath>
 
@@ -43,12 +43,12 @@ void Game::LoadObjects(int argc, char **argv)
 {
     for (int i = 1; i < argc; i++)
     {
-        if (Utils::checkExtension(argv[i], ".obj"))
+        if (Toolbox::checkExtension(argv[i], ".obj"))
         {
             std::vector<Object> newObjects = ObjectParser().parseObjectFile(argv[i]);
             objects.insert(objects.end(), newObjects.begin(), newObjects.end());
         }
-        else if (Utils::checkExtension(argv[i], ".glb"))
+        else if (Toolbox::checkExtension(argv[i], ".glb"))
             meshes.push_back(MeshLoader::LoadMesh(argv[i]));
     }
     for (size_t i = 0; i < objects.size(); i++)
@@ -204,9 +204,9 @@ void Game::updateScene()
 
 void Game::updateCameraView()
 {
-    AlgOps::vec3 direction({cosf(Utils::DegToRad(camera.getYaw())) * cosf(Utils::DegToRad(camera.getPitch())),
-                    sinf(Utils::DegToRad(camera.getPitch())),
-                    sinf(Utils::DegToRad(camera.getYaw())) * cosf(Utils::DegToRad(camera.getPitch()))});
+    AlgOps::vec3 direction({cosf(Toolbox::DegToRad(camera.getYaw())) * cosf(Toolbox::DegToRad(camera.getPitch())),
+                    sinf(Toolbox::DegToRad(camera.getPitch())),
+                    sinf(Toolbox::DegToRad(camera.getYaw())) * cosf(Toolbox::DegToRad(camera.getPitch()))});
     camera.setFrontDirection(AlgOps::normalize(direction));
     camera.setRightDirection(
         AlgOps::normalize(AlgOps::crossProduct(camera.getFrontDirection(), camera.getUpDirection())));

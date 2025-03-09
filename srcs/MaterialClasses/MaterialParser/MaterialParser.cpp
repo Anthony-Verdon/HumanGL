@@ -1,5 +1,5 @@
 #include "MaterialClasses/MaterialParser/MaterialParser.hpp"
-#include "Utils/Utils.hpp"
+#include "Toolbox.hpp"
 #include "MaterialClasses/Material/Material.hpp"
 
 MapMaterialParsingMethods MaterialParser::parsingMethods = {
@@ -11,19 +11,18 @@ MapMaterialParsingMethods MaterialParser::parsingMethods = {
 
 std::vector<Material> MaterialParser::parseMaterialFile(const std::string &path)
 {
-    if (!Utils::checkExtension(path, ".mtl"))
+    if (!Toolbox::checkExtension(path, ".mtl"))
         throw(Exception("PARSE_MATERIAL_FILE", "INVALID_EXTENSION", path, 0));
 
     MaterialData materialData;
     bool firstMaterial = true;
     std::vector<Material> materials;
 
-    std::stringstream fileStream = Utils::readFile(path);
-    std::string line;
-    unsigned int lineIndex = 1;
-    while (std::getline(fileStream, line))
+    std::string file = Toolbox::readFile(path);
+    std::vector<std::string> lines = Toolbox::splitLine(file, "\n");
+    for (size_t i = 0; i < lines.size(); i++)
     {
-        line = line.substr(0, line.find("#"));
+        std::string line = lines[i].substr(0, lines[i].find("#"));
         std::string symbol = line.substr(0, line.find(" "));
         auto it = parsingMethods.find(symbol);
         if (symbol == "newmtl")
@@ -36,13 +35,12 @@ std::vector<Material> MaterialParser::parseMaterialFile(const std::string &path)
             }
             else
                 firstMaterial = false;
-            defineName(materialData, line, lineIndex);
+            defineName(materialData, line, i);
         }
         else if (it != parsingMethods.end())
-            (it->second)(materialData, line, lineIndex);
+            (it->second)(materialData, line, i);
         else if (symbol.length() != 0)
-            throw(Exception("PARSE_MATERIAL_FILE", "INVALID_SYMBOL", line, lineIndex));
-        lineIndex++;
+            throw(Exception("PARSE_MATERIAL_FILE", "INVALID_SYMBOL", line, i));
     }
 
     Material newMaterial(materialData);
@@ -54,7 +52,7 @@ void MaterialParser::defineName(MaterialData &materialData, const std::string &l
 {
     std::vector<std::string> words;
 
-    words = Utils::splitLine(line, " ");
+    words = Toolbox::splitLine(line, " ");
     if (words.size() != 2)
         throw(Exception("DEFINE_NAME", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
@@ -65,14 +63,14 @@ void MaterialParser::defineAmbiantColor(MaterialData &materialData, const std::s
 {
     std::vector<std::string> words;
 
-    words = Utils::splitLine(line, " ");
+    words = Toolbox::splitLine(line, " ");
     if (words.size() != 4)
         throw(Exception("DEFINE_AMBIANT_COLOR", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
     std::vector<float> ambiantColor;
     for (size_t i = 0; i < 3; i++)
     {
-        if (!Utils::isFloat(words[i + 1]))
+        if (!Toolbox::isFloat(words[i + 1]))
             throw(Exception("DEFINE_AMBIANT_COLOR", "INVALID_ARGUMENT", line, lineIndex));
         ambiantColor[i] = std::stof(words[i + 1]);
         if (ambiantColor[i] < 0 || ambiantColor[i] > 1)
@@ -85,14 +83,14 @@ void MaterialParser::defineSpecularColor(MaterialData &materialData, const std::
 {
     std::vector<std::string> words;
 
-    words = Utils::splitLine(line, " ");
+    words = Toolbox::splitLine(line, " ");
     if (words.size() != 4)
         throw(Exception("DEFINE_SPECULAR_COLOR", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
     std::vector<float> specularColor;
     for (size_t i = 0; i < 3; i++)
     {
-        if (!Utils::isFloat(words[i + 1]))
+        if (!Toolbox::isFloat(words[i + 1]))
             throw(Exception("DEFINE_SPECULAR_COLOR", "INVALID_ARGUMENT", line, lineIndex));
         specularColor[i] = std::stof(words[i + 1]);
         if (specularColor[i] < 0 || specularColor[i] > 1)
@@ -105,14 +103,14 @@ void MaterialParser::defineDiffuseColor(MaterialData &materialData, const std::s
 {
     std::vector<std::string> words;
 
-    words = Utils::splitLine(line, " ");
+    words = Toolbox::splitLine(line, " ");
     if (words.size() != 4)
         throw(Exception("DEFINE_DIFFUSE_COLOR", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
     std::vector<float> diffuseColor;
     for (size_t i = 0; i < 3; i++)
     {
-        if (!Utils::isFloat(words[i + 1]))
+        if (!Toolbox::isFloat(words[i + 1]))
             throw(Exception("DEFINE_DIFFUSE_COLOR", "INVALID_ARGUMENT", line, lineIndex));
         diffuseColor[i] = std::stof(words[i + 1]);
         if (diffuseColor[i] < 0 || diffuseColor[i] > 1)
@@ -125,11 +123,11 @@ void MaterialParser::defineSpecularExponent(MaterialData &materialData, const st
 {
     std::vector<std::string> words;
 
-    words = Utils::splitLine(line, " ");
+    words = Toolbox::splitLine(line, " ");
     if (words.size() != 2)
         throw(Exception("DEFINE_SPECULAR_EXPONENT", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
-    if (!Utils::isFloat(words[1]))
+    if (!Toolbox::isFloat(words[1]))
         throw(Exception("DEFINE_SPECULAR_EXPONENT", "INVALID_ARGUMENT", line, lineIndex));
     float specularExponent = std::stof(words[1]);
     if (specularExponent < 0 || specularExponent > 1000)
@@ -141,11 +139,11 @@ void MaterialParser::defineRefractionIndex(MaterialData &materialData, const std
 {
     std::vector<std::string> words;
 
-    words = Utils::splitLine(line, " ");
+    words = Toolbox::splitLine(line, " ");
     if (words.size() != 2)
         throw(Exception("DEFINE_REFRACTION_INDEX", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
-    if (!Utils::isFloat(words[1]))
+    if (!Toolbox::isFloat(words[1]))
         throw(Exception("DEFINE_REFRACTION_INDEX", "INVALID_ARGUMENT", line, lineIndex));
     float refractionIndex = std::stof(words[1]);
     if (refractionIndex < 0 || refractionIndex > 10)
@@ -157,11 +155,11 @@ void MaterialParser::defineOpacity(MaterialData &materialData, const std::string
 {
     std::vector<std::string> words;
 
-    words = Utils::splitLine(line, " ");
+    words = Toolbox::splitLine(line, " ");
     if (words.size() != 2)
         throw(Exception("DEFINE_OPACITY", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
-    if (!Utils::isFloat(words[1]))
+    if (!Toolbox::isFloat(words[1]))
         throw(Exception("DEFINE_OPACITY", "INVALID_ARGUMENT", line, lineIndex));
     float opacity = std::stof(words[1]);
     if (opacity < 0 || opacity > 1)
@@ -173,11 +171,11 @@ void MaterialParser::defineIllum(MaterialData &materialData, const std::string &
 {
     std::vector<std::string> words;
 
-    words = Utils::splitLine(line, " ");
+    words = Toolbox::splitLine(line, " ");
     if (words.size() != 2)
         throw(Exception("DEFINE_ILLUM", "INVALID_NUMBER_OF_ARGUMENTS", line, lineIndex));
 
-    if (!Utils::isInt(words[1]))
+    if (!Toolbox::isInt(words[1]))
         throw(Exception("DEFINE_ILLUM", "INVALID_ARGUMENT", line, lineIndex));
     int illum = std::stoi(words[1]);
     if (illum < 0 || illum > 10)

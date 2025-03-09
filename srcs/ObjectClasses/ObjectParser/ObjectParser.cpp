@@ -1,6 +1,6 @@
 #include "ObjectParser.hpp"
 #include "MaterialClasses/MaterialParser/MaterialParser.hpp"
-#include "Utils/Utils.hpp"
+#include "Toolbox.hpp"
 #include <algorithm>
 #include <cmath>
 #include <string>
@@ -32,19 +32,17 @@ std::vector<Object> ObjectParser::parseObjectFile(const std::string &path)
     normalVertexTime = 0;
     faceTime = 0;
 
-    if (!Utils::checkExtension(path, ".obj"))
+    if (!Toolbox::checkExtension(path, ".obj"))
         throw(std::runtime_error(parseError("PARSE_OBJECT_FILE", "INVALID_EXTENSION", path)));
 
     ObjectData objectData;
     std::vector<Object> objects;
     
-    std::stringstream fileStream = Utils::readFile(path);
-    fileStream = Utils::readFile(path);
-    std::string line;
-    while (std::getline(fileStream, line))
+    std::string file = Toolbox::readFile(path);
+    std::vector<std::string> lines = Toolbox::splitLine(file, "\n");
+    for (size_t i = 0; i < lines.size(); i++)
     {
-        lineIndex++;
-        line = line.substr(0, line.find("#"));
+        std::string line = lines[i].substr(0, lines[i].find("#"));
         std::string symbol = line.substr(0, line.find(" "));
         auto it = parsingMethods.find(symbol);
         if (symbol == "o")
@@ -80,7 +78,7 @@ void ObjectParser::defineName(ObjectData &objectData, const std::string &line)
 {
     std::vector<std::string> words;
 
-    words = Utils::splitLine(line, " ");
+    words = Toolbox::splitLine(line, " ");
     if (words.size() != 2)
         throw(std::runtime_error(parseError("DEFINE_NAME", "INVALID_NUMBER_OF_ARGUMENTS", line)));
     objectData.setName(words[1]);
@@ -93,13 +91,13 @@ void ObjectParser::defineVertex(ObjectData &objectData, const std::string &line)
     Vertex vertex;
     std::vector<std::string> words;
 
-    words = Utils::splitLine(line, " ");
+    words = Toolbox::splitLine(line, " ");
     if (words.size() < 4 || words.size() > 5)
         throw(std::runtime_error(parseError("DEFINE_VERTEX", "INVALID_NUMBER_OF_ARGUMENTS", line)));
 
     for (size_t i = 1; i < words.size(); i++)
     {
-        if (!Utils::isFloat(words[i]))
+        if (!Toolbox::isFloat(words[i]))
             throw(std::runtime_error(parseError("DEFINE_VERTEX", "INVALID_ARGUMENT", line)));
         vertex.push_back(std::stof(words[i]));
     }
@@ -125,13 +123,13 @@ void ObjectParser::defineTextureVertex(ObjectData &objectData, const std::string
     Vertex textureVertex;
     std::vector<std::string> words;
 
-    words = Utils::splitLine(line, " ");
+    words = Toolbox::splitLine(line, " ");
     if (words.size() < 3 || words.size() > 4)
         throw(std::runtime_error(parseError("DEFINE_VERTEX_TEXTURE", "INVALID_NUMBER_OF_ARGUMENTS", line)));
 
     for (size_t i = 1; i < words.size(); i++)
     {
-        if (!Utils::isFloat(words[i]))
+        if (!Toolbox::isFloat(words[i]))
             throw(std::runtime_error(parseError("DEFINE_VERTEX_TEXTURE", "INVALID_ARGUMENT", line)));
         float value = std::stof(words[i]);
         if (value < 0 || value > 1)
@@ -154,13 +152,13 @@ void ObjectParser::defineNormalVertex(ObjectData &objectData, const std::string 
     Vertex normalVertex;
     std::vector<std::string> words;
 
-    words = Utils::splitLine(line, " ");
+    words = Toolbox::splitLine(line, " ");
     if (words.size() != 4)
         throw(std::runtime_error(parseError("DEFINE_VERTEX_TEXTURE", "INVALID_NUMBER_OF_ARGUMENTS", line)));
 
     for (size_t i = 1; i < words.size(); i++)
     {
-        if (!Utils::isFloat(words[i]))
+        if (!Toolbox::isFloat(words[i]))
             throw(std::runtime_error(parseError("DEFINE_VERTEX_TEXTURE", "INVALID_ARGUMENT", line)));
         float value = std::stof(words[i]);
         if (value < -1 || value > 1)
@@ -179,7 +177,7 @@ void ObjectParser::defineFace(ObjectData &objectData, const std::string &line)
     clock_t start = clock();
 
     Face face;
-    std::vector<std::string> words = Utils::splitLine(line, " ");
+    std::vector<std::string> words = Toolbox::splitLine(line, " ");
     if (words.size() < 4)
         throw(std::runtime_error(parseError("DEFINE_FACE", "INVALID_NUMBER_OF_ARGUMENTS", line)));
 
@@ -194,7 +192,7 @@ void ObjectParser::defineFace(ObjectData &objectData, const std::string &line)
         if (nbBackSlash != 2)
             throw(std::runtime_error(parseError("DEFINE_FACE", "INVALID_ARGUMENT", line)));
 
-        std::vector<std::string> vertices = Utils::splitLine(words[i], "/");
+        std::vector<std::string> vertices = Toolbox::splitLine(words[i], "/");
         if (vertices.size() != 3)
             throw(std::runtime_error(parseError("DEFINE_FACE", "INVALID_ARGUMENT", line)));
 
@@ -239,7 +237,7 @@ size_t ObjectParser::CalculateVertexIndex(ObjectData &objectData, const std::str
             break;
     }
 
-    if (!Utils::isInt(vertex))
+    if (!Toolbox::isInt(vertex))
         throw(std::runtime_error(parseError("DEFINE_FACE", "INVALID_ARGUMENT", line)));
     int vertexIndex = std::stoi(vertex);
     if (vertexIndex < -nbVertices || vertexIndex > nbVertices || vertexIndex == 0)
@@ -362,7 +360,7 @@ void ObjectParser::defineSmoothShading(ObjectData &objectData, const std::string
 {
     std::vector<std::string> words;
 
-    words = Utils::splitLine(line, " ");
+    words = Toolbox::splitLine(line, " ");
     if (words.size() != 2)
         throw(std::runtime_error(parseError("DEFINE_SMOOTH_SHADING", "INVALID_NUMBER_OF_ARGUMENTS", line)));
 
@@ -380,7 +378,7 @@ void ObjectParser::saveNewMTL(ObjectData &objectData, const std::string &line)
     (void)objectData;
     std::vector<std::string> words;
 
-    words = Utils::splitLine(line, " ");
+    words = Toolbox::splitLine(line, " ");
     if (words.size() != 2)
         throw(std::runtime_error(parseError("CREATE_NEW_MTL", "INVALID_NUMBER_OF_ARGUMENTS", line)));
 
@@ -392,7 +390,7 @@ void ObjectParser::defineMTL(ObjectData &objectData, const std::string &line)
 {
     std::vector<std::string> words;
 
-    words = Utils::splitLine(line, " ");
+    words = Toolbox::splitLine(line, " ");
     if (words.size() != 2)
         throw(std::runtime_error(parseError("DEFINE_MTL", "INVALID_NUMBER_OF_ARGUMENTS", line)));
 

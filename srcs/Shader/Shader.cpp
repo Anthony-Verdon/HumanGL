@@ -1,5 +1,5 @@
 #include "Shader.hpp"
-#include "Utils/Utils.hpp"
+#include "Toolbox.hpp"
 
 Shader::Shader()
 {
@@ -9,8 +9,8 @@ Shader::Shader()
 Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath)
 {
 
-    const std::string vertexCode = Utils::readFile(vertexPath).str();
-    const std::string fragmentCode = Utils::readFile(fragmentPath).str();
+    const std::string vertexCode = Toolbox::readFile(vertexPath);
+    const std::string fragmentCode = Toolbox::readFile(fragmentPath);
     const unsigned int vertex = compileShader(vertexCode.c_str(), GL_VERTEX_SHADER);
     const unsigned int fragment = compileShader(fragmentCode.c_str(), GL_FRAGMENT_SHADER);
     compileProgram(vertex, fragment);
