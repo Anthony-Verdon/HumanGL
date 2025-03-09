@@ -2,11 +2,12 @@
 #include "RessourceManager/RessourceManager.hpp"
 #include <glad/glad.h>
 
-Mesh::Mesh(const Glb::GltfData &data, const Glb::Mesh &mesh)
+Mesh::Mesh(const Glb::GltfData &data, const Glb::Mesh &mesh, const AlgOps::mat4 &transform)
 {
     vertices = mesh.vertices;
     indices = mesh.indices;
     texture = "";
+    this->transform = transform;
     if (mesh.material != -1)
     {
         int imageIndex = data.materials[mesh.material].image;
@@ -72,12 +73,8 @@ void Mesh::Draw(const AlgOps::mat4 &projection, const AlgOps::mat4 &view) const
     shader->use();
     shader->setMat4("projection", projection);
     shader->setMat4("view", view);
-    AlgOps::mat4 model;
-    model.identity();
-    shader->setMat4("model", model);
+    shader->setMat4("model", transform);
     /*
-    shader->setMat4("rotation", rotation);
-    shader->setMat4("model", globalTransform);
     for (auto it = joints.begin(); it != joints.end(); it++)
     {
         AlgOps::mat4 matrix = GetRoot()->GetNode(it->first)->GetGlobalTransfrom();

@@ -11,7 +11,7 @@ class Model
         ~Model();
 
         void Init();
-        void LoadMesh(const Glb::GltfData &data, size_t nodeIndex);
+        void LoadMesh(const Glb::GltfData &data, size_t nodeIndex, const AlgOps::mat4 &parentTransform);
         void Draw(const AlgOps::mat4 &projection, const AlgOps::mat4 &view) const;
     
     private:

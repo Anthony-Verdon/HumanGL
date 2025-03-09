@@ -6,7 +6,9 @@ Model::Model()
 
 Model::Model(const Glb::GltfData &data, size_t nodeIndex)
 {
-    LoadMesh(data, nodeIndex);
+    AlgOps::mat4 transform;
+    transform.identity();
+    LoadMesh(data, nodeIndex, transform);
 }
 
 Model::~Model()
@@ -14,15 +16,16 @@ Model::~Model()
 
 }
 
-void Model::LoadMesh(const Glb::GltfData &data, size_t nodeIndex)
+void Model::LoadMesh(const Glb::GltfData &data, size_t nodeIndex, const AlgOps::mat4 &parentTransform)
 {
     auto node = data.nodes[nodeIndex];
+    auto transform = parentTransform * node.transform;
 
     if (node.mesh != -1)
-        meshes.push_back({data, data.meshes[node.mesh]});
+        meshes.push_back({data, data.meshes[node.mesh], transform});
 
     for (size_t i = 0; i < node.children.size(); i++)
-        LoadMesh(data, node.children[i]);
+        LoadMesh(data, node.children[i], transform);
 }
 
 void Model::Init()

@@ -5,7 +5,7 @@
 class Mesh
 {
     public:
-        Mesh(const Glb::GltfData &data, const Glb::Mesh &mesh);
+        Mesh(const Glb::GltfData &data, const Glb::Mesh &mesh, const AlgOps::mat4 &transform);
         ~Mesh();
 
         void Init();
@@ -16,4 +16,5 @@ class Mesh
         std::vector<Glb::Vertex> vertices;
         std::vector<uint16_t> indices;
         std::string texture;
+        AlgOps::mat4 transform;
 };
