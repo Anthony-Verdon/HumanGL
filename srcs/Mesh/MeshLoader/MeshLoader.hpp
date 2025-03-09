@@ -4,17 +4,18 @@
 #include "Mesh/MeshData/MeshData.hpp"
 #include "Mesh/MeshRenderer/MeshRenderer.hpp"
 #include "JsonParser/JsonValue.hpp"
+#include "GlbParser/GlbParser.hpp"
 
 namespace MeshLoader
 {
     MeshRenderer LoadMesh(const std::string &path);
     
     MeshData LoadMeshDataFromGlb(const std::string &path);
-    MeshData LoadNode(JsonParser::JsonValue &gltfJson, const std::string &binStr, size_t nodeIndex, MeshData *parent);
-    AlgOps::mat4 CalculateLocalTransform(JsonParser::JsonValue &node);
-    void LoadMesh(MeshData &data, JsonParser::JsonValue &gltfJson, const std::string &binStr, int meshIndex);
-    void LoadVertices(MeshData &data, JsonParser::JsonValue &gltfJson, const std::string &binStr, JsonParser::JsonValue &attributes);
-    void LoadIndices(MeshData &data, JsonParser::JsonValue &gltfJson, const std::string &binStr, int indiceIndex);
-    void LoadMaterial(MeshData &data, JsonParser::JsonValue &gltfJson, const std::string &binStr, int materialIndex);
-    void LoadSkin(MeshData &data, JsonParser::JsonValue &gltfJson, const std::string &binStr, int skinIndex);
+
+    void PrintNode(const Glb::GltfData &data, int nodeIndex);
+    void PrintSkin(const Glb::GltfData &data, int skinIndex);
+    void PrintMesh(const Glb::GltfData &data, int meshIndex);
+    void PrintMaterial(const Glb::GltfData &data, int materialIndex);
+    void PrintImage(const Glb::GltfData &data, int imageIndex);
+
 }
