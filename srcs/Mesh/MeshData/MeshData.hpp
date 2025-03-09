@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include "Matrix/Matrix.hpp"
+#include "Matrix.hpp"
 #include <map>
 
 struct VertexStruct

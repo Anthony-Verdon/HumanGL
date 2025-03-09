@@ -3,7 +3,7 @@
 #include <string>
 
 #include <glad/glad.h>
-#include "Matrix/Matrix.hpp"
+#include "Matrix.hpp"
 
 class Shader
 {

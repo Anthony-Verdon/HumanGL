@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Matrix/Matrix.hpp"
+#include "Matrix.hpp"
 
 class Light
 {

@@ -2,7 +2,7 @@
 #include "GlbParser/GlbParser.hpp"
 #include "RessourceManager/RessourceManager.hpp"
 #include "Utils/Utils.hpp"
-#include "Matrix/Matrix.hpp"
+#include "Matrix.hpp"
 #include <iostream>
 
 namespace MeshLoader
@@ -18,7 +18,7 @@ namespace MeshLoader
 
     MeshData LoadMeshDataFromGlb(const std::string &path)
     {
-        auto [gltfJson, binStr] = GlbParser::ParseFile(path, true);
+        auto [gltfJson, binStr] = Glb::LoadBinaryFile(path, true);
 
         MeshData data;
         size_t rootSceneIndex = gltfJson["scene"];
