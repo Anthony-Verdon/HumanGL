@@ -7,7 +7,7 @@
 
 namespace ModelLoader
 {
-    Model LoadModel(const std::string &path)
+    std::vector<Model> LoadModel(const std::string &path)
     {
         if (Toolbox::checkExtension(path, ".glb"))
             return (LoadModelFromGlb(path));
@@ -15,17 +15,18 @@ namespace ModelLoader
         throw(std::runtime_error("unknown extension"));
     }
 
-    Model LoadModelFromGlb(const std::string &path)
+    std::vector<Model> LoadModelFromGlb(const std::string &path)
     {
         auto [gltfJson, binStr] = Glb::LoadBinaryFile(path, true);
 
         Glb::GltfData data = Glb::LoadGltf(gltfJson, binStr);
         Glb::Scene scene = data.scenes[data.rootScene];
+
+        std::vector<Model> models;
         for (size_t i = 0; i < scene.nodes.size(); i++)
-            PrintNode(data, scene.nodes[i]);
-    
-        Model model(data, scene.nodes[0]);
-        return (model);
+            models.push_back({data, (size_t)scene.nodes[i]});
+
+        return (models);
     }
 
     void PrintNode(const Glb::GltfData &data, int nodeIndex)

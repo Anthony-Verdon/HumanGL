@@ -47,12 +47,14 @@ void Game::LoadObjects(int argc, char **argv)
         }
         else if (Toolbox::checkExtension(argv[i], ".glb"))
         {
-            model = ModelLoader::LoadModel(argv[i]);
-            model.Init();
+            std::vector<Model> newModels =  ModelLoader::LoadModel(argv[i]);
+            models.insert(models.end(), newModels.begin(), newModels.end());
         }
     }
     for (size_t i = 0; i < objects.size(); i++)
         objects[i].initVAO();
+    for (size_t i = 0; i < models.size(); i++)
+        models[i].Init();
 
 }
 
@@ -178,7 +180,8 @@ void Game::updateScene()
         
         AlgOps::mat4 view = AlgOps::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(),
         camera.getUpDirection());
-        model.Draw(projection, view);
+        for (size_t i = 0; i < models.size(); i++)
+            models[i].Draw(projection, view);
     }
 
     // light

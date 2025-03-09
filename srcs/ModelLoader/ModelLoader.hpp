@@ -6,8 +6,8 @@
 
 namespace ModelLoader
 {
-    Model LoadModel(const std::string &path);
-    Model LoadModelFromGlb(const std::string &path);
+    std::vector<Model> LoadModel(const std::string &path);
+    std::vector<Model> LoadModelFromGlb(const std::string &path);
 
     void PrintNode(const Glb::GltfData &data, int nodeIndex);
     void PrintSkin(const Glb::GltfData &data, int skinIndex);

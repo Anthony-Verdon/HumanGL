@@ -20,7 +20,7 @@ class Game: public AProgram
     private:
         Camera camera;
         std::vector<Object> objects;
-        Model model;
+        std::vector<Model> models;
         bool displayColor;
         float mixedValue;
         float sceneRotation[3];
