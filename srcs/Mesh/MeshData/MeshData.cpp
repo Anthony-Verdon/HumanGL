@@ -18,9 +18,13 @@ MeshData &MeshData::operator=(const MeshData &instance)
         vertices = instance.GetVertices();
         indices = instance.GetIndices();
         localTransform = instance.GetLocalTransfrom();
+        globalTransform = instance.GetGlobalTransfrom();
         children = instance.GetChildren();
         texture = instance.GetTexture();
         joints = instance.GetJoints();
+        ID = instance.GetID();
+        for (size_t i = 0; i < children.size(); i++)
+            children[i].SetParent(this);
     }
 
     return (*this);

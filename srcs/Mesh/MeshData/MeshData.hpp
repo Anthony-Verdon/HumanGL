@@ -37,6 +37,9 @@ class MeshData
         void SetLocalTransform(const AlgOps::mat4 &localTransform) { this->localTransform = localTransform; }
         AlgOps::mat4 GetLocalTransfrom() const { return (localTransform); }
 
+        void SetGlobalTransform(const AlgOps::mat4 &globalTransform) { this->globalTransform = globalTransform; }
+        AlgOps::mat4 GetGlobalTransfrom() const { return (globalTransform); }
+
         void AddChild(const MeshData &child) { children.push_back(child); }
         std::vector<MeshData> GetChildren() const { return (children); }
 
@@ -48,13 +51,24 @@ class MeshData
 
         void AddJoint(int ID, const AlgOps::mat4 &joint) { joints[ID] = joint; }
         std::map<int, AlgOps::mat4> GetJoints() const { return (joints); }
+
+        void SetID(int ID) { this->ID = ID; }
+        int GetID() const { return (ID); }
+
+        void SetParent(MeshData *parent) { this->parent = parent; }
+        MeshData *GetParent() const { return (parent); }
     
     protected:
         std::string name;
+        int ID;
+
+        std::vector<MeshData> children;
+        MeshData *parent;
+        
         std::vector<VertexStruct> vertices;
         std::vector<unsigned short> indices;
         AlgOps::mat4 localTransform;
-        std::vector<MeshData> children;
+        AlgOps::mat4 globalTransform;
         std::map<int, AlgOps::mat4> joints;
         std::string texture;
 };

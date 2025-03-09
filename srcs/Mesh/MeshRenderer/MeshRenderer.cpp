@@ -4,11 +4,13 @@
 #include <iostream>
 MeshRenderer::MeshRenderer(const MeshData &data): MeshData(data)
 {
+    parentRenderer = NULL;
     VAO = 0;
 }
 
 MeshRenderer::MeshRenderer(const MeshRenderer &instance)
 {
+    parentRenderer = NULL;
     VAO = 0;
     *this = instance;
 }
@@ -21,9 +23,13 @@ MeshRenderer &MeshRenderer::operator=(const MeshRenderer &instance)
         vertices = instance.GetVertices();
         indices = instance.GetIndices();
         localTransform = instance.GetLocalTransfrom();
+        globalTransform = instance.GetGlobalTransfrom();
         children = instance.GetChildren();
         texture = instance.GetTexture();
         joints = instance.GetJoints();
+        ID = instance.GetID();
+        for (size_t i = 0; i < children.size(); i++)
+            children[i].SetParent(this);
     }
 
     return (*this);
@@ -70,7 +76,10 @@ void MeshRenderer::InitRenderer()
     for (size_t i = 0; i < children.size(); i++)
         childrenRenderer.push_back(children[i]);
     for (size_t i = 0; i < childrenRenderer.size(); i++)
+    {
         childrenRenderer[i].InitRenderer();
+        childrenRenderer[i].SetParentRenderer(this);
+    }
 }
 
 void MeshRenderer::DestroyRenderer()
@@ -79,6 +88,7 @@ void MeshRenderer::DestroyRenderer()
     {
         for (size_t i = 0; i < childrenRenderer.size(); i++)
             childrenRenderer[i].DestroyRenderer();
+        childrenRenderer.clear();
         glDeleteVertexArrays(1, &VAO);
         glDeleteBuffers(1, &VBO);
         glDeleteBuffers(1, &EBO);
@@ -99,21 +109,31 @@ void ReverseMatrix(AlgOps::mat4 &matrix)
     matrix = tmp;
 }
 
+const MeshRenderer *MeshRenderer::GetRoot() const
+{
+    if (parentRenderer)
+        return (parentRenderer->GetRoot());
+    else
+        return (this);
+}
+
+const MeshRenderer *MeshRenderer::GetNode(int ID) const
+{
+    if (this->ID == ID)
+        return (this);
+
+    for (size_t i = 0; i < childrenRenderer.size(); i++)
+    {
+        const MeshRenderer *node = childrenRenderer[i].GetNode(ID);
+        if (node)
+            return (node);
+    }
+
+    return (NULL);
+}
+
 void MeshRenderer::Draw(const AlgOps::mat4 &rotation, const AlgOps::mat4 &projection, const AlgOps::mat4 &view, const AlgOps::mat4 &model) const
 {
-    AlgOps::mat4 globalPosJoint[2];
-    globalPosJoint[0] = {1, 7.86255e-24, 2.0051e-23, 0,
-         -7.86255e-24, 1, -2.63823e-16, 0, 
-        -2.0051e-23, 2.63823e-16, 1, 0, 
-        -1.13742e-22, 1, 3.28889e-15, 1};
-    globalPosJoint[1] = {1, 8.78695e-16, 3.42285e-08, 0, 
-        -1.46449e-15, 1, 1.71143e-08, 0, 
-        -3.42285e-08, -1.71143e-08, 1, 0, 
-        0, 0, 0, 1};
-
-    ReverseMatrix(globalPosJoint[0]);
-    ReverseMatrix(globalPosJoint[1]);
-    globalPosJoint[1] = AlgOps::translate(globalPosJoint[1], AlgOps::vec3({1, 0, 0}));
     AlgOps::mat4 globalTransform = model * localTransform;
     if (indices.size() != 0)
     {
@@ -124,7 +144,13 @@ void MeshRenderer::Draw(const AlgOps::mat4 &rotation, const AlgOps::mat4 &projec
         shader->setMat4("view", view);
         shader->setMat4("model", globalTransform);
         for (auto it = joints.begin(); it != joints.end(); it++)
-            shader->setMat4("jointMat[" + std::to_string(it->first) + "]", globalPosJoint[it->first] * it->second);
+        {
+            AlgOps::mat4 matrix = GetRoot()->GetNode(it->first)->GetGlobalTransfrom();
+            ReverseMatrix(matrix);
+            if (it->first == 1)
+                matrix = AlgOps::translate(matrix, AlgOps::vec3({1, 0, 0}));
+            shader->setMat4("jointMat[" + std::to_string(it->first) + "]", matrix * it->second);
+        }
         bool useTexCoord = (texture != "");
         shader->setInt("useTexCoord", useTexCoord);
         if (useTexCoord)

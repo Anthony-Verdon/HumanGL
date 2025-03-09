@@ -24,29 +24,34 @@ namespace MeshLoader
         size_t rootSceneIndex = gltfJson["scene"];
         auto rootScene = gltfJson["scenes"][rootSceneIndex];
         data.SetName(rootScene["name"]);
+        data.SetID(-1);
+        data.SetParent(nullptr);
         AlgOps::mat4 model;
         model.identity();
         data.SetLocalTransform(model);
+        data.SetGlobalTransform(model);
 
         for (size_t nodeIndex: rootScene["nodes"])
-            data.AddChild(LoadNode(gltfJson, binStr, nodeIndex));
+            data.AddChild(LoadNode(gltfJson, binStr, nodeIndex, &data));
         
         return (data);
     }
 
-    MeshData LoadNode(JsonParser::JsonValue &gltfJson, const std::string &binStr, size_t nodeIndex)
+    MeshData LoadNode(JsonParser::JsonValue &gltfJson, const std::string &binStr, size_t nodeIndex, MeshData *parent)
     {
         MeshData data;
         
         auto node = gltfJson["nodes"][nodeIndex];
         
         data.SetName(node["name"]);
+        data.SetID(nodeIndex);
+        data.SetParent(parent);
         data.SetLocalTransform(CalculateLocalTransform(node));
-
+        data.SetGlobalTransform(parent->GetGlobalTransfrom() * data.GetLocalTransfrom());
         if (node.KeyExist("children"))
         {
             for (size_t child : node["children"])
-                data.AddChild(LoadNode(gltfJson, binStr, child));
+                data.AddChild(LoadNode(gltfJson, binStr, child, &data));
         }
 
         if (node.KeyExist("mesh"))
