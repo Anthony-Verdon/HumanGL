@@ -2,12 +2,16 @@
 #include "RessourceManager/RessourceManager.hpp"
 #include <glad/glad.h>
 
-Mesh::Mesh(const Glb::GltfData &data, const Glb::Mesh &mesh, const AlgOps::mat4 &transform)
+Mesh::Mesh(const Glb::GltfData &data, size_t nodeIndex)
 {
+    this->data = data;
+    this->nodeIndex = nodeIndex;
+    auto node = data.nodes[nodeIndex];
+    auto mesh = data.meshes[node.mesh];
     vertices = mesh.vertices;
+    name = mesh.name;
     indices = mesh.indices;
     texture = "";
-    this->transform = transform;
     if (mesh.material != -1)
     {
         int imageIndex = data.materials[mesh.material].image;
@@ -18,6 +22,11 @@ Mesh::Mesh(const Glb::GltfData &data, const Glb::Mesh &mesh, const AlgOps::mat4 
             if (!RessourceManager::TextureExist(texture))
                 RessourceManager::AddTexture(texture, image.buffer, image.bufferLength);
         }
+    }
+    if (node.skin != -1)
+    {   
+        auto skin = data.skins[node.skin];
+        joints = skin.joints;
     }
     VAO = 0;
     VBO = 0;
@@ -67,22 +76,30 @@ Mesh::~Mesh()
     }
 }
 
-void Mesh::Draw(const AlgOps::mat4 &projection, const AlgOps::mat4 &view) const
+AlgOps::mat4 ReverseMatrix(const AlgOps::mat4 &matrix)
+{
+    AlgOps::mat4 newMatrix;
+    for (size_t i = 0; i < 4; i++)
+    {
+        for (size_t j = 0; j < 4; j++)
+        {
+            newMatrix.setData(i, j, matrix.getData(j, i));
+        }
+    }
+
+    return (newMatrix);
+}
+
+void Mesh::Draw(const AlgOps::mat4 &projection, const AlgOps::mat4 &view, std::map<int, AlgOps::mat4> &nodesTransform) const
 {
     auto shader = RessourceManager::GetShader("mesh_shader");
     shader->use();
     shader->setMat4("projection", projection);
     shader->setMat4("view", view);
-    shader->setMat4("model", transform);
-    /*
-    for (auto it = joints.begin(); it != joints.end(); it++)
-    {
-        AlgOps::mat4 matrix = GetRoot()->GetNode(it->first)->GetGlobalTransfrom();
-        AlgOps::mat4 matrix2 = it->second;
-        ReverseMatrix(matrix2);
-        shader->setMat4("jointMat[" + std::to_string(it->first) + "]", matrix * matrix2);
-    }
-    */
+    shader->setMat4("model", nodesTransform[nodeIndex]);
+    shader->setInt("useJoints", (joints.size() != 0));
+    for (size_t i = 0; i < joints.size(); i++)
+        shader->setMat4("jointMat[" + std::to_string(i) + "]", nodesTransform[joints[i].nodeIndex] * ReverseMatrix(joints[i].inverseBindMatrix));
     bool useTexCoord = (texture != "");
     shader->setInt("useTexCoord", useTexCoord);
     if (useTexCoord)

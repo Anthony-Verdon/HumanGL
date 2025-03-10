@@ -11,12 +11,14 @@ class Model
         ~Model();
 
         void Init();
-        void LoadMesh(const Glb::GltfData &data, size_t nodeIndex, const AlgOps::mat4 &parentTransform);
+        void LoadMesh(const Glb::GltfData &data, size_t nodeIndex);
         void Draw(const AlgOps::mat4 &projection, const AlgOps::mat4 &view) const;
     
     private:
+        std::map<int, AlgOps::mat4> CalculateNodeTransform(const Glb::GltfData &data, size_t nodeIndex, const AlgOps::mat4 &parentTransform) const; 
+
         Glb::GltfData data;
-        Glb::Node node;
+        size_t nodeIndex;
 
         std::vector<Mesh> meshes;
 
