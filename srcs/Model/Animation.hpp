@@ -16,4 +16,7 @@ class Animation
         Glb::Animation data;
         std::map<int, glm::mat4> nodesTransform;
         float timer;
+
+        glm::vec3 CalculateLerp(const glm::vec3 &previousPoint, const glm::vec3 &nextPoint, float interpolation);
+        glm::quat CalculateSlerp(const glm::quat &previousPoint, const glm::quat &nextPoint, float interpolation);
 };
