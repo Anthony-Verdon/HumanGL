@@ -10,14 +10,11 @@ Animator::~Animator()
 
 void Animator::LoadAnimation(const Glb::Animation &animation)
 {
-    Animation anim(animation); 
-    std::string name = animation.name;
-    animations.insert(std::make_pair(name, Animation(animation)));
-    animations[name] = Animation(animation);
+    animations.insert(std::make_pair(animation.name, Animation(animation)));
 }
 
 void Animator::Update()
 {
-    for (auto animation: animations)
+    for (auto &animation: animations)
         animation.second.Update();
 }
