@@ -9,6 +9,7 @@ Model::Model(const Glb::GltfData &data, size_t nodeIndex)
     this->data = data;
     this->nodeIndex = nodeIndex;
     LoadMesh(data, nodeIndex);
+    LoadAnimations(data);
 }
 
 Model::~Model()
@@ -27,14 +28,21 @@ void Model::LoadMesh(const Glb::GltfData &data, size_t nodeIndex)
         LoadMesh(data, node.children[i]);
 }
 
+void Model::LoadAnimations(const Glb::GltfData &data)
+{
+    for (size_t i = 0; i < data.animations.size(); i++)
+        animator.LoadAnimation(data.animations[i]);
+}
+
 void Model::Init()
 {
     for (size_t i = 0; i < meshes.size(); i++)
         meshes[i].Init();
 }
 
-void Model::Draw(const glm::mat4 &projection, const glm::mat4 &view) const
+void Model::Draw(const glm::mat4 &projection, const glm::mat4 &view)
 {
+    animator.Update();
     glm::mat4 transform(1.0f);
     auto nodesTransform = CalculateNodeTransform(data, nodeIndex, transform);
     for (size_t i = 0; i < meshes.size(); i++)
