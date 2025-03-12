@@ -76,20 +76,6 @@ Mesh::~Mesh()
     }
 }
 
-AlgOps::mat4 ReverseMatrix(const AlgOps::mat4 &matrix)
-{
-    AlgOps::mat4 newMatrix;
-    for (size_t i = 0; i < 4; i++)
-    {
-        for (size_t j = 0; j < 4; j++)
-        {
-            newMatrix.setData(i, j, matrix.getData(j, i));
-        }
-    }
-
-    return (newMatrix);
-}
-
 void Mesh::Draw(const AlgOps::mat4 &projection, const AlgOps::mat4 &view, std::map<int, AlgOps::mat4> &nodesTransform) const
 {
     auto shader = RessourceManager::GetShader("mesh_shader");
@@ -99,7 +85,7 @@ void Mesh::Draw(const AlgOps::mat4 &projection, const AlgOps::mat4 &view, std::m
     shader->setMat4("model", nodesTransform[nodeIndex]);
     shader->setInt("useJoints", (joints.size() != 0));
     for (size_t i = 0; i < joints.size(); i++)
-        shader->setMat4("jointMat[" + std::to_string(i) + "]", nodesTransform[joints[i].nodeIndex] * ReverseMatrix(joints[i].inverseBindMatrix));
+        shader->setMat4("jointMat[" + std::to_string(i) + "]", nodesTransform[joints[i].nodeIndex] * joints[i].inverseBindMatrix);
     bool useTexCoord = (texture != "");
     shader->setInt("useTexCoord", useTexCoord);
     if (useTexCoord)
