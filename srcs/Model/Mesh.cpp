@@ -76,19 +76,6 @@ Mesh::~Mesh()
     }
 }
 
-#include <iostream>
-std::ostream &operator<<(std::ostream &os, const glm::mat4 &instance)
-{
-    os << std::endl;
-    for (size_t y = 0; y < 4; y++)
-    {
-        for (size_t x = 0; x < 4; x++)
-            os << instance[y][x] << " ";
-        os << std::endl;
-    }
-
-    return (os);
-}
 void Mesh::Draw(const glm::mat4 &projection, const glm::mat4 &view, std::map<int, glm::mat4> &nodesTransform) const
 {
     auto shader = RessourceManager::GetShader("mesh_shader");
