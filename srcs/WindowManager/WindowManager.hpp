@@ -3,14 +3,14 @@
 #include <GLFW/glfw3.h>
 #include <string>
 #include "AProgram/AProgram.hpp"
-#include "Matrix.hpp"
+#include <glm/glm.hpp>
 
 class WindowManager
 {
   private:
     static GLFWwindow *window;
-    static AlgOps::vec2 windowSize;
-    static AlgOps::vec2 mousePosition;
+    static glm::vec2 windowSize;
+    static glm::vec2 mousePosition;
 
     WindowManager() = delete;
     ~WindowManager() = delete;
@@ -26,11 +26,11 @@ class WindowManager
     
     static GLFWwindow *GetWindow();
 
-    static AlgOps::vec2 GetWindowSize();
+    static glm::vec2 GetWindowSize();
     static unsigned int GetWindowWidth();
     static unsigned int GetWindowHeight();
 
-    static AlgOps::vec2 GetMousePosition();
+    static glm::vec2 GetMousePosition();
     static void SetMousePosition(double xPos, double yPos);
 
     static void SetUserPointer(void *ptr);

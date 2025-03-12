@@ -2,7 +2,7 @@
 #include "GlbParser/GlbParser.hpp"
 #include "RessourceManager/RessourceManager.hpp"
 #include "Toolbox.hpp"
-#include "Matrix.hpp"
+#include <glm/glm.hpp>
 #include <iostream>
 
 namespace ModelLoader
@@ -33,7 +33,7 @@ namespace ModelLoader
     {
         auto node = data.nodes[nodeIndex];
         std::cout << nodeIndex << " " << node.name << std::endl;
-        std::cout << "transform: " << node.transform << std::endl;
+        //std::cout << "transform: " << node.transform << std::endl;
         std::cout << "skin: " << node.skin << std::endl;
         if (node.skin != -1)
             PrintSkin(data, node.skin);

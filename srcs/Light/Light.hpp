@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Matrix.hpp"
+#include <glm/glm.hpp>
 
 class Light
 {
@@ -8,16 +8,16 @@ class Light
         unsigned int VAO;
         unsigned int VBO;
 
-        AlgOps::vec3 color;
-        AlgOps::vec3 pos;
-        AlgOps::vec3 scale;
+        glm::vec3 color;
+        glm::vec3 pos;
+        glm::vec3 scale;
         
     public:
         Light();
         ~Light();
 
         void Draw();
-        AlgOps::vec3 GetColor() const { return color; }
-        AlgOps::vec3 GetPos() const { return pos; }
-        AlgOps::vec3 GetScale() const { return scale; }
+        glm::vec3 GetColor() const { return color; }
+        glm::vec3 GetPos() const { return pos; }
+        glm::vec3 GetScale() const { return scale; }
 };

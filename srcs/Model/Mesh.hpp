@@ -9,7 +9,7 @@ class Mesh
         ~Mesh();
 
         void Init();
-        void Draw(const AlgOps::mat4 &projection, const AlgOps::mat4 &view, std::map<int, AlgOps::mat4> &nodesTransform) const;
+        void Draw(const glm::mat4 &projection, const glm::mat4 &view, std::map<int, glm::mat4> &nodesTransform) const;
 
     private:
         unsigned int VAO, VBO, EBO;
