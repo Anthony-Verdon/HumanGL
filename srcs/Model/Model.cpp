@@ -10,6 +10,7 @@ Model::Model(const Glb::GltfData &data, size_t nodeIndex)
     this->nodeIndex = nodeIndex;
     LoadMesh(data, nodeIndex);
     LoadAnimations(data);
+    animator.Play("Anim_0");
 }
 
 Model::~Model()
@@ -52,7 +53,7 @@ void Model::Draw(const glm::mat4 &projection, const glm::mat4 &view)
 std::map<int, glm::mat4> Model::CalculateNodeTransform(const Glb::GltfData &data, size_t nodeIndex, const glm::mat4 &parentTransform) const
 {
     auto node = data.nodes[nodeIndex];
-    auto transform = parentTransform * node.transform;
+    auto transform = parentTransform * node.transform * animator.GetNodeTransform(nodeIndex);
     std::map<int, glm::mat4> nodesTransform;
     nodesTransform[nodeIndex] = transform;
 

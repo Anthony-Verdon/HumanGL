@@ -10,6 +10,7 @@ class Animation
 
         void Reset();
         void Update();
+        glm::mat4 GetNodeTransform(size_t node) const;
 
     private:
         Glb::Animation data;
