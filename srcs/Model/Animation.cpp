@@ -51,7 +51,10 @@ void Animation::Update()
         size_t nextKeyFrame = (keyframe + 1) % (sampler.timecodes.size() - 1);
         size_t previousBufferIndex = keyframe * sampler.nbElement;
         size_t nextBufferIndex = nextKeyFrame * sampler.nbElement;
-        float interpolation = (timer - sampler.timecodes[keyframe]) / (sampler.timecodes[nextKeyFrame] - sampler.timecodes[keyframe]);
+        float totalTime = sampler.timecodes[nextKeyFrame] - sampler.timecodes[keyframe];
+        float interpolation = 0;
+        if (totalTime > 0)
+            interpolation = (timer - sampler.timecodes[keyframe]) / totalTime;
         auto it = nodesTransform.find(node);
         if (data.channels[i].type == "translation")
         {
@@ -107,7 +110,8 @@ glm::mat4 Animation::GetNodeTransform(size_t node) const
 
 glm::vec3 Animation::CalculateLerp(const glm::vec3 &previousPoint, const glm::vec3 &nextPoint, float interpolation)
 {
-    return previousPoint + interpolation * (nextPoint - previousPoint);
+    return (previousPoint * (1 - interpolation) + nextPoint * interpolation);
+
 }
 
 glm::quat Animation::CalculateSlerp(const glm::quat &previousQuat, const glm::quat &nextQuat, float interpolation)
@@ -122,7 +126,7 @@ glm::quat Animation::CalculateSlerp(const glm::quat &previousQuat, const glm::qu
     }
         
     if (dotProduct > 0.9995)
-        return glm::normalize(previousQuat + interpolation * (nextQuat2 - previousQuat));
+        return glm::normalize(previousQuat * (1 - interpolation) + nextQuat2 * interpolation);
 
     float theta_0 = acos(dotProduct);
     float theta = interpolation * theta_0;
