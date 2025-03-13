@@ -14,7 +14,7 @@ Mesh::Mesh(const Glb::GltfData &data, size_t nodeIndex)
     texture = "";
     if (mesh.material != -1)
     {
-        int imageIndex = data.materials[mesh.material].image;
+        int imageIndex = data.materials[mesh.material].pbr.baseColorTexture;
         if (imageIndex != -1)
         {
             auto image = data.images[imageIndex];

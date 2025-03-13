@@ -66,9 +66,9 @@ namespace ModelLoader
     {
         auto material = data.materials[materialIndex];
         std::cout << material.name << std::endl;
-        std::cout << "image: " << material.image << std::endl;
-        if (material.image != -1)
-            PrintImage(data, material.image);
+        std::cout << "image: " << material.pbr.baseColorTexture << std::endl;
+        if (material.pbr.baseColorTexture != -1)
+            PrintImage(data, material.pbr.baseColorTexture);
     }
 
     void PrintImage(const Glb::GltfData &data, int imageIndex)
