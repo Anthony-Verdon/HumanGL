@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GlbParser/GlbParser.hpp"
+#include "Light/Light.hpp"
 
 class Mesh
 {
@@ -9,7 +10,7 @@ class Mesh
         ~Mesh();
 
         void Init();
-        void Draw(const glm::mat4 &projection, const glm::mat4 &view, std::map<int, glm::mat4> &nodesTransform) const;
+        void Draw(const glm::vec3 &camPos, const Light &light, const glm::mat4 &projection, const glm::mat4 &view, std::map<int, glm::mat4> &nodesTransform) const;
 
     private:
         unsigned int VAO, VBO, EBO;

@@ -12,7 +12,7 @@ class Model
         ~Model();
 
         void Init();
-        void Draw(const glm::mat4 &projection, const glm::mat4 &view);
+        void Draw(const glm::vec3 &camPos, const Light &light, const glm::mat4 &projection, const glm::mat4 &view);
         
     private:
         void LoadMesh(const Glb::GltfData &data, size_t nodeIndex);

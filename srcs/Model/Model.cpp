@@ -41,13 +41,13 @@ void Model::Init()
         meshes[i].Init();
 }
 
-void Model::Draw(const glm::mat4 &projection, const glm::mat4 &view)
+void Model::Draw(const glm::vec3 &camPos, const Light &light, const glm::mat4 &projection, const glm::mat4 &view)
 {
     animator.Update();
     glm::mat4 transform(1.0f);
     auto nodesTransform = CalculateNodeTransform(data, nodeIndex, transform);
     for (size_t i = 0; i < meshes.size(); i++)
-        meshes[i].Draw(projection, view, nodesTransform);
+        meshes[i].Draw(camPos, light, projection, view, nodesTransform);
 }
 
 std::map<int, glm::mat4> Model::CalculateNodeTransform(const Glb::GltfData &data, size_t nodeIndex, const glm::mat4 &parentTransform) const

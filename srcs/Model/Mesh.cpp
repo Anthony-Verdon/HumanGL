@@ -85,7 +85,7 @@ Mesh::~Mesh()
     }
 }
 
-void Mesh::Draw(const glm::mat4 &projection, const glm::mat4 &view, std::map<int, glm::mat4> &nodesTransform) const
+void Mesh::Draw(const glm::vec3 &camPos, const Light &light, const glm::mat4 &projection, const glm::mat4 &view, std::map<int, glm::mat4> &nodesTransform) const
 {
     auto shader = RessourceManager::GetShader("mesh_shader");
     shader->use();
@@ -98,9 +98,9 @@ void Mesh::Draw(const glm::mat4 &projection, const glm::mat4 &view, std::map<int
         shader->setMat4("jointMat[" + std::to_string(i) + "]", nodesTransform[joints[i].nodeIndex] * joints[i].inverseBindMatrix);
     
     // fs
-    shader->setVec3("camPos", glm::vec3(0.0f, 0.0f, 3.0f));
-    shader->setVec3("lightPos", glm::vec3(0, 0, -3));
-    shader->setVec3("lightColor", glm::vec3(1, 1, 1));
+    shader->setVec3("camPos", camPos);
+    shader->setVec3("lightPos", light.GetPos());
+    shader->setVec3("lightColor", light.GetColor());
     shader->setFloat("lightIntensity", 15);
     shader->setVec3("uBaseColor", baseColorFactor);
     shader->setVec3("uEmissiveColor", emissiveFactor);
@@ -114,6 +114,7 @@ void Mesh::Draw(const glm::mat4 &projection, const glm::mat4 &view, std::map<int
         glActiveTexture(GL_TEXTURE0);    
         glBindTexture(GL_TEXTURE_2D, RessourceManager::GetTexture(baseColorTexture)->getID());
     }
+
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, 0);
 }

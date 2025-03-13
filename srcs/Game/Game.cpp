@@ -181,7 +181,7 @@ void Game::updateScene()
         glm::mat4 view = glm::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(),
         camera.getUpDirection());
         for (size_t i = 0; i < models.size(); i++)
-            models[i].Draw(projection, view);
+            models[i].Draw(camera.getPosition(), light, projection, view);
     }
 
     // light
