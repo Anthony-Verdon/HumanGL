@@ -11,17 +11,26 @@ Mesh::Mesh(const Glb::GltfData &data, size_t nodeIndex)
     vertices = mesh.vertices;
     name = mesh.name;
     indices = mesh.indices;
-    texture = "";
+    baseColorTexture = "";
+    baseColorFactor = glm::vec4(1, 1, 1, 1);
+    metallicFactor = 1;
+    roughnessFactor = 1;
     if (mesh.material != -1)
     {
-        int imageIndex = data.materials[mesh.material].pbr.baseColorTexture;
+        auto material = data.materials[mesh.material];
+        int imageIndex = material.pbr.baseColorTexture;
         if (imageIndex != -1)
         {
             auto image = data.images[imageIndex];
-            texture = image.name;
-            if (!RessourceManager::TextureExist(texture))
-                RessourceManager::AddTexture(texture, image.buffer, image.bufferLength);
+            baseColorTexture = image.name;
+            if (!RessourceManager::TextureExist(image.name))
+                RessourceManager::AddTexture(image.name, image.buffer, image.bufferLength);
         }
+        baseColorFactor = material.pbr.baseColorFactor;
+        metallicFactor = material.pbr.metallicFactor;
+        roughnessFactor = material.pbr.roughnessFactor;
+        emissiveFactor = material.emissiveFactor;
+
     }
     if (node.skin != -1)
     {   
@@ -80,18 +89,30 @@ void Mesh::Draw(const glm::mat4 &projection, const glm::mat4 &view, std::map<int
 {
     auto shader = RessourceManager::GetShader("mesh_shader");
     shader->use();
+    // vs
     shader->setMat4("projection", projection);
     shader->setMat4("view", view);
     shader->setMat4("model", nodesTransform[nodeIndex]);
     shader->setInt("useJoints", (joints.size() != 0));
     for (size_t i = 0; i < joints.size(); i++)
         shader->setMat4("jointMat[" + std::to_string(i) + "]", nodesTransform[joints[i].nodeIndex] * joints[i].inverseBindMatrix);
-    bool useTexCoord = (texture != "");
-    shader->setInt("useTexCoord", useTexCoord);
-    if (useTexCoord)
+    
+    // fs
+    shader->setVec3("camPos", glm::vec3(0.0f, 0.0f, 3.0f));
+    shader->setVec3("lightPos", glm::vec3(0, 0, -3));
+    shader->setVec3("lightColor", glm::vec3(1, 1, 1));
+    shader->setFloat("lightIntensity", 15);
+    shader->setVec3("uBaseColor", baseColorFactor);
+    shader->setVec3("uEmissiveColor", emissiveFactor);
+    shader->setFloat("metallic", metallicFactor);
+    shader->setFloat("roughness", roughnessFactor);
+    shader->setFloat("ambientOcclusion", 1.0);
+    bool useBaseColorTexture = (baseColorTexture != "");
+    shader->setInt("useBaseColorTexture", useBaseColorTexture);
+    if (useBaseColorTexture)
     {
         glActiveTexture(GL_TEXTURE0);    
-        glBindTexture(GL_TEXTURE_2D, RessourceManager::GetTexture(texture)->getID()); 
+        glBindTexture(GL_TEXTURE_2D, RessourceManager::GetTexture(baseColorTexture)->getID());
     }
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, 0);

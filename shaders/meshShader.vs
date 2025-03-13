@@ -5,7 +5,6 @@ layout (location = 2) in vec3 aNormal;
 layout (location = 3) in vec4 aJoint;
 layout (location = 4) in vec4 aWeight;
 
-uniform mat4 rotation;
 uniform mat4 view;
 uniform mat4 projection;
 uniform mat4 model;
@@ -13,6 +12,7 @@ uniform mat4 model;
 uniform mat4 jointMat[MAX_MATRICES];
 uniform bool useJoints;
 
+out vec3 WorldPos;
 out vec2 TexCoord;
 out vec3 Normal;
 
@@ -27,7 +27,8 @@ void main()
             aWeight.z * jointMat[int(aJoint.z)] +
             aWeight.w * jointMat[int(aJoint.w)];
     }
-    gl_Position = projection * view * model * skinMat * vec4(aPos, 1);
+    WorldPos = vec3(model * skinMat * vec4(aPos, 1.0));
+    gl_Position = projection * view * vec4(WorldPos, 1.0);
     TexCoord = vec2(aTexCoord.x, aTexCoord.y);
     Normal = mat3(transpose(inverse(model))) * aNormal; 
 }
