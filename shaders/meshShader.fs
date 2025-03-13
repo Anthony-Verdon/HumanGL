@@ -5,19 +5,19 @@ in vec2 TexCoord;
 in vec3 WorldPos;
 in vec3 Normal;
 
-uniform vec3 camPos;
-uniform vec3 lightPos;
-uniform vec3 lightColor;
-uniform float lightIntensity;
+uniform vec3 uCamPos;
+uniform vec3 uLightPos;
+uniform vec3 uLightColor;
+uniform float uLightIntensity;
 
 uniform vec3 uBaseColor;
 uniform vec3 uEmissiveColor;
-uniform float metallic;
-uniform float roughness;
-uniform float ambientOcclusion;
+uniform float uMetallic;
+uniform float uRoughness;
+uniform float uAmbientOcclusion;
 
-uniform bool useBaseColorTexture;
-uniform sampler2D baseColorTexture;
+uniform bool uUseBaseColorTexture;
+uniform sampler2D uBaseColorTexture;
 
 const float PI = 3.14159265359;
 
@@ -66,40 +66,40 @@ vec3 FresnelSchlick(float cosTheta, vec3 F0)
 void main()
 {
     vec3 N = normalize(Normal);
-    vec3 V = normalize(camPos - WorldPos);
+    vec3 V = normalize(uCamPos - WorldPos);
 
     vec3 baseColor;
-    if (useBaseColorTexture)
-        baseColor = vec3(texture(baseColorTexture, TexCoord));
+    if (uUseBaseColorTexture)
+        baseColor = vec3(texture(uBaseColorTexture, TexCoord));
     else
         baseColor = uBaseColor;
 
-    vec3 F0 = mix(vec3(0.04), baseColor, metallic);
+    vec3 F0 = mix(vec3(0.04), baseColor, uMetallic);
     vec3 Lo = vec3(0.0);
     // start loop of light
-    vec3 L = normalize(lightPos - WorldPos);
+    vec3 L = normalize(uLightPos - WorldPos);
     vec3 H = normalize(V + L);
 
-    float distance = length(lightPos - WorldPos);
+    float distance = length(uLightPos - WorldPos);
     float attenuation = 1.0 / (distance * distance);
-    vec3 radiance = lightColor * attenuation;
+    vec3 radiance = uLightColor * attenuation;
 
     vec3 F = FresnelSchlick(max(dot(H, V), 0.0), F0);
-    float NDF = DistributionGGX(N, H, roughness);
-    float G = GeometrySmith(N, V, L, roughness);
+    float NDF = DistributionGGX(N, H, uRoughness);
+    float G = GeometrySmith(N, V, L, uRoughness);
     vec3 num = NDF * G * F;
     float denom = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001;
     vec3 specular = num / denom;
 
     vec3 kS = F;
-    vec3 kD = (vec3(1.0) - kS) * (1.0 - metallic);
+    vec3 kD = (vec3(1.0) - kS) * (1.0 - uMetallic);
 
     float NdotL = max(dot(N, L), 0.0);
-    Lo += (kD * baseColor / PI + specular) * radiance * lightColor * lightIntensity * NdotL;
+    Lo += (kD * baseColor / PI + specular) * radiance * uLightColor * uLightIntensity * NdotL;
     // end loop of light
 
     vec3 ambient = vec3(0.03) * baseColor;
-    vec3 color = ambient + Lo * ambientOcclusion + uEmissiveColor;
+    vec3 color = ambient + Lo * uAmbientOcclusion + uEmissiveColor;
 
     color = color / (color + vec3(1.0));
     color = pow(color, vec3(1.0 / 2.2));

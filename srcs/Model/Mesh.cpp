@@ -90,25 +90,25 @@ void Mesh::Draw(const glm::vec3 &camPos, const Light &light, const glm::mat4 &pr
     auto shader = RessourceManager::GetShader("mesh_shader");
     shader->use();
     // vs
-    shader->setMat4("projection", projection);
-    shader->setMat4("view", view);
-    shader->setMat4("model", nodesTransform[nodeIndex]);
-    shader->setInt("useJoints", (joints.size() != 0));
+    shader->setMat4("uProjection", projection);
+    shader->setMat4("uView", view);
+    shader->setMat4("uModel", nodesTransform[nodeIndex]);
+    shader->setInt("uUseJoints", (joints.size() != 0));
     for (size_t i = 0; i < joints.size(); i++)
-        shader->setMat4("jointMat[" + std::to_string(i) + "]", nodesTransform[joints[i].nodeIndex] * joints[i].inverseBindMatrix);
+        shader->setMat4("uJointMat[" + std::to_string(i) + "]", nodesTransform[joints[i].nodeIndex] * joints[i].inverseBindMatrix);
     
     // fs
-    shader->setVec3("camPos", camPos);
-    shader->setVec3("lightPos", light.GetPos());
-    shader->setVec3("lightColor", light.GetColor());
-    shader->setFloat("lightIntensity", 15);
+    shader->setVec3("uCamPos", camPos);
+    shader->setVec3("uLightPos", light.GetPos());
+    shader->setVec3("uLightColor", light.GetColor());
+    shader->setFloat("uLightIntensity", 15);
     shader->setVec3("uBaseColor", baseColorFactor);
     shader->setVec3("uEmissiveColor", emissiveFactor);
-    shader->setFloat("metallic", metallicFactor);
-    shader->setFloat("roughness", roughnessFactor);
-    shader->setFloat("ambientOcclusion", 1.0);
+    shader->setFloat("uMetallic", metallicFactor);
+    shader->setFloat("uRoughness", roughnessFactor);
+    shader->setFloat("uAmbientOcclusion", 1.0);
     bool useBaseColorTexture = (baseColorTexture != "");
-    shader->setInt("useBaseColorTexture", useBaseColorTexture);
+    shader->setInt("uUseBaseColorTexture", useBaseColorTexture);
     if (useBaseColorTexture)
     {
         glActiveTexture(GL_TEXTURE0);    
