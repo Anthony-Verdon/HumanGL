@@ -22,6 +22,7 @@ class Game: public AProgram
         std::vector<Object> objects;
         std::vector<Model> models;
         bool displayColor;
+        bool HoverOrFocusImGUI;
         float mixedValue;
         float sceneRotation[3];
         float inputRotation[3];

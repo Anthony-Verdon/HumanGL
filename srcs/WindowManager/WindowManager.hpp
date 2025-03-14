@@ -30,6 +30,9 @@ class WindowManager
     static unsigned int GetWindowWidth();
     static unsigned int GetWindowHeight();
 
+    static void SetInputMode(int mode, int value);
+    static int GetInputMode(int mode);
+
     static glm::vec2 GetMousePosition();
     static void SetMousePosition(double xPos, double yPos);
 

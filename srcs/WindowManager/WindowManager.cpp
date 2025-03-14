@@ -28,7 +28,6 @@ void WindowManager::InitWindow(const std::string &name, unsigned int width, unsi
     if (!window)
         throw(std::runtime_error("INIT_WINDOW::INITIALIZATION_FAILED"));
     glfwMakeContextCurrent(window);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
         throw(std::runtime_error("INIT_OPENGL::INITIALIZATION_FAILED"));
@@ -100,6 +99,16 @@ unsigned int WindowManager::GetWindowWidth()
 unsigned int WindowManager::GetWindowHeight()
 {
     return (windowSize.y);
+}
+
+void WindowManager::SetInputMode(int mode, int value)
+{
+    glfwSetInputMode(window, mode, value);
+}
+
+int WindowManager::GetInputMode(int mode)
+{
+    return (glfwGetInputMode(window, mode));
 }
 
 void WindowManager::SetMousePosition(double xPos, double yPos)

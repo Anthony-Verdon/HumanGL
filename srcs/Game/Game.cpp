@@ -30,6 +30,7 @@ Game::Game()
 
     WindowManager::SetUserPointer(&camera);
     WindowManager::SetScrollCallback(scroll_callback);
+    WindowManager::SetInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     RessourceManager::AddShader("basic_shader", "shaders/shader.vs", "shaders/shader.fs");
     RessourceManager::AddShader("mesh_shader", "shaders/meshShader.vs", "shaders/meshShader.fs");
@@ -78,7 +79,9 @@ void Game::Run()
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    ImGui::ShowDemoWindow();
+    ImGui::Begin("new window");
+    HoverOrFocusImGUI = ImGui::IsWindowHovered() || ImGui::IsWindowFocused();
+    ImGui::End();
 
     Time::updateTime();
     ProcessInput();
@@ -90,9 +93,28 @@ void Game::Run()
 
 void Game::ProcessInput()
 {
-    updateCamera();
-    updateSceneOrientation();
-    updateDisplayMode();
+    bool focusRenderer = WindowManager::GetInputMode(GLFW_CURSOR) == GLFW_CURSOR_DISABLED;
+    if (!HoverOrFocusImGUI && WindowManager::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_1))
+        WindowManager::SetInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    static bool keyEnable = true;
+    if (keyEnable && WindowManager::IsKeyPressed(GLFW_KEY_ESCAPE))
+    {
+        if (focusRenderer)
+            WindowManager::SetInputMode(GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        else
+            WindowManager::StopUpdateLoop();
+        keyEnable = false;
+    }
+    else if (!WindowManager::IsKeyPressed(GLFW_KEY_ESCAPE))
+    {
+        keyEnable = true;
+    }
+    if (focusRenderer)
+    {
+        updateCamera();
+        updateSceneOrientation();
+        updateDisplayMode();
+    }
 }
 
 
