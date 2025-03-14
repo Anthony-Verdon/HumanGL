@@ -8,6 +8,10 @@
 #include "globals.hpp"
 #include <cmath>
 #include <glm/gtc/matrix_transform.hpp>
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+
 void scroll_callback(GLFWwindow *window, double xOffset, double yOffset);
 
 Game::Game() 
@@ -30,6 +34,16 @@ Game::Game()
     RessourceManager::AddShader("basic_shader", "shaders/shader.vs", "shaders/shader.fs");
     RessourceManager::AddShader("mesh_shader", "shaders/meshShader.vs", "shaders/meshShader.fs");
     RessourceManager::AddShader("light", "shaders/lightShader.vs", "shaders/lightShader.fs");
+
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+
+    // Setup Platform/Renderer backends
+    ImGui_ImplGlfw_InitForOpenGL(WindowManager::GetWindow(), true);          // Second param install_callback=true will install GLFW callbacks and chain to existing ones.
+    ImGui_ImplOpenGL3_Init();
 }
 
 Game::~Game() 
@@ -60,15 +74,22 @@ void Game::LoadObjects(int argc, char **argv)
 
 void Game::Run()
 {
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    ImGui::ShowDemoWindow();
+
     Time::updateTime();
     ProcessInput();
     updateScene();
+
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 void Game::ProcessInput()
 {
-    if (WindowManager::IsKeyPressed(GLFW_KEY_ESCAPE))
-        WindowManager::StopUpdateLoop();
     updateCamera();
     updateSceneOrientation();
     updateDisplayMode();
