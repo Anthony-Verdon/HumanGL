@@ -29,6 +29,7 @@ class Game: public AProgram
         glm::vec3 axis[3];
         Light light;
         
+        void DrawImGui();
         void ProcessInput();
         void updateCamera();
         void updateSceneOrientation();

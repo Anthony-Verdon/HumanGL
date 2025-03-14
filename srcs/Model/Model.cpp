@@ -62,3 +62,13 @@ std::map<int, glm::mat4> Model::CalculateNodeTransform(const Glb::GltfData &data
 
     return (nodesTransform);
 }
+
+std::vector<std::string> Model::GetAnimations() const
+{
+    return (animator.GetAnimationsName());
+}
+
+void Model::SetAnimation(const std::string &name)
+{
+    animator.Play(name);
+}

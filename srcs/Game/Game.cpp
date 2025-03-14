@@ -75,20 +75,10 @@ void Game::LoadObjects(int argc, char **argv)
 
 void Game::Run()
 {
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
-
-    ImGui::Begin("new window");
-    HoverOrFocusImGUI = ImGui::IsWindowHovered() || ImGui::IsWindowFocused();
-    ImGui::End();
-
     Time::updateTime();
     ProcessInput();
     updateScene();
-
-    ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    DrawImGui();
 }
 
 void Game::ProcessInput()
@@ -324,6 +314,36 @@ void Game::updateShader(const Object &object)
     shader->setVec3("light.ambient",  light.GetColor());
     shader->setVec3("light.diffuse",  0.5f, 0.5f, 0.5f);
     shader->setVec3("light.specular", 1.0f, 1.0f, 1.0f); 
+}
+
+void Game::DrawImGui()
+{
+
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    ImGui::Begin("animations");
+    HoverOrFocusImGUI = ImGui::IsWindowHovered() || ImGui::IsWindowFocused();
+    for (size_t i = 0; i < models.size(); i++)
+    {
+        std::string model = "model " + std::to_string(i); 
+        if (ImGui::CollapsingHeader(model.c_str()))
+        {
+            std::vector<std::string> animations = models[i].GetAnimations();
+            for (auto it = animations.begin(); it != animations.end(); it++)
+            {
+                if (ImGui::Button(it->c_str()))
+                {
+                    models[i].SetAnimation(*it);
+                }
+            }
+        }
+    }
+    ImGui::End();
+    
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 void scroll_callback(GLFWwindow *window, double xOffset, double yOffset)
