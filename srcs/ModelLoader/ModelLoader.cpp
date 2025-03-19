@@ -2,7 +2,6 @@
 #include "GlbParser/GlbParser.hpp"
 #include "RessourceManager/RessourceManager.hpp"
 #include "Toolbox.hpp"
-#include <glm/glm.hpp>
 #include <iostream>
 
 namespace ModelLoader

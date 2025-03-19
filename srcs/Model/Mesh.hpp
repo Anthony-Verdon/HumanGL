@@ -10,7 +10,7 @@ class Mesh
         ~Mesh();
 
         void Init();
-        void Draw(const glm::vec3 &camPos, const Light &light, const glm::mat4 &projection, const glm::mat4 &view, std::map<int, glm::mat4> &nodesTransform) const;
+        void Draw(const ml::vec3 &camPos, const Light &light, const ml::mat4 &projection, const ml::mat4 &view, std::map<int, ml::mat4> &nodesTransform) const;
 
     private:
         unsigned int VAO, VBO, EBO;
@@ -23,8 +23,8 @@ class Mesh
 
         // material
         std::string baseColorTexture;
-        glm::vec4 baseColorFactor;
-        glm::vec3 emissiveFactor;
+        ml::vec4 baseColorFactor;
+        ml::vec3 emissiveFactor;
         float metallicFactor;
         float roughnessFactor;
 };

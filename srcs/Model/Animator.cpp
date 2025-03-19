@@ -21,13 +21,19 @@ void Animator::Update()
         animation->second.Update();
 }
 
-glm::mat4 Animator::GetNodeTransform(size_t node) const
+ml::mat4 Animator::GetNodeTransform(size_t node) const
 {
     auto animation = animations.find(currentAnimation);
     if (animation != animations.end())
+    {
         return (animation->second.GetNodeTransform(node));
+    }
     else
-        return (glm::mat4(1.0f));
+    {
+        ml::mat4 matrix;
+        matrix.identity();
+        return (matrix);
+    }
 }
 
 std::vector<std::string> Animator::GetAnimationsName() const

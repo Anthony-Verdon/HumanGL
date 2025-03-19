@@ -12,13 +12,13 @@ class Model
         ~Model();
 
         void Init();
-        void Draw(const glm::vec3 &camPos, const Light &light, const glm::mat4 &projection, const glm::mat4 &view);
+        void Draw(const ml::vec3 &camPos, const Light &light, const ml::mat4 &projection, const ml::mat4 &view);
         std::vector<std::string> GetAnimations() const;
         void SetAnimation(const std::string &name);
     private:
         void LoadMesh(const Glb::GltfData &data, size_t nodeIndex);
         void LoadAnimations(const Glb::GltfData &data);
-        std::map<int, glm::mat4> CalculateNodeTransform(const Glb::GltfData &data, size_t nodeIndex, const glm::mat4 &parentTransform) const; 
+        std::map<int, ml::mat4> CalculateNodeTransform(const Glb::GltfData &data, size_t nodeIndex, const ml::mat4 &parentTransform) const; 
 
         Glb::GltfData data;
         size_t nodeIndex;

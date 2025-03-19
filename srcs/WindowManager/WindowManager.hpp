@@ -3,14 +3,14 @@
 #include <GLFW/glfw3.h>
 #include <string>
 #include "AProgram/AProgram.hpp"
-#include <glm/glm.hpp>
+#include "vec/vec.hpp"
 
 class WindowManager
 {
   private:
     static GLFWwindow *window;
-    static glm::vec2 windowSize;
-    static glm::vec2 mousePosition;
+    static ml::vec2 windowSize;
+    static ml::vec2 mousePosition;
 
     WindowManager() = delete;
     ~WindowManager() = delete;
@@ -26,14 +26,14 @@ class WindowManager
     
     static GLFWwindow *GetWindow();
 
-    static glm::vec2 GetWindowSize();
+    static ml::vec2 GetWindowSize();
     static unsigned int GetWindowWidth();
     static unsigned int GetWindowHeight();
 
     static void SetInputMode(int mode, int value);
     static int GetInputMode(int mode);
 
-    static glm::vec2 GetMousePosition();
+    static ml::vec2 GetMousePosition();
     static void SetMousePosition(double xPos, double yPos);
 
     static void SetUserPointer(void *ptr);

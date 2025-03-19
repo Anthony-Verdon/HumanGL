@@ -14,7 +14,7 @@ class Animator
         
         void Play(const std::string &animation);
         void Update();
-        glm::mat4 GetNodeTransform(size_t node) const;
+        ml::mat4 GetNodeTransform(size_t node) const;
         std::vector<std::string> GetAnimationsName() const;
     
     private:

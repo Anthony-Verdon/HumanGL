@@ -26,7 +26,7 @@ class Game: public AProgram
         float mixedValue;
         float sceneRotation[3];
         float inputRotation[3];
-        glm::vec3 axis[3];
+        ml::vec3 axis[3];
         Light light;
         
         void DrawImGui();

@@ -3,7 +3,8 @@
 #include <string>
 
 #include <glad/glad.h>
-#include <glm/glm.hpp>
+#include "vec/vec.hpp"
+#include "mat/mat.hpp"
 
 class Shader
 {
@@ -36,15 +37,15 @@ class Shader
 
     void setInt(const std::string &name, int value) const;
     void setFloat(const std::string &name, float x) const;
-    void setVec2(const std::string &name, const glm::vec2 &vector) const;
+    void setVec2(const std::string &name, const ml::vec2 &vector) const;
     void setVec2(const std::string &name, float x, float y) const;
-    void setVec3(const std::string &name, const glm::vec3 &vector) const;
+    void setVec3(const std::string &name, const ml::vec3 &vector) const;
     void setVec3(const std::string &name, float x, float y, float z) const;
-    void setVec4(const std::string &name, const glm::vec4 &vector) const;
+    void setVec4(const std::string &name, const ml::vec4 &vector) const;
     void setVec4(const std::string &name, float x, float y, float z, float w) const;
-    void setMat2(const std::string &name, const glm::mat2 &matrix) const;
-    void setMat3(const std::string &name, const glm::mat3 &matrix) const;
-    void setMat4(const std::string &name, const glm::mat4 &matrix) const;
+    void setMat2(const std::string &name, const ml::mat2 &matrix) const;
+    void setMat3(const std::string &name, const ml::mat3 &matrix) const;
+    void setMat4(const std::string &name, const ml::mat4 &matrix) const;
 
     unsigned int getID() const;
 };

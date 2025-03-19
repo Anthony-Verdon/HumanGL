@@ -5,8 +5,8 @@
 #include "globals.hpp"
 
 GLFWwindow *WindowManager::window = NULL;
-glm::vec2 WindowManager::mousePosition;
-glm::vec2 WindowManager::windowSize;
+ml::vec2 WindowManager::mousePosition;
+ml::vec2 WindowManager::windowSize;
 
 void mouse_callback(GLFWwindow *window, double xPos, double yPos);
 
@@ -86,7 +86,7 @@ GLFWwindow* WindowManager::GetWindow()
     return (window);
 }
 
-glm::vec2 WindowManager::GetWindowSize()
+ml::vec2 WindowManager::GetWindowSize()
 {
     return (windowSize);
 }
@@ -116,7 +116,7 @@ void WindowManager::SetMousePosition(double xPos, double yPos)
     mousePosition = {(float)xPos, (float)yPos};
 }
 
-glm::vec2 WindowManager::GetMousePosition()
+ml::vec2 WindowManager::GetMousePosition()
 {
     return (mousePosition);
 }

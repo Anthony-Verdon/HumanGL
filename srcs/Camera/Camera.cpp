@@ -3,8 +3,8 @@
 Camera::Camera()
 {
     position = {0.0f, 0.0f, 3.0f};
-    frontDirection = glm::vec3(1.0f);
-    rightDirection = glm::vec3(1.0f);
+    frontDirection = ml::vec3(1.0f, 1.0f, 1.0f);
+    rightDirection = ml::vec3(1.0f, 1.0f, 1.0f);
     upDirection = {0.0f, 1.0f, 0.0f};
 
     yaw = -90.0f;
@@ -14,12 +14,12 @@ Camera::Camera()
     speed = 2.5f;
 }
 
-Camera::Camera(const glm::vec3 &position, const glm::vec3 &upDirection, float yaw, float pitch, float roll, float fov,
+Camera::Camera(const ml::vec3 &position, const ml::vec3 &upDirection, float yaw, float pitch, float roll, float fov,
                float speed)
 {
     this->position = position;
-    frontDirection = glm::vec3(1.0f);
-    rightDirection = glm::vec3(1.0f);
+    frontDirection = ml::vec3(1.0f, 1.0f, 1.0f);
+    rightDirection = ml::vec3(1.0f, 1.0f, 1.0f);
     this->upDirection = upDirection;
     this->yaw = yaw;
     this->pitch = pitch;
@@ -54,22 +54,22 @@ Camera::~Camera()
 {
 }
 
-glm::vec3 Camera::getPosition() const
+ml::vec3 Camera::getPosition() const
 {
     return (position);
 }
 
-glm::vec3 Camera::getFrontDirection() const
+ml::vec3 Camera::getFrontDirection() const
 {
     return (frontDirection);
 }
 
-glm::vec3 Camera::getRightDirection() const
+ml::vec3 Camera::getRightDirection() const
 {
     return (rightDirection);
 }
 
-glm::vec3 Camera::getUpDirection() const
+ml::vec3 Camera::getUpDirection() const
 {
     return (upDirection);
 }
@@ -97,21 +97,21 @@ float Camera::getSpeed() const
     return (speed);
 }
 
-void Camera::setPosition(const glm::vec3 &position)
+void Camera::setPosition(const ml::vec3 &position)
 {
     this->position = position;
 }
-void Camera::setFrontDirection(const glm::vec3 &frontDirection)
+void Camera::setFrontDirection(const ml::vec3 &frontDirection)
 {
     this->frontDirection = frontDirection;
 }
 
-void Camera::setRightDirection(const glm::vec3 &rightDirection)
+void Camera::setRightDirection(const ml::vec3 &rightDirection)
 {
     this->rightDirection = rightDirection;
 }
 
-void Camera::setUpDirection(const glm::vec3 &upDirection)
+void Camera::setUpDirection(const ml::vec3 &upDirection)
 {
     this->upDirection = upDirection;
 }
@@ -141,7 +141,7 @@ void Camera::setSpeed(float speed)
     this->speed = speed;
 }
 
-void Camera::addToPosition(const glm::vec3 &position)
+void Camera::addToPosition(const ml::vec3 &position)
 {
     this->position = this->position + position;
 }

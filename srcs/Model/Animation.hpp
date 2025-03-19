@@ -10,13 +10,13 @@ class Animation
 
         void Reset();
         void Update();
-        glm::mat4 GetNodeTransform(size_t node) const;
+        ml::mat4 GetNodeTransform(size_t node) const;
 
     private:
         Glb::Animation data;
-        std::map<int, glm::mat4> nodesTransform;
+        std::map<int, ml::mat4> nodesTransform;
         float timer;
 
-        glm::vec3 CalculateLerp(const glm::vec3 &previousPoint, const glm::vec3 &nextPoint, float interpolation);
-        glm::quat CalculateSlerp(const glm::quat &previousPoint, const glm::quat &nextPoint, float interpolation);
+        ml::vec3 CalculateLerp(const ml::vec3 &previousPoint, const ml::vec3 &nextPoint, float interpolation);
+        ml::vec4 CalculateSlerp(const ml::vec4 &previousPoint, const ml::vec4 &nextPoint, float interpolation);
 };

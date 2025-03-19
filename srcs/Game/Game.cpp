@@ -7,10 +7,10 @@
 #include "Toolbox.hpp"
 #include "globals.hpp"
 #include <cmath>
-#include <glm/gtc/matrix_transform.hpp>
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+#include "geometry/geometry.hpp"
 
 void scroll_callback(GLFWwindow *window, double xOffset, double yOffset);
 
@@ -125,7 +125,7 @@ void Game::updateCamera()
     // orientation
     const float sensitivity = 0.1f;
 
-    glm::vec2 mousePos = WindowManager::GetMousePosition();
+    ml::vec2 mousePos = WindowManager::GetMousePosition();
     static float lastX = mousePos.x;
     static float lastY = mousePos.y;
 
@@ -203,15 +203,15 @@ void Game::updateScene()
         sceneRotation[X_AXIS] += inputRotation[X_AXIS] * Time::getDeltaTime();
         sceneRotation[Y_AXIS] += inputRotation[Y_AXIS] * Time::getDeltaTime();
         sceneRotation[Z_AXIS] += inputRotation[Z_AXIS] * Time::getDeltaTime();
-        glm::mat4 rotation;
-        rotation= glm::mat4(1);
-        rotation =  glm::rotate(rotation, sceneRotation[X_AXIS], axis[X_AXIS]) *
-        glm::rotate(rotation, sceneRotation[Y_AXIS], axis[Y_AXIS]) *
-        glm::rotate(rotation, sceneRotation[Z_AXIS], axis[Z_AXIS]);
+        ml::mat4 rotation;
+        rotation.identity();
+        rotation =  ml::rotate(sceneRotation[X_AXIS], axis[X_AXIS]) *
+        ml::rotate(sceneRotation[Y_AXIS], axis[Y_AXIS]) *
+        ml::rotate(sceneRotation[Z_AXIS], axis[Z_AXIS]);
         
-        glm::mat4 projection = glm::perspective(camera.getFov(), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
+        ml::mat4 projection = ml::perspective(camera.getFov(), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
         
-        glm::mat4 view = glm::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(),
+        ml::mat4 view = ml::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(),
         camera.getUpDirection());
         for (size_t i = 0; i < models.size(); i++)
             models[i].Draw(camera.getPosition(), light, projection, view);
@@ -220,15 +220,13 @@ void Game::updateScene()
     // light
     auto shader = RessourceManager::GetShader("light");
     shader->use();
-    glm::mat4 projection = glm::perspective(camera.getFov(), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
+    ml::mat4 projection = ml::perspective(camera.getFov(), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
     shader->setMat4("projection", projection);
-    glm::mat4 view = glm::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(), camera.getUpDirection());
+    ml::mat4 view = ml::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(), camera.getUpDirection());
     shader->setMat4("view", view);
     shader->setVec3("lightColor", light.GetColor());
 
-    glm::mat4 model(1.0f);
-    model = glm::translate(model, light.GetPos());
-    model = glm::scale(model, light.GetScale()); 
+    ml::mat4 model = ml::translate(light.GetPos()) * ml::scale(light.GetScale());
     shader->setMat4("model", model);
 
     light.Draw();
@@ -236,12 +234,12 @@ void Game::updateScene()
 
 void Game::updateCameraView()
 {
-    glm::vec3 direction({cosf(Toolbox::DegToRad(camera.getYaw())) * cosf(Toolbox::DegToRad(camera.getPitch())),
+    ml::vec3 direction(cosf(Toolbox::DegToRad(camera.getYaw())) * cosf(Toolbox::DegToRad(camera.getPitch())),
                     sinf(Toolbox::DegToRad(camera.getPitch())),
-                    sinf(Toolbox::DegToRad(camera.getYaw())) * cosf(Toolbox::DegToRad(camera.getPitch()))});
-    camera.setFrontDirection(glm::normalize(direction));
+                    sinf(Toolbox::DegToRad(camera.getYaw())) * cosf(Toolbox::DegToRad(camera.getPitch())));
+    camera.setFrontDirection(ml::normalize(direction));
     camera.setRightDirection(
-        glm::normalize(glm::cross(camera.getFrontDirection(), camera.getUpDirection())));
+        ml::normalize(ml::crossProduct(camera.getFrontDirection(), camera.getUpDirection())));
 }
 
 void Game::updateTexture()
@@ -280,20 +278,21 @@ void Game::updateShader(const Object &object)
     sceneRotation[X_AXIS] += inputRotation[X_AXIS] * Time::getDeltaTime();
     sceneRotation[Y_AXIS] += inputRotation[Y_AXIS] * Time::getDeltaTime();
     sceneRotation[Z_AXIS] += inputRotation[Z_AXIS] * Time::getDeltaTime();
-    glm::mat4 rotation;
-    rotation= glm::mat4(1);
-    rotation = glm::rotate(rotation, sceneRotation[X_AXIS], axis[X_AXIS]) *
-                glm::rotate(rotation, sceneRotation[Y_AXIS], axis[Y_AXIS]) *
-                glm::rotate(rotation, sceneRotation[Z_AXIS], axis[Z_AXIS]);
+    ml::mat4 rotation;
+    rotation.identity();
+    rotation = ml::rotate(sceneRotation[X_AXIS], axis[X_AXIS]) *
+                ml::rotate(sceneRotation[Y_AXIS], axis[Y_AXIS]) *
+                ml::rotate(sceneRotation[Z_AXIS], axis[Z_AXIS]);
     shader->setMat4("rotation", rotation);
 
-    glm::mat4 projection = glm::perspective(camera.getFov(), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
+    ml::mat4 projection = ml::perspective(camera.getFov(), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
     shader->setMat4("projection", projection);
 
-    glm::mat4 view = glm::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(),
+    ml::mat4 view = ml::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(),
                                  camera.getUpDirection());
     shader->setMat4("view", view);
-    glm::mat4 model(1.0f);
+    ml::mat4 model;
+    model.identity();
     shader->setMat4("model", model);
 
     shader->setVec3("viewPos", camera.getPosition());
@@ -301,7 +300,7 @@ void Game::updateShader(const Object &object)
     std::vector<Material> materials = object.getMaterials();
     for (size_t i = 0; i < materials.size(); i++)
     {
-        glm::vec3 color = {materials[i].getColor(AMBIANT_COLOR)[0], materials[i].getColor(AMBIANT_COLOR)[1], materials[i].getColor(AMBIANT_COLOR)[2]};
+        ml::vec3 color = {materials[i].getColor(AMBIANT_COLOR)[0], materials[i].getColor(AMBIANT_COLOR)[1], materials[i].getColor(AMBIANT_COLOR)[2]};
         shader->setVec3("materials[" + std::to_string(i) + "].ambient", color);
         color = {materials[i].getColor(DIFFUSE_COLOR)[0], materials[i].getColor(DIFFUSE_COLOR)[1], materials[i].getColor(DIFFUSE_COLOR)[2]};
         shader->setVec3("materials[" + std::to_string(i) + "].diffuse", color);

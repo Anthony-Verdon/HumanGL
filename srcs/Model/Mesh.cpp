@@ -12,7 +12,7 @@ Mesh::Mesh(const Glb::GltfData &data, size_t nodeIndex)
     name = mesh.name;
     indices = mesh.indices;
     baseColorTexture = "";
-    baseColorFactor = glm::vec4(1, 1, 1, 1);
+    baseColorFactor = ml::vec4(1, 1, 1, 1);
     metallicFactor = 1;
     roughnessFactor = 1;
     if (mesh.material != -1)
@@ -85,7 +85,7 @@ Mesh::~Mesh()
     }
 }
 
-void Mesh::Draw(const glm::vec3 &camPos, const Light &light, const glm::mat4 &projection, const glm::mat4 &view, std::map<int, glm::mat4> &nodesTransform) const
+void Mesh::Draw(const ml::vec3 &camPos, const Light &light, const ml::mat4 &projection, const ml::mat4 &view, std::map<int, ml::mat4> &nodesTransform) const
 {
     auto shader = RessourceManager::GetShader("mesh_shader");
     shader->use();
@@ -102,7 +102,7 @@ void Mesh::Draw(const glm::vec3 &camPos, const Light &light, const glm::mat4 &pr
     shader->setVec3("uLightPos", light.GetPos());
     shader->setVec3("uLightColor", light.GetColor());
     shader->setFloat("uLightIntensity", 15);
-    shader->setVec3("uBaseColor", baseColorFactor);
+    shader->setVec4("uBaseColor", baseColorFactor);
     shader->setVec3("uEmissiveColor", emissiveFactor);
     shader->setFloat("uMetallic", metallicFactor);
     shader->setFloat("uRoughness", roughnessFactor);

@@ -1,17 +1,14 @@
 #include "Model/Animation.hpp"
 #include "Time/Time.hpp"
 #include <iostream>
-#include <glm/gtc/matrix_transform.hpp>
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/quaternion.hpp>
-#include <glm/gtx/string_cast.hpp>
+#include "geometry/geometry.hpp"
 
 Animation::Animation(const Glb::Animation &animation)
 {   
     data = animation;
     timer = 0;
     for (size_t i = 0; i < animation.channels.size(); i++)
-        nodesTransform[animation.channels[i].node] = glm::mat4(1.0f);
+        nodesTransform[animation.channels[i].node].identity();
 }
 
 Animation::~Animation()
@@ -22,14 +19,14 @@ void Animation::Reset()
 {
     timer = 0;
     for (auto it = nodesTransform.begin(); it != nodesTransform.end(); it++)
-        it->second = glm::mat4(1.0f);
+        it->second.identity();
 }
 
 void Animation::Update()
 {
     timer += Time::getDeltaTime();
     for (auto it = nodesTransform.begin(); it != nodesTransform.end(); it++)
-        it->second = glm::mat4(1.0f);
+        it->second.identity();
 
     for (size_t i = 0; i < data.channels.size(); i++)
     {
@@ -58,67 +55,73 @@ void Animation::Update()
         auto it = nodesTransform.find(node);
         if (data.channels[i].type == "translation")
         {
-            glm::vec3 previousPoint = glm::vec3(sampler.data[previousBufferIndex + 0], sampler.data[previousBufferIndex + 1], sampler.data[previousBufferIndex + 2]);
+            ml::vec3 previousPoint = ml::vec3(sampler.data[previousBufferIndex + 0], sampler.data[previousBufferIndex + 1], sampler.data[previousBufferIndex + 2]);
             if (sampler.interpolation == "STEP")
             {
-                it->second *= glm::translate(glm::mat4(1.0f), previousPoint);
+                it->second *= ml::translate(previousPoint);
             }
             else if (sampler.interpolation == "LINEAR")
             {
-                glm::vec3 nextPoint = glm::vec3(sampler.data[nextBufferIndex + 0], sampler.data[nextBufferIndex + 1], sampler.data[nextBufferIndex + 2]);
-                it->second *= glm::translate(glm::mat4(1.0f), CalculateLerp(previousPoint, nextPoint, interpolation));
+                ml::vec3 nextPoint = ml::vec3(sampler.data[nextBufferIndex + 0], sampler.data[nextBufferIndex + 1], sampler.data[nextBufferIndex + 2]);
+                it->second *= ml::translate(CalculateLerp(previousPoint, nextPoint, interpolation));
             }
         }
         else if (data.channels[i].type == "rotation")
         {
-            glm::quat previousQuat = glm::quat(sampler.data[previousBufferIndex + 3], sampler.data[previousBufferIndex + 0], sampler.data[previousBufferIndex + 1], sampler.data[previousBufferIndex + 2]);
+            ml::vec4 previousQuat = ml::vec4(sampler.data[previousBufferIndex + 3], sampler.data[previousBufferIndex + 0], sampler.data[previousBufferIndex + 1], sampler.data[previousBufferIndex + 2]);
             if (sampler.interpolation == "STEP")
             {
-                it->second *= glm::toMat4(previousQuat);
+                it->second *= ml::rotate(previousQuat);
             }
             else if (sampler.interpolation == "LINEAR")
             {
-                glm::quat nextQuat = glm::quat(sampler.data[nextBufferIndex + 3], sampler.data[nextBufferIndex + 0], sampler.data[nextBufferIndex + 1], sampler.data[nextBufferIndex + 2]);
-                it->second *= glm::toMat4(CalculateSlerp(previousQuat, nextQuat, interpolation));
+                ml::vec4 nextQuat = ml::vec4(sampler.data[nextBufferIndex + 3], sampler.data[nextBufferIndex + 0], sampler.data[nextBufferIndex + 1], sampler.data[nextBufferIndex + 2]);
+                it->second *= ml::rotate(CalculateSlerp(previousQuat, nextQuat, interpolation));
             }
 
         }
         else if (data.channels[i].type == "scale")
         {
-            glm::vec3 previousPoint = glm::vec3(sampler.data[previousBufferIndex + 0], sampler.data[previousBufferIndex + 1], sampler.data[previousBufferIndex + 2]);
+            ml::vec3 previousPoint = ml::vec3(sampler.data[previousBufferIndex + 0], sampler.data[previousBufferIndex + 1], sampler.data[previousBufferIndex + 2]);
             if (sampler.interpolation == "STEP")
             {
-                it->second *= glm::scale(glm::mat4(1.0f), previousPoint);
+                it->second *= ml::scale(previousPoint);
             }
             else if (sampler.interpolation == "LINEAR")
             {
-                glm::vec3 nextPoint = glm::vec3(sampler.data[nextBufferIndex + 0], sampler.data[nextBufferIndex + 1], sampler.data[nextBufferIndex + 2]);
-                it->second *= glm::scale(glm::mat4(1.0f), CalculateLerp(previousPoint, nextPoint, interpolation));
+                ml::vec3 nextPoint = ml::vec3(sampler.data[nextBufferIndex + 0], sampler.data[nextBufferIndex + 1], sampler.data[nextBufferIndex + 2]);
+                it->second *= ml::scale(CalculateLerp(previousPoint, nextPoint, interpolation));
             }
         }
     }
 }
 
-glm::mat4 Animation::GetNodeTransform(size_t node) const
+ml::mat4 Animation::GetNodeTransform(size_t node) const
 {
     auto nodeTransform = nodesTransform.find(node);
     if (nodeTransform != nodesTransform.end())
+    {
         return (nodeTransform->second);
+    }
     else
-        return (glm::mat4(1.0f));
+    {
+        ml::mat4 matrix;
+        matrix.identity();
+        return (matrix);
+    }
 }
 
-glm::vec3 Animation::CalculateLerp(const glm::vec3 &previousPoint, const glm::vec3 &nextPoint, float interpolation)
+ml::vec3 Animation::CalculateLerp(const ml::vec3 &previousPoint, const ml::vec3 &nextPoint, float interpolation)
 {
     return (previousPoint * (1 - interpolation) + nextPoint * interpolation);
 
 }
 
-glm::quat Animation::CalculateSlerp(const glm::quat &previousQuat, const glm::quat &nextQuat, float interpolation)
+ml::vec4 Animation::CalculateSlerp(const ml::vec4 &previousQuat, const ml::vec4 &nextQuat, float interpolation)
 {
-    float dotProduct = glm::dot(previousQuat, nextQuat);
+    float dotProduct = ml::dotProduct(previousQuat, nextQuat);
     
-    glm::quat nextQuat2 = nextQuat;
+    ml::vec4 nextQuat2 = nextQuat;
     if (dotProduct < 0.0)
     {
         nextQuat2 = -nextQuat2;
@@ -126,7 +129,7 @@ glm::quat Animation::CalculateSlerp(const glm::quat &previousQuat, const glm::qu
     }
         
     if (dotProduct > 0.9995)
-        return glm::normalize(previousQuat * (1 - interpolation) + nextQuat2 * interpolation);
+        return ml::normalize(previousQuat * (1 - interpolation) + nextQuat2 * interpolation);
 
     float theta_0 = acos(dotProduct);
     float theta = interpolation * theta_0;
