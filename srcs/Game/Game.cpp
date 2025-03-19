@@ -225,7 +225,7 @@ void Game::updateScene()
     ml::mat4 projection = ml::perspective(camera.getFov(), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
     shader->setMat4("projection", projection);
     
-    ml::mat4 view = ml::lookAt(camera.getPosition(), camera.getFrontDirection(), camera.getUpDirection());
+    ml::mat4 view = ml::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(), camera.getUpDirection());
     shader->setMat4("view", view);
     
     ml::mat4 model = ml::translate(light.GetPos()) * ml::scale(light.GetScale());
