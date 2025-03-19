@@ -126,17 +126,17 @@ void Shader::setVec4(const std::string &name, float x, float y, float z, float w
 
 void Shader::setMat2(const std::string &name, const ml::mat2 &matrix) const
 {
-    glUniformMatrix2fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, matrix.ptr());
+    glUniformMatrix2fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, matrix.ptr().get());
 }
 
 void Shader::setMat3(const std::string &name, const ml::mat3 &matrix) const
 {
-    glUniformMatrix3fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, matrix.ptr());
+    glUniformMatrix3fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, matrix.ptr().get());
 }
 
 void Shader::setMat4(const std::string &name, const ml::mat4 &matrix) const
 {
-    glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, matrix.ptr());
+    glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, matrix.ptr().get());
 }
 
 unsigned int Shader::getID() const
