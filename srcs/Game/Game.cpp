@@ -195,7 +195,8 @@ void Game::updateScene()
 {
     updateCameraView();
     updateTexture();
-
+    
+    /*
     for (size_t i = 0; i < objects.size(); i++)
         renderObject(objects[i]);
     
@@ -216,18 +217,21 @@ void Game::updateScene()
         for (size_t i = 0; i < models.size(); i++)
             models[i].Draw(camera.getPosition(), light, projection, view);
     }
-
+    */
     // light
     auto shader = RessourceManager::GetShader("light");
     shader->use();
+    
     ml::mat4 projection = ml::perspective(camera.getFov(), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
     shader->setMat4("projection", projection);
-    ml::mat4 view = ml::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(), camera.getUpDirection());
+    
+    ml::mat4 view = ml::lookAt(camera.getPosition(), camera.getFrontDirection(), camera.getUpDirection());
     shader->setMat4("view", view);
-    shader->setVec3("lightColor", light.GetColor());
-
+    
     ml::mat4 model = ml::translate(light.GetPos()) * ml::scale(light.GetScale());
     shader->setMat4("model", model);
+    
+    shader->setVec3("lightColor", light.GetColor());
 
     light.Draw();
 }
@@ -238,8 +242,7 @@ void Game::updateCameraView()
                     sinf(Toolbox::DegToRad(camera.getPitch())),
                     sinf(Toolbox::DegToRad(camera.getYaw())) * cosf(Toolbox::DegToRad(camera.getPitch())));
     camera.setFrontDirection(ml::normalize(direction));
-    camera.setRightDirection(
-        ml::normalize(ml::crossProduct(camera.getFrontDirection(), camera.getUpDirection())));
+    camera.setRightDirection(ml::normalize(ml::crossProduct(camera.getFrontDirection(), camera.getUpDirection())));
 }
 
 void Game::updateTexture()
