@@ -228,7 +228,7 @@ void Game::updateScene()
     ml::mat4 view = ml::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(), camera.getUpDirection());
     shader->setMat4("view", view);
     
-    ml::mat4 model = ml::translate(light.GetPos()) * ml::scale(light.GetScale());
+    ml::mat4 model = ml::translate(light.GetPos()) * ml::rotate(45, ml::vec3(1, 1, 1)) * ml::scale(light.GetScale());
     shader->setMat4("model", model);
     
     shader->setVec3("lightColor", light.GetColor());
