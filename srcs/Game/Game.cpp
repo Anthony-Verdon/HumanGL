@@ -196,7 +196,6 @@ void Game::updateScene()
     updateCameraView();
     updateTexture();
     
-    /*
     for (size_t i = 0; i < objects.size(); i++)
         renderObject(objects[i]);
     
@@ -217,7 +216,7 @@ void Game::updateScene()
         for (size_t i = 0; i < models.size(); i++)
             models[i].Draw(camera.getPosition(), light, projection, view);
     }
-    */
+    
     // light
     auto shader = RessourceManager::GetShader("light");
     shader->use();

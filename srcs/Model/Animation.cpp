@@ -68,14 +68,14 @@ void Animation::Update()
         }
         else if (data.channels[i].type == "rotation")
         {
-            ml::vec4 previousQuat = ml::vec4(sampler.data[previousBufferIndex + 3], sampler.data[previousBufferIndex + 0], sampler.data[previousBufferIndex + 1], sampler.data[previousBufferIndex + 2]);
+            ml::vec4 previousQuat = ml::vec4(sampler.data[previousBufferIndex + 0], sampler.data[previousBufferIndex + 1], sampler.data[previousBufferIndex + 2], sampler.data[previousBufferIndex + 3]);
             if (sampler.interpolation == "STEP")
             {
                 it->second *= ml::rotate(previousQuat);
             }
             else if (sampler.interpolation == "LINEAR")
             {
-                ml::vec4 nextQuat = ml::vec4(sampler.data[nextBufferIndex + 3], sampler.data[nextBufferIndex + 0], sampler.data[nextBufferIndex + 1], sampler.data[nextBufferIndex + 2]);
+                ml::vec4 nextQuat = ml::vec4(sampler.data[nextBufferIndex + 0], sampler.data[nextBufferIndex + 1], sampler.data[nextBufferIndex + 2], sampler.data[nextBufferIndex + 3]);
                 it->second *= ml::rotate(CalculateSlerp(previousQuat, nextQuat, interpolation));
             }
 
