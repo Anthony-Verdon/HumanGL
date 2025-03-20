@@ -4,3 +4,4 @@ scop*
 .vscode
 .xmake
 build
+imgui.ini
