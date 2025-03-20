@@ -45,7 +45,7 @@ void Animation::Update()
             keyframe = 0;
             timer = 0;
         }
-        size_t nextKeyFrame = (keyframe + 1) % (sampler.timecodes.size() - 1);
+        size_t nextKeyFrame = (keyframe + 1) % sampler.timecodes.size();
         size_t previousBufferIndex = keyframe * sampler.nbElement;
         size_t nextBufferIndex = nextKeyFrame * sampler.nbElement;
         float totalTime = sampler.timecodes[nextKeyFrame] - sampler.timecodes[keyframe];
