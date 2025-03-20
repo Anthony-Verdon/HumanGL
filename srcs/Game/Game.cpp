@@ -10,6 +10,7 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "geometry/geometry.hpp"
+#include <algorithm>
 
 void scroll_callback(GLFWwindow *window, double xOffset, double yOffset);
 
@@ -161,7 +162,8 @@ void Game::DrawImGui()
             if (ImGui::TreeNode("skeletton"))
             {
                 auto [data, nodeIndex] = models[i].GetRootNode();
-                AddChildNode(data, nodeIndex);
+                AddChildNode(data, -1, nodeIndex);
+                models[i].SetData(data);
                 ImGui::TreePop();
             }
             if (ImGui::TreeNode("animations"))
@@ -185,26 +187,73 @@ void Game::DrawImGui()
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void Game::AddChildNode(const Glb::GltfData &data, size_t nodeIndex)
+void Game::AddChildNode(Glb::GltfData &data, int parentIndex, int nodeIndex)
 {
-    auto node = data.nodes[nodeIndex];
+    auto &node = data.nodes[nodeIndex];
 
     if (node.children.size() == 0)
     {
-        ImGui::Text("%s", node.name.c_str());
+        ImGui::Selectable(node.name.c_str());
+        AddDragAndDrop(data, parentIndex, nodeIndex);
     }
     else
     {
         if (ImGui::TreeNode(node.name.c_str()))
         {
+            AddDragAndDrop(data, parentIndex, nodeIndex);
             for (size_t i = 0; i < node.children.size(); i++)
-                AddChildNode(data, node.children[i]);
+                AddChildNode(data, nodeIndex, node.children[i]);
             ImGui::TreePop();
         }
-
+        else
+        {
+            AddDragAndDrop(data, parentIndex, nodeIndex);
+        }
     }
 }
 
+void Game::AddDragAndDrop(Glb::GltfData &data, int parentIndex, int nodeIndex)
+{
+    auto &node = data.nodes[nodeIndex];
+    if (ImGui::BeginDragDropSource())
+    {
+        std::pair<int, int> indexes = std::make_pair(parentIndex, nodeIndex);
+        ImGui::SetDragDropPayload("SKELETTON_NODE_SELECTED", &indexes, sizeof(std::pair<int, int>));
+        ImGui::Text("%s", node.name.c_str());
+        ImGui::EndDragDropSource();
+    }
+    if (ImGui::BeginDragDropTarget())
+    {
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SKELETTON_NODE_SELECTED"))
+        {
+            auto [parentIndex, childIndex] = *(std::pair<int, int>*)payload->Data;
+            if (CheckNoRecursiveChild(data, nodeIndex, childIndex))
+            {
+                node.children.push_back(childIndex);
+                if (parentIndex != -1)
+                {
+                    auto &parent = data.nodes[parentIndex];
+                    auto childIt = std::find(parent.children.begin(), parent.children.end(), childIndex);
+                    parent.children.erase(childIt);
+                }
+            }
+        }
+        ImGui::EndDragDropTarget();
+    }
+}
+
+bool Game::CheckNoRecursiveChild(Glb::GltfData &data, int newParent, int newChild)
+{
+    auto newChildNode = data.nodes[newChild];
+
+    for (size_t i = 0; i < newChildNode.children.size(); i++)
+    {
+        if (newChildNode.children[i] == newParent || !CheckNoRecursiveChild(data, newParent, newChildNode.children[i]))
+            return (false);
+    }
+
+    return (true);
+}
 
 void scroll_callback(GLFWwindow *window, double xOffset, double yOffset)
 {
