@@ -13,8 +13,11 @@ class Model
 
         void Init();
         void Draw(const ml::vec3 &camPos, const Light &light, const ml::mat4 &projection, const ml::mat4 &view);
+        
         std::vector<std::string> GetAnimations() const;
         void SetAnimation(const std::string &name);
+
+        std::pair<Glb::GltfData, size_t> GetRootNode() const { return (std::make_pair(data, nodeIndex)); }
     private:
         void LoadMesh(const Glb::GltfData &data, size_t nodeIndex);
         void LoadAnimations(const Glb::GltfData &data);

@@ -22,11 +22,13 @@ class Game: public AProgram
         bool HoverOrFocusImGUI;
         Light light;
         
-        void DrawImGui();
         void ProcessInput();
         void updateCamera();
         void updateScene();
-    
+        
+        void DrawImGui();
+        void AddChildNode(const Glb::GltfData &data, size_t nodeIndex);
+
     public:
         Game();
         ~Game();

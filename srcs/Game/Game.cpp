@@ -151,21 +151,32 @@ void Game::DrawImGui()
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    ImGui::Begin("animations");
+    ImGui::Begin("Characters");
     HoverOrFocusImGUI = ImGui::IsWindowHovered() || ImGui::IsWindowFocused();
     for (size_t i = 0; i < models.size(); i++)
     {
-        std::string model = "model " + std::to_string(i); 
+        std::string model = "model " + std::to_string(i);
         if (ImGui::CollapsingHeader(model.c_str()))
         {
-            std::vector<std::string> animations = models[i].GetAnimations();
-            for (auto it = animations.begin(); it != animations.end(); it++)
+            if (ImGui::TreeNode("skeletton"))
             {
-                if (ImGui::Button(it->c_str()))
-                {
-                    models[i].SetAnimation(*it);
-                }
+                auto [data, nodeIndex] = models[i].GetRootNode();
+                AddChildNode(data, nodeIndex);
+                ImGui::TreePop();
             }
+            if (ImGui::TreeNode("animations"))
+            {
+                std::vector<std::string> animations = models[i].GetAnimations();
+                for (auto it = animations.begin(); it != animations.end(); it++)
+                {
+                    if (ImGui::Button(it->c_str()))
+                    {
+                        models[i].SetAnimation(*it);
+                    }
+                }
+                ImGui::TreePop();
+            }
+            
         }
     }
     ImGui::End();
@@ -173,6 +184,27 @@ void Game::DrawImGui()
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
+
+void Game::AddChildNode(const Glb::GltfData &data, size_t nodeIndex)
+{
+    auto node = data.nodes[nodeIndex];
+
+    if (node.children.size() == 0)
+    {
+        ImGui::Text("%s", node.name.c_str());
+    }
+    else
+    {
+        if (ImGui::TreeNode(node.name.c_str()))
+        {
+            for (size_t i = 0; i < node.children.size(); i++)
+                AddChildNode(data, node.children[i]);
+            ImGui::TreePop();
+        }
+
+    }
+}
+
 
 void scroll_callback(GLFWwindow *window, double xOffset, double yOffset)
 {
