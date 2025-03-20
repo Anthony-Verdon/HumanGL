@@ -1,8 +1,8 @@
 #pragma once
 
 #include "GlbParser/GlbParser.hpp"
-#include "Model/Animator.hpp"
-#include "Model/Mesh.hpp"
+#include "Model/Animator/Animator.hpp"
+#include "Model/Mesh/Mesh.hpp"
 
 class Model
 {

@@ -1,7 +1,7 @@
 #include "Game/Game.hpp"
 #include "WindowManager/WindowManager.hpp"
 #include "RessourceManager/RessourceManager.hpp"
-#include "ModelLoader/ModelLoader.hpp"
+#include "Model/ModelLoader/ModelLoader.hpp"
 #include "Time/Time.hpp"
 #include "Toolbox.hpp"
 #include "globals.hpp"

@@ -1,4 +1,4 @@
-#include "Model/Animator.hpp"
+#include "Model/Animator/Animator.hpp"
 
 Animator::Animator()
 {

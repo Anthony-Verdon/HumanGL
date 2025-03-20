@@ -1,4 +1,4 @@
-#include "Model/Mesh.hpp"
+#include "Model/Mesh/Mesh.hpp"
 #include "RessourceManager/RessourceManager.hpp"
 #include <glad/glad.h>
 

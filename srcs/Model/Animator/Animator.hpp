@@ -1,7 +1,7 @@
 #pragma once
 
 #include <map>
-#include "Model/Animation.hpp"
+#include "Model/Animator/Animation/Animation.hpp"
 #include "GlbParser/GlbParser.hpp"
 
 class Animator
