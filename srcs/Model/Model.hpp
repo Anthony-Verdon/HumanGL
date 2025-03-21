@@ -10,6 +10,7 @@ struct NodeModel
 {
     std::string name;
     std::vector<int> children;
+    std::vector<Model> models;
 };
 
 class Model
@@ -22,6 +23,7 @@ class Model
         void Init();
         void Destroy();
         void Draw(const ml::vec3 &camPos, const Light &light, const ml::mat4 &projection, const ml::mat4 &view);
+        void DrawSubModels(size_t nodeIndex, const ml::vec3 &camPos, const Light &light, const ml::mat4 &projection, const ml::mat4 &view);
         
         std::vector<std::string> GetAnimations() const;
         void SetAnimation(const std::string &name);

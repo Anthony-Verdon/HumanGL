@@ -59,6 +59,7 @@ void Model::Draw(const ml::vec3 &camPos, const Light &light, const ml::mat4 &pro
     auto nodesTransform = CalculateNodeTransform(nodeIndex, transform);
     for (size_t i = 0; i < meshes.size(); i++)
         meshes[i].Draw(camPos, light, projection, view, nodesTransform);
+    DrawSubModels(nodeIndex, camPos, light, projection, view);
 }
 
 std::map<int, ml::mat4> Model::CalculateNodeTransform(size_t nodeIndex, const ml::mat4 &parentTransform)
@@ -72,6 +73,15 @@ std::map<int, ml::mat4> Model::CalculateNodeTransform(size_t nodeIndex, const ml
         nodesTransform.merge(CalculateNodeTransform(node.children[i], transform));
 
     return (nodesTransform);
+}
+
+void Model::DrawSubModels(size_t nodeIndex, const ml::vec3 &camPos, const Light &light, const ml::mat4 &projection, const ml::mat4 &view)
+{
+    auto node = nodes[nodeIndex];
+    for (size_t i = 0; i < node.children.size(); i++)
+        DrawSubModels(node.children[i], camPos, light, projection, view);
+    for (size_t i = 0; i < node.models.size(); i++)
+        node.models[i].Draw(camPos, light, projection, view);
 }
 
 std::vector<std::string> Model::GetAnimations() const

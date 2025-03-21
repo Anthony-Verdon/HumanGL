@@ -38,6 +38,12 @@ Game::Game()
 
 Game::~Game() 
 {
+    // tmp
+    auto [nodes, nodeIndex] = models[0].GetRootNode();
+    for (size_t i = 0; i < nodes[0].models.size(); i++)
+        nodes[0].models[i].Destroy();
+    // end tmp
+    
     for (size_t i = 0; i < models.size(); i++)
         models[i].Destroy();
 }
@@ -54,6 +60,14 @@ void Game::LoadObjects(int argc, char **argv)
     }
     for (size_t i = 0; i < models.size(); i++)
         models[i].Init();
+
+    // tmp
+    auto [nodes, nodeIndex] = models[0].GetRootNode();
+    nodes[0].models = ModelLoader::LoadModel("assets/rectangle.glb");
+    for (size_t i = 0; i < nodes[0].models.size(); i++)
+        nodes[0].models[i].Init();
+    models[0].SetNodes(nodes);
+    // end tmp
 }
 
 void Game::Run()
@@ -195,7 +209,7 @@ void Game::AddChildNode(std::map<int, NodeModel> &nodes, int parentIndex, int no
 {
     auto &node = nodes[nodeIndex];
 
-    if (node.children.size() == 0)
+    if (node.children.size() == 0 && node.models.size() == 0)
     {
         ImGui::Selectable(node.name.c_str());
         AddDragAndDrop(nodes, parentIndex, nodeIndex);
@@ -207,6 +221,8 @@ void Game::AddChildNode(std::map<int, NodeModel> &nodes, int parentIndex, int no
             AddDragAndDrop(nodes, parentIndex, nodeIndex);
             for (size_t i = 0; i < node.children.size(); i++)
                 AddChildNode(nodes, nodeIndex, node.children[i]);
+            for (size_t i = 0; i < node.models.size(); i++)
+                ImGui::Text("model %zu", i);
             ImGui::TreePop();
         }
         else
