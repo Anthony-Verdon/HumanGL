@@ -20,7 +20,6 @@ class Mesh
         std::vector<Glb::Vertex> vertices;
         std::vector<uint16_t> indices;
         std::vector<Glb::Joint> joints;
-        Glb::GltfData data;
 
         // material
         std::string baseColorTexture;

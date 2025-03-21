@@ -4,7 +4,6 @@
 
 Mesh::Mesh(const Glb::GltfData &data, size_t nodeIndex)
 {
-    this->data = data;
     this->nodeIndex = nodeIndex;
     auto node = data.nodes[nodeIndex];
     auto mesh = data.meshes[node.mesh];
