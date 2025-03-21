@@ -38,12 +38,6 @@ Game::Game()
 
 Game::~Game() 
 {
-    // tmp
-    auto [nodes, nodeIndex] = models[0].GetRootNode();
-    for (size_t i = 0; i < nodes[0].models.size(); i++)
-        nodes[0].models[i].Destroy();
-    // end tmp
-    
     for (size_t i = 0; i < models.size(); i++)
         models[i].Destroy();
 }
@@ -60,14 +54,6 @@ void Game::LoadObjects(int argc, char **argv)
     }
     for (size_t i = 0; i < models.size(); i++)
         models[i].Init();
-
-    // tmp
-    auto [nodes, nodeIndex] = models[0].GetRootNode();
-    nodes[0].models = ModelLoader::LoadModel("assets/rectangle.glb");
-    for (size_t i = 0; i < nodes[0].models.size(); i++)
-        nodes[0].models[i].Init();
-    models[0].SetNodes(nodes);
-    // end tmp
 }
 
 void Game::Run()
@@ -177,6 +163,7 @@ void Game::DrawImGui()
         std::string model = "model " + std::to_string(i);
         if (ImGui::CollapsingHeader(model.c_str()))
         {
+            AddDragAndDrop(models, i);
             std::string skeletton = "skeletton## " + model;
             if (ImGui::TreeNode(skeletton.c_str()))
             {
@@ -198,7 +185,10 @@ void Game::DrawImGui()
                 }
                 ImGui::TreePop();
             }
-            
+        }
+        else
+        {
+            AddDragAndDrop(models, i);
         }
     }
     ImGui::End();
@@ -234,6 +224,17 @@ void Game::AddChildNode(std::map<int, NodeModel> &nodes, int parentIndex, int no
     }
 }
 
+void Game::AddDragAndDrop(std::vector<Model> &models, int modelIndex)
+{
+    if (ImGui::BeginDragDropSource())
+    {
+        std::pair<std::vector<Model>*, int> modelData = std::make_pair(&models, modelIndex);
+        ImGui::SetDragDropPayload("MODEL_SELECTED", &modelData, sizeof(std::pair<std::vector<Model>*, int>));
+        ImGui::Text("%s", "model");
+        ImGui::EndDragDropSource();
+    }
+}
+
 void Game::AddDragAndDrop(std::map<int, NodeModel> &nodes, int parentIndex, int nodeIndex)
 {
     auto &node = nodes[nodeIndex];
@@ -259,6 +260,12 @@ void Game::AddDragAndDrop(std::map<int, NodeModel> &nodes, int parentIndex, int 
                     parent.children.erase(childIt);
                 }
             }
+        }
+        else if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MODEL_SELECTED"))
+        {
+            auto [models, modelIndex] = *(std::pair<std::vector<Model>*, int>*)payload->Data;
+            node.models.push_back((*models)[modelIndex]);
+            models->erase(models->begin() + modelIndex);
         }
         ImGui::EndDragDropTarget();
     }

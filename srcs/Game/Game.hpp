@@ -7,13 +7,6 @@
 #include "Shader/Shader.hpp"
 #include "Light/Light.hpp"
 
-typedef enum axis
-{
-    X_AXIS,
-    Y_AXIS,
-    Z_AXIS
-} e_axis;
-
 class Game: public AProgram
 {
     private:
@@ -29,6 +22,7 @@ class Game: public AProgram
         void DrawImGui();
         void AddChildNode(std::map<int, NodeModel> &nodes, int parentIndex, int nodeIndex);
         void AddDragAndDrop(std::map<int, NodeModel> &nodes, int parentIndex, int nodeIndex);
+        void AddDragAndDrop(std::vector<Model> &models, int modelIndex);
         bool CheckNoRecursiveChild(std::map<int, NodeModel> &nodes, int nodeIndex, int childIndex);
 
     public:
