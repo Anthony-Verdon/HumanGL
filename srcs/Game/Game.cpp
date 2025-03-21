@@ -25,6 +25,7 @@ Game::Game()
     RessourceManager::AddShader("mesh_shader", "shaders/meshShader.vs", "shaders/meshShader.fs");
     RessourceManager::AddShader("light", "shaders/lightShader.vs", "shaders/lightShader.fs");
 
+    HoverOrFocusImGUI = false;
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();

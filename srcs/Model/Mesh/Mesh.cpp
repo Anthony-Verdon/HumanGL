@@ -14,6 +14,7 @@ Mesh::Mesh(const Glb::GltfData &data, size_t nodeIndex)
     baseColorFactor = ml::vec4(1, 1, 1, 1);
     metallicFactor = 1;
     roughnessFactor = 1;
+    emissiveFactor = ml::vec3(0, 0, 0);
     if (mesh.material != -1)
     {
         auto material = data.materials[mesh.material];
