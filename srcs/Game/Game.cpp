@@ -149,8 +149,10 @@ void Game::updateScene()
     ml::mat4 view = ml::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(), camera.getUpDirection());
     
     // models
+    ml::mat4 transform;
+    transform.identity();
     for (size_t i = 0; i < models.size(); i++)
-        models[i].Draw(camera.getPosition(), light, projection, view);
+        models[i].Draw(camera.getPosition(), light, projection, view, transform);
     
     // light
     auto shader = RessourceManager::GetShader("light");
