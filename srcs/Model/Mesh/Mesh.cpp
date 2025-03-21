@@ -42,6 +42,11 @@ Mesh::Mesh(const Glb::GltfData &data, size_t nodeIndex)
     EBO = 0;
 }
 
+Mesh::~Mesh()
+{
+}
+
+
 void Mesh::Init()
 {
     glGenVertexArrays(1, &VAO);
@@ -75,13 +80,14 @@ void Mesh::Init()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-Mesh::~Mesh()
+void Mesh::Destroy()
 {
     if (VAO != 0)
     {
         glDeleteVertexArrays(1, &VAO);
         glDeleteBuffers(1, &VBO);
         glDeleteBuffers(1, &EBO);
+        VAO = 0;
     }
 }
 

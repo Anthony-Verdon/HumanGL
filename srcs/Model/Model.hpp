@@ -12,6 +12,7 @@ class Model
         ~Model();
 
         void Init();
+        void Destroy();
         void Draw(const ml::vec3 &camPos, const Light &light, const ml::mat4 &projection, const ml::mat4 &view);
         
         std::vector<std::string> GetAnimations() const;

@@ -10,6 +10,7 @@ class Mesh
         ~Mesh();
 
         void Init();
+        void Destroy();
         void Draw(const ml::vec3 &camPos, const Light &light, const ml::mat4 &projection, const ml::mat4 &view, std::map<int, ml::mat4> &nodesTransform) const;
 
     private:

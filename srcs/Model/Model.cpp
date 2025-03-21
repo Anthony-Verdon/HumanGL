@@ -41,6 +41,12 @@ void Model::Init()
         meshes[i].Init();
 }
 
+void Model::Destroy()
+{
+    for (size_t i = 0; i < meshes.size(); i++)
+        meshes[i].Destroy();
+}
+
 void Model::Draw(const ml::vec3 &camPos, const Light &light, const ml::mat4 &projection, const ml::mat4 &view)
 {
     animator.Update();

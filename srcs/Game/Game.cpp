@@ -38,6 +38,8 @@ Game::Game()
 
 Game::~Game() 
 {
+    for (size_t i = 0; i < models.size(); i++)
+        models[i].Destroy();
 }
 
 void Game::LoadObjects(int argc, char **argv)
