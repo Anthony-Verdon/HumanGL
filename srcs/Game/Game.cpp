@@ -164,9 +164,9 @@ void Game::DrawImGui()
             std::string skeletton = "skeletton## " + model;
             if (ImGui::TreeNode(skeletton.c_str()))
             {
-                auto [data, nodeIndex] = models[i].GetRootNode();
-                AddChildNode(data, -1, nodeIndex);
-                models[i].SetData(data);
+                auto [nodes, nodeIndex] = models[i].GetRootNode();
+                AddChildNode(nodes, -1, nodeIndex);
+                models[i].SetNodes(nodes);
                 ImGui::TreePop();
             }
             std::string animations = "animations## " + model;
@@ -191,34 +191,34 @@ void Game::DrawImGui()
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void Game::AddChildNode(Glb::GltfData &data, int parentIndex, int nodeIndex)
+void Game::AddChildNode(std::map<int, NodeModel> &nodes, int parentIndex, int nodeIndex)
 {
-    auto &node = data.nodes[nodeIndex];
+    auto &node = nodes[nodeIndex];
 
     if (node.children.size() == 0)
     {
         ImGui::Selectable(node.name.c_str());
-        AddDragAndDrop(data, parentIndex, nodeIndex);
+        AddDragAndDrop(nodes, parentIndex, nodeIndex);
     }
     else
     {
         if (ImGui::TreeNode(node.name.c_str()))
         {
-            AddDragAndDrop(data, parentIndex, nodeIndex);
+            AddDragAndDrop(nodes, parentIndex, nodeIndex);
             for (size_t i = 0; i < node.children.size(); i++)
-                AddChildNode(data, nodeIndex, node.children[i]);
+                AddChildNode(nodes, nodeIndex, node.children[i]);
             ImGui::TreePop();
         }
         else
         {
-            AddDragAndDrop(data, parentIndex, nodeIndex);
+            AddDragAndDrop(nodes, parentIndex, nodeIndex);
         }
     }
 }
 
-void Game::AddDragAndDrop(Glb::GltfData &data, int parentIndex, int nodeIndex)
+void Game::AddDragAndDrop(std::map<int, NodeModel> &nodes, int parentIndex, int nodeIndex)
 {
-    auto &node = data.nodes[nodeIndex];
+    auto &node = nodes[nodeIndex];
     if (ImGui::BeginDragDropSource())
     {
         std::pair<int, int> indexes = std::make_pair(parentIndex, nodeIndex);
@@ -231,12 +231,12 @@ void Game::AddDragAndDrop(Glb::GltfData &data, int parentIndex, int nodeIndex)
         if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SKELETTON_NODE_SELECTED"))
         {
             auto [parentIndex, childIndex] = *(std::pair<int, int>*)payload->Data;
-            if (CheckNoRecursiveChild(data, nodeIndex, childIndex))
+            if (CheckNoRecursiveChild(nodes, nodeIndex, childIndex))
             {
                 node.children.push_back(childIndex);
                 if (parentIndex != -1)
                 {
-                    auto &parent = data.nodes[parentIndex];
+                    auto &parent = nodes[parentIndex];
                     auto childIt = std::find(parent.children.begin(), parent.children.end(), childIndex);
                     parent.children.erase(childIt);
                 }
@@ -246,13 +246,13 @@ void Game::AddDragAndDrop(Glb::GltfData &data, int parentIndex, int nodeIndex)
     }
 }
 
-bool Game::CheckNoRecursiveChild(Glb::GltfData &data, int newParent, int newChild)
+bool Game::CheckNoRecursiveChild(std::map<int, NodeModel> &nodes, int newParent, int newChild)
 {
-    auto newChildNode = data.nodes[newChild];
+    auto newChildNode = nodes[newChild];
 
     for (size_t i = 0; i < newChildNode.children.size(); i++)
     {
-        if (newChildNode.children[i] == newParent || !CheckNoRecursiveChild(data, newParent, newChildNode.children[i]))
+        if (newChildNode.children[i] == newParent || !CheckNoRecursiveChild(nodes, newParent, newChildNode.children[i]))
             return (false);
     }
 

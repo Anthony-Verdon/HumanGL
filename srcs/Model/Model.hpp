@@ -4,6 +4,14 @@
 #include "Model/Animator/Animator.hpp"
 #include "Model/Mesh/Mesh.hpp"
 
+class Model;
+
+struct NodeModel
+{
+    std::string name;
+    std::vector<int> children;
+};
+
 class Model
 {
     public:
@@ -18,16 +26,16 @@ class Model
         std::vector<std::string> GetAnimations() const;
         void SetAnimation(const std::string &name);
 
-        std::pair<Glb::GltfData, size_t> GetRootNode() const { return (std::make_pair(data, nodeIndex)); }
-        void SetData(const Glb::GltfData &data) {this->data = data; }
+        std::pair<std::map<int, NodeModel>, size_t> GetRootNode() const { return (std::make_pair(nodes, nodeIndex)); }
+        void SetNodes(const std::map<int, NodeModel> &nodes) {this->nodes = nodes; }
         
     private:
         void LoadMesh(const Glb::GltfData &data, size_t nodeIndex);
         void LoadAnimations(const Glb::GltfData &data);
-        std::map<int, ml::mat4> CalculateNodeTransform(const Glb::GltfData &data, size_t nodeIndex, const ml::mat4 &parentTransform) const; 
+        std::map<int, ml::mat4> CalculateNodeTransform(size_t nodeIndex, const ml::mat4 &parentTransform);
 
-        Glb::GltfData data;
         size_t nodeIndex;
+        std::map<int, NodeModel> nodes;
 
         std::vector<Mesh> meshes;
         Animator animator;

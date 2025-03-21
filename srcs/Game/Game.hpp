@@ -27,9 +27,9 @@ class Game: public AProgram
         void updateScene();
         
         void DrawImGui();
-        void AddChildNode(Glb::GltfData &data, int parentIndex, int nodeIndex);
-        void AddDragAndDrop(Glb::GltfData &data, int parentIndex, int nodeIndex);
-        bool CheckNoRecursiveChild(Glb::GltfData &data, int nodeIndex, int childIndex);
+        void AddChildNode(std::map<int, NodeModel> &nodes, int parentIndex, int nodeIndex);
+        void AddDragAndDrop(std::map<int, NodeModel> &nodes, int parentIndex, int nodeIndex);
+        bool CheckNoRecursiveChild(std::map<int, NodeModel> &nodes, int nodeIndex, int childIndex);
 
     public:
         Game();

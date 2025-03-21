@@ -6,7 +6,6 @@ Model::Model()
 
 Model::Model(const Glb::GltfData &data, size_t nodeIndex)
 {
-    this->data = data;
     this->nodeIndex = nodeIndex;
     LoadMesh(data, nodeIndex);
     LoadAnimations(data);
@@ -25,8 +24,13 @@ void Model::LoadMesh(const Glb::GltfData &data, size_t nodeIndex)
     if (node.mesh != -1)
         meshes.push_back({data, nodeIndex});
 
+    nodes[nodeIndex] = {};
+    nodes[nodeIndex].name = node.name;
     for (size_t i = 0; i < node.children.size(); i++)
+    {
+        nodes[nodeIndex].children.push_back(node.children[i]);
         LoadMesh(data, node.children[i]);
+    }
 }
 
 void Model::LoadAnimations(const Glb::GltfData &data)
@@ -52,20 +56,20 @@ void Model::Draw(const ml::vec3 &camPos, const Light &light, const ml::mat4 &pro
     animator.Update();
     ml::mat4 transform;
     transform.identity();
-    auto nodesTransform = CalculateNodeTransform(data, nodeIndex, transform);
+    auto nodesTransform = CalculateNodeTransform(nodeIndex, transform);
     for (size_t i = 0; i < meshes.size(); i++)
         meshes[i].Draw(camPos, light, projection, view, nodesTransform);
 }
 
-std::map<int, ml::mat4> Model::CalculateNodeTransform(const Glb::GltfData &data, size_t nodeIndex, const ml::mat4 &parentTransform) const
+std::map<int, ml::mat4> Model::CalculateNodeTransform(size_t nodeIndex, const ml::mat4 &parentTransform)
 {
-    auto node = data.nodes[nodeIndex];
+    auto node = nodes[nodeIndex];
     auto transform = parentTransform * animator.GetNodeTransform(nodeIndex);
     std::map<int, ml::mat4> nodesTransform;
     nodesTransform[nodeIndex] = transform;
 
     for (size_t i = 0; i < node.children.size(); i++)
-        nodesTransform.merge(CalculateNodeTransform(data, node.children[i], transform));
+        nodesTransform.merge(CalculateNodeTransform(node.children[i], transform));
 
     return (nodesTransform);
 }
