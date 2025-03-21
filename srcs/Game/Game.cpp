@@ -159,14 +159,16 @@ void Game::DrawImGui()
         std::string model = "model " + std::to_string(i);
         if (ImGui::CollapsingHeader(model.c_str()))
         {
-            if (ImGui::TreeNode("skeletton"))
+            std::string skeletton = "skeletton## " + model;
+            if (ImGui::TreeNode(skeletton.c_str()))
             {
                 auto [data, nodeIndex] = models[i].GetRootNode();
                 AddChildNode(data, -1, nodeIndex);
                 models[i].SetData(data);
                 ImGui::TreePop();
             }
-            if (ImGui::TreeNode("animations"))
+            std::string animations = "animations## " + model;
+            if (ImGui::TreeNode(animations.c_str()))
             {
                 std::vector<std::string> animations = models[i].GetAnimations();
                 for (auto it = animations.begin(); it != animations.end(); it++)
