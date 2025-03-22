@@ -91,7 +91,7 @@ void Mesh::Destroy()
     }
 }
 
-void Mesh::Draw(const ml::vec3 &camPos, const Light &light, const ml::mat4 &projection, const ml::mat4 &view, std::map<int, ml::mat4> &nodesTransform) const
+void Mesh::Draw(const ml::vec3 &camPos, const Light lights[4], const ml::mat4 &projection, const ml::mat4 &view, std::map<int, ml::mat4> &nodesTransform) const
 {
     auto shader = RessourceManager::GetShader("mesh_shader");
     shader->use();
@@ -105,9 +105,12 @@ void Mesh::Draw(const ml::vec3 &camPos, const Light &light, const ml::mat4 &proj
     
     // fs
     shader->setVec3("uCamPos", camPos);
-    shader->setVec3("uLightPos", light.GetPos());
-    shader->setVec3("uLightColor", light.GetColor());
-    shader->setFloat("uLightIntensity", 15);
+    for (size_t i = 0; i < 4; i++)
+    {
+        shader->setVec3("uLightPos[" + std::to_string(i) + "]", lights[i].GetPos());
+        shader->setVec3("uLightColor[" + std::to_string(i) + "]", lights[i].GetColor());
+        shader->setFloat("uLightIntensity[" + std::to_string(i) + "]", lights[i].GetIntensity());
+    }
     shader->setVec4("uBaseColor", baseColorFactor);
     shader->setVec3("uEmissiveColor", emissiveFactor);
     shader->setFloat("uMetallic", metallicFactor);

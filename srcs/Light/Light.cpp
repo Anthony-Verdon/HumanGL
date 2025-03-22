@@ -58,8 +58,9 @@ Light::Light()
     glEnableVertexAttribArray(0);
 
     color = {1, 1, 1};
-    pos = {0, 0, -3};
-    scale = {0.5, 0.5, 0.5};
+    pos = {0, 0, 0};
+    scale = {0, 0, 0};
+    intensity = 1;
 }
 
 Light::~Light()

@@ -13,7 +13,7 @@ class Game: public AProgram
         Camera camera;
         std::vector<int> modelsIndex;
         bool HoverOrFocusImGUI;
-        Light light;
+        Light lights[4];
         
         void ProcessInput();
         void updateCamera();

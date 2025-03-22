@@ -22,8 +22,8 @@ class Model
 
         void Init();
         void Destroy();
-        void Draw(const ml::vec3 &camPos, const Light &light, const ml::mat4 &projection, const ml::mat4 &view, const ml::mat4 &initTransform);
-        void DrawSubModels(size_t nodeIndex, const ml::vec3 &camPos, const Light &light, const ml::mat4 &projection, const ml::mat4 &view, std::map<int, ml::mat4> &nodesTransform);
+        void Draw(const ml::vec3 &camPos, const Light lights[4], const ml::mat4 &projection, const ml::mat4 &view, const ml::mat4 &initTransform);
+        void DrawSubModels(size_t nodeIndex, const ml::vec3 &camPos, const Light lights[4], const ml::mat4 &projection, const ml::mat4 &view, std::map<int, ml::mat4> &nodesTransform);
         
         std::vector<std::string> GetAnimations() const;
         void SetAnimation(const std::string &name);

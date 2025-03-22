@@ -26,6 +26,19 @@ Game::Game()
     RessourceManager::AddShader("mesh_shader", "shaders/meshShader.vs", "shaders/meshShader.fs");
     RessourceManager::AddShader("light", "shaders/lightShader.vs", "shaders/lightShader.fs");
 
+    for (size_t i = 0; i < 4; i++)
+    {
+        lights[i].SetScale(ml::vec3(0.5, 0.5, 0.5));
+        lights[i].SetIntensity(15);
+    }
+    lights[0].SetPos(ml::vec3(0, 0, -3));
+    lights[0].SetColor(ml::vec3(1, 0, 0));
+    lights[1].SetPos(ml::vec3(0, 0, 3));
+    lights[1].SetColor(ml::vec3(0, 1, 0));
+    lights[2].SetPos(ml::vec3(-3, 0, 0));
+    lights[2].SetColor(ml::vec3(0, 0, 1));
+    lights[3].SetPos(ml::vec3(3, 0, 0));
+    lights[3].SetColor(ml::vec3(1, 1, 1));
     HoverOrFocusImGUI = false;
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -137,17 +150,20 @@ void Game::updateScene()
     ml::mat4 transform;
     transform.identity();
     for (size_t i = 0; i < modelsIndex.size(); i++)
-        ModelManager::GetModel(modelsIndex[i]).Draw(camera.getPosition(), light, projection, view, transform);
+        ModelManager::GetModel(modelsIndex[i]).Draw(camera.getPosition(), lights, projection, view, transform);
     
     // light
     auto shader = RessourceManager::GetShader("light");
     shader->use();
-    ml::mat4 model = ml::translate(light.GetPos()) * ml::scale(light.GetScale());
-    shader->setMat4("model", model);
     shader->setMat4("view", view);
     shader->setMat4("projection", projection);
-    shader->setVec3("lightColor", light.GetColor());
-    light.Draw();
+    for (size_t i = 0; i < 4; i++)
+    {
+        ml::mat4 model = ml::translate(lights[i].GetPos()) * ml::scale(lights[i].GetScale());
+        shader->setMat4("model", model);
+        shader->setVec3("lightColor", lights[i].GetColor());
+        lights[i].Draw();
+    }
 }
 
 void Game::DrawImGui()

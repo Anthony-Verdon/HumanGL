@@ -6,9 +6,9 @@ in vec3 WorldPos;
 in vec3 Normal;
 
 uniform vec3 uCamPos;
-uniform vec3 uLightPos;
-uniform vec3 uLightColor;
-uniform float uLightIntensity;
+uniform vec3 uLightPos[4];
+uniform vec3 uLightColor[4];
+uniform float uLightIntensity[4];
 
 uniform vec3 uBaseColor;
 uniform vec3 uEmissiveColor;
@@ -76,26 +76,28 @@ void main()
 
     vec3 F0 = mix(vec3(0.04), baseColor, uMetallic);
     vec3 Lo = vec3(0.0);
-    // start loop of light
-    vec3 L = normalize(uLightPos - WorldPos);
-    vec3 H = normalize(V + L);
+    for (int i = 0; i < 4; i++)
+    {
+        vec3 L = normalize(uLightPos[i] - WorldPos);
+        vec3 H = normalize(V + L);
 
-    float distance = length(uLightPos - WorldPos);
-    float attenuation = 1.0 / (distance * distance);
-    vec3 radiance = uLightColor * attenuation;
+        float distance = length(uLightPos[i] - WorldPos);
+        float attenuation = 1.0 / (distance * distance);
+        vec3 radiance = uLightColor[i] * attenuation;
 
-    vec3 F = FresnelSchlick(max(dot(H, V), 0.0), F0);
-    float NDF = DistributionGGX(N, H, uRoughness);
-    float G = GeometrySmith(N, V, L, uRoughness);
-    vec3 num = NDF * G * F;
-    float denom = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001;
-    vec3 specular = num / denom;
+        vec3 F = FresnelSchlick(max(dot(H, V), 0.0), F0);
+        float NDF = DistributionGGX(N, H, uRoughness);
+        float G = GeometrySmith(N, V, L, uRoughness);
+        vec3 num = NDF * G * F;
+        float denom = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001;
+        vec3 specular = num / denom;
 
-    vec3 kS = F;
-    vec3 kD = (vec3(1.0) - kS) * (1.0 - uMetallic);
+        vec3 kS = F;
+        vec3 kD = (vec3(1.0) - kS) * (1.0 - uMetallic);
 
-    float NdotL = max(dot(N, L), 0.0);
-    Lo += (kD * baseColor / PI + specular) * radiance * uLightColor * uLightIntensity * NdotL;
+        float NdotL = max(dot(N, L), 0.0);
+        Lo += (kD * baseColor / PI + specular) * radiance * uLightColor[i] * uLightIntensity[i] * NdotL;
+    }
     // end loop of light
 
     vec3 ambient = vec3(0.03) * baseColor;
