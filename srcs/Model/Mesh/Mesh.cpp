@@ -107,9 +107,9 @@ void Mesh::Draw(const ml::vec3 &camPos, const Light lights[4], const ml::mat4 &p
     shader->setVec3("uCamPos", camPos);
     for (size_t i = 0; i < 4; i++)
     {
-        shader->setVec3("uLightPos[" + std::to_string(i) + "]", lights[i].GetPos());
-        shader->setVec3("uLightColor[" + std::to_string(i) + "]", lights[i].GetColor());
-        shader->setFloat("uLightIntensity[" + std::to_string(i) + "]", lights[i].GetIntensity());
+        shader->setVec3("uLightPoints[" + std::to_string(i) + "].pos", lights[i].GetPos());
+        shader->setVec3("uLightPoints[" + std::to_string(i) + "].color", lights[i].GetColor());
+        shader->setFloat("uLightPoints[" + std::to_string(i) + "].intensity", lights[i].GetIntensity());
     }
     shader->setVec4("uBaseColor", baseColorFactor);
     shader->setVec3("uEmissiveColor", emissiveFactor);

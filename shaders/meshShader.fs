@@ -6,9 +6,15 @@ in vec3 WorldPos;
 in vec3 Normal;
 
 uniform vec3 uCamPos;
-uniform vec3 uLightPos[4];
-uniform vec3 uLightColor[4];
-uniform float uLightIntensity[4];
+
+struct LightPoint
+{
+    vec3 pos;
+    vec3 color;
+    float intensity;
+};
+
+uniform LightPoint uLightPoints[4];
 
 uniform vec3 uBaseColor;
 uniform vec3 uEmissiveColor;
@@ -63,14 +69,14 @@ vec3 FresnelSchlick(float cosTheta, vec3 F0)
     return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }
 
-vec3 CalculatePointLight(vec3 N, vec3 V, vec3 F0, vec3 baseColor, int index)
+vec3 CalculatePointLight(vec3 N, vec3 V, vec3 F0, vec3 baseColor, LightPoint lightPoint)
 {
-    vec3 L = normalize(uLightPos[index] - WorldPos);
+    vec3 L = normalize(lightPoint.pos - WorldPos);
     vec3 H = normalize(V + L);
 
-    float distance = length(uLightPos[index] - WorldPos);
+    float distance = length(lightPoint.pos - WorldPos);
     float attenuation = 1.0 / (distance * distance);
-    vec3 radiance = uLightColor[index] * attenuation;
+    vec3 radiance = lightPoint.color * attenuation;
 
     vec3 F = FresnelSchlick(max(dot(H, V), 0.0), F0);
     float NDF = DistributionGGX(N, H, uRoughness);
@@ -83,7 +89,7 @@ vec3 CalculatePointLight(vec3 N, vec3 V, vec3 F0, vec3 baseColor, int index)
     vec3 kD = (vec3(1.0) - kS) * (1.0 - uMetallic);
 
     float NdotL = max(dot(N, L), 0.0);
-    return ((kD * baseColor / PI + specular) * radiance * uLightColor[index] * uLightIntensity[index] * NdotL);
+    return ((kD * baseColor / PI + specular) * radiance * lightPoint.color * lightPoint.intensity * NdotL);
 }
 
 void main()
@@ -101,7 +107,7 @@ void main()
     vec3 Lo = vec3(0.0);
     for (int i = 0; i < 4; i++)
     {
-        Lo += CalculatePointLight(N, V, F0, baseColor, i);
+        Lo += CalculatePointLight(N, V, F0, baseColor, uLightPoints[i]);
     }
 
     vec3 ambient = vec3(0.03) * baseColor;
