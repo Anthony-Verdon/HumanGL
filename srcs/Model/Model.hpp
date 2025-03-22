@@ -10,7 +10,7 @@ struct NodeModel
 {
     std::string name;
     std::vector<int> children;
-    std::vector<Model> models;
+    std::vector<int> models;
 };
 
 class Model
@@ -28,7 +28,8 @@ class Model
         std::vector<std::string> GetAnimations() const;
         void SetAnimation(const std::string &name);
 
-        std::pair<std::map<int, NodeModel>, size_t> GetRootNode() const { return (std::make_pair(nodes, nodeIndex)); }
+        std::map<int, NodeModel> &GetNodes() { return (nodes); }
+        size_t GetRootIndex() { return (nodeIndex); }
         void SetNodes(const std::map<int, NodeModel> &nodes) {this->nodes = nodes; }
         
     private:

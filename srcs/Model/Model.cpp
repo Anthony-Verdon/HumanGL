@@ -1,4 +1,5 @@
 #include "Model/Model.hpp"
+#include "ModelManager/ModelManager.hpp"
 
 Model::Model()
 {
@@ -79,7 +80,7 @@ void Model::DrawSubModels(size_t nodeIndex, const ml::vec3 &camPos, const Light 
     for (size_t i = 0; i < node.children.size(); i++)
         DrawSubModels(node.children[i], camPos, light, projection, view, nodesTransform);
     for (size_t i = 0; i < node.models.size(); i++)
-        node.models[i].Draw(camPos, light, projection, view, nodesTransform[nodeIndex]);
+        ModelManager::GetModel(node.models[i]).Draw(camPos, light, projection, view, nodesTransform[nodeIndex]);
 }
 
 std::vector<std::string> Model::GetAnimations() const

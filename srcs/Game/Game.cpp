@@ -2,6 +2,7 @@
 #include "WindowManager/WindowManager.hpp"
 #include "RessourceManager/RessourceManager.hpp"
 #include "Model/ModelLoader/ModelLoader.hpp"
+#include "ModelManager/ModelManager.hpp"
 #include "Time/Time.hpp"
 #include "Toolbox.hpp"
 #include "globals.hpp"
@@ -39,19 +40,19 @@ Game::Game()
 
 Game::~Game() 
 {
-    for (size_t i = 0; i < models.size(); i++)
-        models[i].Destroy();
+    for (size_t i = 0; i < ModelManager::GetNbModel(); i++)
+        ModelManager::GetModel(i).Destroy();
 }
 
 void Game::LoadObjects(int argc, char **argv)
 {
     for (int i = 1; i < argc; i++)
+        ModelManager::AddModels(ModelLoader::LoadModel(argv[i]));
+    for (size_t i = 0; i < ModelManager::GetNbModel(); i++)
     {
-        std::vector<Model> newModels =  ModelLoader::LoadModel(argv[i]);
-        models.insert(models.end(), newModels.begin(), newModels.end());
+        ModelManager::GetModel(i).Init();
+        modelsIndex.push_back(i);
     }
-    for (size_t i = 0; i < models.size(); i++)
-        models[i].Init();
 }
 
 void Game::Run()
@@ -135,8 +136,8 @@ void Game::updateScene()
     // models
     ml::mat4 transform;
     transform.identity();
-    for (size_t i = 0; i < models.size(); i++)
-        models[i].Draw(camera.getPosition(), light, projection, view, transform);
+    for (size_t i = 0; i < modelsIndex.size(); i++)
+        ModelManager::GetModel(modelsIndex[i]).Draw(camera.getPosition(), light, projection, view, transform);
     
     // light
     auto shader = RessourceManager::GetShader("light");
@@ -156,38 +157,40 @@ void Game::DrawImGui()
 
     ImGui::Begin("Characters");
     HoverOrFocusImGUI = ImGui::IsWindowHovered() || ImGui::IsWindowFocused();
-    AddModels(models);
+    AddModels(&modelsIndex);
     ImGui::End();
     
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void Game::AddModels(std::vector<Model> &models)
+void Game::AddModels(std::vector<int> *modelsIndex)
 {
-    for (size_t i = 0; i < models.size(); i++)
+    for (size_t i = 0; i < modelsIndex->size(); i++)
     {
-        std::string model = "model " + std::to_string(i);
-        if (ImGui::CollapsingHeader(model.c_str()))
+        auto &model = ModelManager::GetModel((*modelsIndex)[i]);
+        auto &nodes = model.GetNodes();
+        size_t nodeIndex = model.GetRootIndex();
+        std::string modelStr = "model " + std::to_string((*modelsIndex)[i]);
+        if (ImGui::CollapsingHeader(modelStr.c_str()))
         {
-            AddDragAndDrop(models, i);
-            std::string skeletton = "skeletton## " + model;
+            AddDragAndDrop(modelsIndex, (*modelsIndex)[i]);
+            std::string skeletton = "skeletton## " + modelStr;
             if (ImGui::TreeNode(skeletton.c_str()))
             {
-                auto [nodes, nodeIndex] = models[i].GetRootNode();
                 AddChildNode(nodes, -1, nodeIndex);
-                models[i].SetNodes(nodes);
+                model.SetNodes(nodes);
                 ImGui::TreePop();
             }
-            std::string animations = "animations## " + model;
+            std::string animations = "animations## " + modelStr;
             if (ImGui::TreeNode(animations.c_str()))
             {
-                std::vector<std::string> animations = models[i].GetAnimations();
+                std::vector<std::string> animations = model.GetAnimations();
                 for (auto it = animations.begin(); it != animations.end(); it++)
                 {
                     if (ImGui::Button(it->c_str()))
                     {
-                        models[i].SetAnimation(*it);
+                        model.SetAnimation(*it);
                     }
                 }
                 ImGui::TreePop();
@@ -195,7 +198,7 @@ void Game::AddModels(std::vector<Model> &models)
         }
         else
         {
-            AddDragAndDrop(models, i);
+            AddDragAndDrop(modelsIndex, (*modelsIndex)[i]);
         }
     }
 }
@@ -216,7 +219,7 @@ void Game::AddChildNode(std::map<int, NodeModel> &nodes, int parentIndex, int no
             AddDragAndDrop(nodes, parentIndex, nodeIndex);
             for (size_t i = 0; i < node.children.size(); i++)
                 AddChildNode(nodes, nodeIndex, node.children[i]);
-            AddModels(node.models);
+            AddModels(&node.models);
             ImGui::TreePop();
         }
         else
@@ -226,12 +229,12 @@ void Game::AddChildNode(std::map<int, NodeModel> &nodes, int parentIndex, int no
     }
 }
 
-void Game::AddDragAndDrop(std::vector<Model> &models, int modelIndex)
+void Game::AddDragAndDrop(std::vector<int> *modelsIndex, int modelIndex)
 {
     if (ImGui::BeginDragDropSource())
     {
-        std::pair<std::vector<Model>*, int> modelData = std::make_pair(&models, modelIndex);
-        ImGui::SetDragDropPayload("MODEL_SELECTED", &modelData, sizeof(std::pair<std::vector<Model>*, int>));
+        std::pair<std::vector<int>*, int> modelData = std::make_pair(modelsIndex, modelIndex);
+        ImGui::SetDragDropPayload("MODEL_SELECTED", &modelData, sizeof(std::pair<std::vector<int>*, int>));
         ImGui::Text("%s", "model");
         ImGui::EndDragDropSource();
     }
@@ -265,9 +268,10 @@ void Game::AddDragAndDrop(std::map<int, NodeModel> &nodes, int parentIndex, int 
         }
         else if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MODEL_SELECTED"))
         {
-            auto [models, modelIndex] = *(std::pair<std::vector<Model>*, int>*)payload->Data;
-            node.models.push_back((*models)[modelIndex]);
-            models->erase(models->begin() + modelIndex);
+            auto [modelsIndex, modelIndex] = *(std::pair<std::vector<int>*, int>*)payload->Data;
+            node.models.push_back(modelIndex);
+            auto it = std::find(modelsIndex->begin(), modelsIndex->end(), modelIndex);
+            modelsIndex->erase(it); 
         }
         ImGui::EndDragDropTarget();
     }

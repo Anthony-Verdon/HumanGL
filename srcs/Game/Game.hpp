@@ -11,7 +11,7 @@ class Game: public AProgram
 {
     private:
         Camera camera;
-        std::vector<Model> models;
+        std::vector<int> modelsIndex;
         bool HoverOrFocusImGUI;
         Light light;
         
@@ -20,10 +20,10 @@ class Game: public AProgram
         void updateScene();
         
         void DrawImGui();
-        void AddModels(std::vector<Model> &models);
+        void AddModels(std::vector<int> *modelsIndex);
         void AddChildNode(std::map<int, NodeModel> &nodes, int parentIndex, int nodeIndex);
         void AddDragAndDrop(std::map<int, NodeModel> &nodes, int parentIndex, int nodeIndex);
-        void AddDragAndDrop(std::vector<Model> &models, int modelIndex);
+        void AddDragAndDrop(std::vector<int> *modelsIndex, int modelIndex);
         bool CheckNoRecursiveChild(std::map<int, NodeModel> &nodes, int nodeIndex, int childIndex);
 
     public:
