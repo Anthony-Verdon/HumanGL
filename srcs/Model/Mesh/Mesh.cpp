@@ -1,5 +1,7 @@
 #include "Model/Mesh/Mesh.hpp"
 #include "RessourceManager/RessourceManager.hpp"
+#include "Toolbox.hpp"
+#include <cmath>
 #include <glad/glad.h>
 
 Mesh::Mesh(const Glb::GltfData &data, size_t nodeIndex)
@@ -91,7 +93,7 @@ void Mesh::Destroy()
     }
 }
 
-void Mesh::Draw(const ml::vec3 &camPos, const Light lights[4], const ml::mat4 &projection, const ml::mat4 &view, std::map<int, ml::mat4> &nodesTransform) const
+void Mesh::Draw(const ml::vec3 &camPos, const ml::vec3 &camDir, const Light lights[4], const ml::mat4 &projection, const ml::mat4 &view, std::map<int, ml::mat4> &nodesTransform) const
 {
     auto shader = RessourceManager::GetShader("mesh_shader");
     shader->use();
@@ -114,6 +116,14 @@ void Mesh::Draw(const ml::vec3 &camPos, const Light lights[4], const ml::mat4 &p
     shader->setVec3("uDirectionalLight.direction", ml::vec3(0, -1, 0));
     shader->setVec3("uDirectionalLight.color", ml::vec3(1, 1, 0));
     shader->setFloat("uDirectionalLight.intensity", 3);
+
+    shader->setVec3("uSpotLight.position", camPos);
+    shader->setVec3("uSpotLight.direction", camDir);
+    shader->setFloat("uSpotLight.cutOff", cosf(Toolbox::DegToRad(12.5f)));
+    shader->setFloat("uSpotLight.outerCutOff", cosf(Toolbox::DegToRad(17.5f)));
+    shader->setVec3("uSpotLight.color", ml::vec3(0, 1, 1));
+    shader->setFloat("uSpotLight.intensity", 15);
+
     shader->setVec4("uBaseColor", baseColorFactor);
     shader->setVec3("uEmissiveColor", emissiveFactor);
     shader->setFloat("uMetallic", metallicFactor);

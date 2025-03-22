@@ -150,7 +150,7 @@ void Game::updateScene()
     ml::mat4 transform;
     transform.identity();
     for (size_t i = 0; i < modelsIndex.size(); i++)
-        ModelManager::GetModel(modelsIndex[i]).Draw(camera.getPosition(), lights, projection, view, transform);
+        ModelManager::GetModel(modelsIndex[i]).Draw(camera.getPosition(), camera.getFrontDirection(), lights, projection, view, transform);
     
     // light
     auto shader = RessourceManager::GetShader("light");

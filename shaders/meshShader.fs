@@ -21,8 +21,19 @@ struct DirectionalLight
     float intensity;
 };
 
+struct SpotLight
+{
+    vec3 position;
+    vec3 direction;
+    float cutOff;
+    float outerCutOff;
+    vec3 color;
+    float intensity;
+};
+
 uniform PointLight uPointLights[4];
 uniform DirectionalLight uDirectionalLight;
+uniform SpotLight uSpotLight;
 
 uniform vec3 uBaseColor;
 uniform vec3 uEmissiveColor;
@@ -121,6 +132,35 @@ vec3 CalculateDirectionalLight(vec3 N, vec3 V, vec3 F0, vec3 baseColor, Directio
     return ((kD * baseColor / PI + specular) * radiance * directionalLight.color * directionalLight.intensity * NdotL);
 }
 
+vec3 CalculateSpotLight(vec3 N, vec3 V, vec3 F0, vec3 baseColor, SpotLight spotLight)
+{
+    vec3 L = normalize(spotLight.position - WorldPos);
+    vec3 H = normalize(V + L);
+
+    float distance = length(spotLight.position - WorldPos);
+    float attenuation = 1.0 / (distance * distance);
+    vec3 radiance = spotLight.color * attenuation;
+
+    vec3 F = FresnelSchlick(max(dot(H, V), 0.0), F0);
+    float NDF = DistributionGGX(N, H, uRoughness);
+    float G = GeometrySmith(N, V, L, uRoughness);
+    vec3 num = NDF * G * F;
+    float denom = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001;
+    vec3 specular = num / denom;
+
+    vec3 kS = F;
+    vec3 kD = (vec3(1.0) - kS) * (1.0 - uMetallic);
+
+    float NdotL = max(dot(N, L), 0.0);
+    vec3 result = (kD * baseColor / PI + specular) * radiance * spotLight.color * spotLight.intensity * NdotL;
+
+    float theta     = dot(L, normalize(-spotLight.direction));
+    float epsilon   = spotLight.cutOff - spotLight.outerCutOff;
+    float intensity = clamp((theta - spotLight.outerCutOff) / epsilon, 0.0, 1.0); 
+
+    return (result * intensity);
+}
+
 void main()
 {
     vec3 N = normalize(Normal);
@@ -139,6 +179,8 @@ void main()
         Lo += CalculatePointLight(N, V, F0, baseColor, uPointLights[i]);
     }
     Lo += CalculateDirectionalLight(N, V, F0, baseColor, uDirectionalLight);
+    
+    Lo += CalculateSpotLight(N, V, F0, baseColor, uSpotLight);
 
     vec3 ambient = vec3(0.03) * baseColor;
     vec3 color = ambient + Lo * uAmbientOcclusion + uEmissiveColor;

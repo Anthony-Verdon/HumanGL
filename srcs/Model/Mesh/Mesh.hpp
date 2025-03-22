@@ -11,7 +11,7 @@ class Mesh
 
         void Init();
         void Destroy();
-        void Draw(const ml::vec3 &camPos, const Light lights[4], const ml::mat4 &projection, const ml::mat4 &view, std::map<int, ml::mat4> &nodesTransform) const;
+        void Draw(const ml::vec3 &camPos, const ml::vec3 &camDir, const Light lights[4], const ml::mat4 &projection, const ml::mat4 &view, std::map<int, ml::mat4> &nodesTransform) const;
 
     private:
         unsigned int VAO, VBO, EBO;
