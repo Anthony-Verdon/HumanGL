@@ -47,11 +47,8 @@ void Game::LoadObjects(int argc, char **argv)
 {
     for (int i = 1; i < argc; i++)
     {
-        if (Toolbox::checkExtension(argv[i], ".glb"))
-        {
-            std::vector<Model> newModels =  ModelLoader::LoadModel(argv[i]);
-            models.insert(models.end(), newModels.begin(), newModels.end());
-        }
+        std::vector<Model> newModels =  ModelLoader::LoadModel(argv[i]);
+        models.insert(models.end(), newModels.begin(), newModels.end());
     }
     for (size_t i = 0; i < models.size(); i++)
         models[i].Init();
