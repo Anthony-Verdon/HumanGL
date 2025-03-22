@@ -14,7 +14,15 @@ struct PointLight
     float intensity;
 };
 
+struct DirectionalLight
+{
+    vec3 direction;
+    vec3 color;
+    float intensity;
+};
+
 uniform PointLight uPointLights[4];
+uniform DirectionalLight uDirectionalLight;
 
 uniform vec3 uBaseColor;
 uniform vec3 uEmissiveColor;
@@ -92,6 +100,27 @@ vec3 CalculatePointLight(vec3 N, vec3 V, vec3 F0, vec3 baseColor, PointLight poi
     return ((kD * baseColor / PI + specular) * radiance * pointLight.color * pointLight.intensity * NdotL);
 }
 
+vec3 CalculateDirectionalLight(vec3 N, vec3 V, vec3 F0, vec3 baseColor, DirectionalLight directionalLight)
+{
+    vec3 L = normalize(-directionalLight.direction);
+    vec3 H = normalize(V + L);
+
+    vec3 radiance = directionalLight.color;
+
+    vec3 F = FresnelSchlick(max(dot(H, V), 0.0), F0);
+    float NDF = DistributionGGX(N, H, uRoughness);
+    float G = GeometrySmith(N, V, L, uRoughness);
+    vec3 num = NDF * G * F;
+    float denom = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001;
+    vec3 specular = num / denom;
+
+    vec3 kS = F;
+    vec3 kD = (vec3(1.0) - kS) * (1.0 - uMetallic);
+
+    float NdotL = max(dot(N, L), 0.0);
+    return ((kD * baseColor / PI + specular) * radiance * directionalLight.color * directionalLight.intensity * NdotL);
+}
+
 void main()
 {
     vec3 N = normalize(Normal);
@@ -109,6 +138,7 @@ void main()
     {
         Lo += CalculatePointLight(N, V, F0, baseColor, uPointLights[i]);
     }
+    Lo += CalculateDirectionalLight(N, V, F0, baseColor, uDirectionalLight);
 
     vec3 ambient = vec3(0.03) * baseColor;
     vec3 color = ambient + Lo * uAmbientOcclusion + uEmissiveColor;

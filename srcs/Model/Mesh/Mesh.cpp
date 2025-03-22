@@ -111,6 +111,9 @@ void Mesh::Draw(const ml::vec3 &camPos, const Light lights[4], const ml::mat4 &p
         shader->setVec3("uPointLights[" + std::to_string(i) + "].color", lights[i].GetColor());
         shader->setFloat("uPointLights[" + std::to_string(i) + "].intensity", lights[i].GetIntensity());
     }
+    shader->setVec3("uDirectionalLight.direction", ml::vec3(0, -1, 0));
+    shader->setVec3("uDirectionalLight.color", ml::vec3(1, 1, 0));
+    shader->setFloat("uDirectionalLight.intensity", 3);
     shader->setVec4("uBaseColor", baseColorFactor);
     shader->setVec3("uEmissiveColor", emissiveFactor);
     shader->setFloat("uMetallic", metallicFactor);
