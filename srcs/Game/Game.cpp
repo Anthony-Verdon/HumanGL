@@ -159,6 +159,15 @@ void Game::DrawImGui()
 
     ImGui::Begin("Characters");
     HoverOrFocusImGUI = ImGui::IsWindowHovered() || ImGui::IsWindowFocused();
+    AddModels(models);
+    ImGui::End();
+    
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void Game::AddModels(std::vector<Model> &models)
+{
     for (size_t i = 0; i < models.size(); i++)
     {
         std::string model = "model " + std::to_string(i);
@@ -192,10 +201,6 @@ void Game::DrawImGui()
             AddDragAndDrop(models, i);
         }
     }
-    ImGui::End();
-    
-    ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 void Game::AddChildNode(std::map<int, NodeModel> &nodes, int parentIndex, int nodeIndex)
@@ -214,8 +219,7 @@ void Game::AddChildNode(std::map<int, NodeModel> &nodes, int parentIndex, int no
             AddDragAndDrop(nodes, parentIndex, nodeIndex);
             for (size_t i = 0; i < node.children.size(); i++)
                 AddChildNode(nodes, nodeIndex, node.children[i]);
-            for (size_t i = 0; i < node.models.size(); i++)
-                ImGui::Text("model %zu", i);
+            AddModels(node.models);
             ImGui::TreePop();
         }
         else

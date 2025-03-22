@@ -20,6 +20,7 @@ class Game: public AProgram
         void updateScene();
         
         void DrawImGui();
+        void AddModels(std::vector<Model> &models);
         void AddChildNode(std::map<int, NodeModel> &nodes, int parentIndex, int nodeIndex);
         void AddDragAndDrop(std::map<int, NodeModel> &nodes, int parentIndex, int nodeIndex);
         void AddDragAndDrop(std::vector<Model> &models, int modelIndex);
