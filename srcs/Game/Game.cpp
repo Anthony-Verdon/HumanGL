@@ -142,8 +142,10 @@ void Game::updateScene()
     // light
     auto shader = RessourceManager::GetShader("light");
     shader->use();
-    ml::mat4 model = ml::translate(light.GetPos()) * ml::rotate(45, ml::vec3(1, 1, 1)) * ml::scale(light.GetScale());
+    ml::mat4 model = ml::translate(light.GetPos()) * ml::scale(light.GetScale());
     shader->setMat4("model", model);
+    shader->setMat4("view", view);
+    shader->setMat4("projection", projection);
     shader->setVec3("lightColor", light.GetColor());
     light.Draw();
 }
