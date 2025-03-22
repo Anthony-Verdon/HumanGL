@@ -63,6 +63,29 @@ vec3 FresnelSchlick(float cosTheta, vec3 F0)
     return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }
 
+vec3 CalculatePointLight(vec3 N, vec3 V, vec3 F0, vec3 baseColor, int index)
+{
+    vec3 L = normalize(uLightPos[index] - WorldPos);
+    vec3 H = normalize(V + L);
+
+    float distance = length(uLightPos[index] - WorldPos);
+    float attenuation = 1.0 / (distance * distance);
+    vec3 radiance = uLightColor[index] * attenuation;
+
+    vec3 F = FresnelSchlick(max(dot(H, V), 0.0), F0);
+    float NDF = DistributionGGX(N, H, uRoughness);
+    float G = GeometrySmith(N, V, L, uRoughness);
+    vec3 num = NDF * G * F;
+    float denom = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001;
+    vec3 specular = num / denom;
+
+    vec3 kS = F;
+    vec3 kD = (vec3(1.0) - kS) * (1.0 - uMetallic);
+
+    float NdotL = max(dot(N, L), 0.0);
+    return ((kD * baseColor / PI + specular) * radiance * uLightColor[index] * uLightIntensity[index] * NdotL);
+}
+
 void main()
 {
     vec3 N = normalize(Normal);
@@ -78,27 +101,8 @@ void main()
     vec3 Lo = vec3(0.0);
     for (int i = 0; i < 4; i++)
     {
-        vec3 L = normalize(uLightPos[i] - WorldPos);
-        vec3 H = normalize(V + L);
-
-        float distance = length(uLightPos[i] - WorldPos);
-        float attenuation = 1.0 / (distance * distance);
-        vec3 radiance = uLightColor[i] * attenuation;
-
-        vec3 F = FresnelSchlick(max(dot(H, V), 0.0), F0);
-        float NDF = DistributionGGX(N, H, uRoughness);
-        float G = GeometrySmith(N, V, L, uRoughness);
-        vec3 num = NDF * G * F;
-        float denom = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001;
-        vec3 specular = num / denom;
-
-        vec3 kS = F;
-        vec3 kD = (vec3(1.0) - kS) * (1.0 - uMetallic);
-
-        float NdotL = max(dot(N, L), 0.0);
-        Lo += (kD * baseColor / PI + specular) * radiance * uLightColor[i] * uLightIntensity[i] * NdotL;
+        Lo += CalculatePointLight(N, V, F0, baseColor, i);
     }
-    // end loop of light
 
     vec3 ambient = vec3(0.03) * baseColor;
     vec3 color = ambient + Lo * uAmbientOcclusion + uEmissiveColor;
