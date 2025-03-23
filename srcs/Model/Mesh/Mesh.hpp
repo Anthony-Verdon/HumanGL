@@ -24,5 +24,4 @@ class Mesh
         std::vector<Glb::Joint> joints;
         
         size_t nodeIndex;
-        Glb::GltfData data;
 };

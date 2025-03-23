@@ -9,6 +9,7 @@ class Model;
 struct NodeModel
 {
     std::string name;
+    ml::mat4 transform;
     std::vector<int> children;
     std::vector<int> models;
 };

@@ -10,7 +10,7 @@ Model::Model(const Glb::GltfData &data, size_t nodeIndex)
     this->nodeIndex = nodeIndex;
     LoadMesh(data, nodeIndex);
     LoadAnimations(data);
-    animator.Play("Idle_Combat");
+    animator.Play("");
 }
 
 Model::~Model()
@@ -27,6 +27,7 @@ void Model::LoadMesh(const Glb::GltfData &data, size_t nodeIndex)
 
     nodes[nodeIndex] = {};
     nodes[nodeIndex].name = node.name;
+    nodes[nodeIndex].transform = node.transform;
     for (size_t i = 0; i < node.children.size(); i++)
     {
         nodes[nodeIndex].children.push_back(node.children[i]);
@@ -64,7 +65,13 @@ void Model::Draw(const ml::vec3 &camPos, const ml::vec3 &camDir, const Light lig
 std::map<int, ml::mat4> Model::CalculateNodeTransform(size_t nodeIndex, const ml::mat4 &parentTransform)
 {
     auto node = nodes[nodeIndex];
-    auto transform = parentTransform * animator.GetNodeTransform(nodeIndex);
+
+    ml::mat4 transform;
+    if (animator.GetCurrentAnimation() == "")
+        transform = parentTransform * node.transform;
+    else
+        transform = parentTransform * animator.GetNodeTransform(nodeIndex);
+
     std::map<int, ml::mat4> nodesTransform;
     nodesTransform[nodeIndex] = transform;
 

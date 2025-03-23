@@ -16,6 +16,7 @@ class Animator
         void Update();
         ml::mat4 GetNodeTransform(size_t node) const;
         std::vector<std::string> GetAnimationsName() const;
+        std::string GetCurrentAnimation() const { return currentAnimation; }
     
     private:
         std::map<std::string, Animation> animations;
