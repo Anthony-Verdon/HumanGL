@@ -175,7 +175,11 @@ void Game::DrawImGui()
 
     ImGui::Begin("Characters");
     HoverOrFocusImGUI = ImGui::IsWindowHovered() || ImGui::IsWindowFocused();
+    ImGui::BeginChild("");
+    HoverOrFocusImGUI |= ImGui::IsWindowHovered() || ImGui::IsWindowFocused();
     AddModels(&modelsIndex);
+    ImGui::EndChild();
+    AddDragAndDropTarget();
     ImGui::End();
     
     ImGui::Render();
@@ -258,6 +262,21 @@ void Game::AddDragAndDropSource(std::vector<int> *modelsIndex, int modelIndex)
     }
 }
 
+void Game::AddDragAndDropTarget()
+{
+    if (ImGui::BeginDragDropTarget())
+    {
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MODEL_SELECTED"))
+        {
+            auto [nodeModelsIndex, nodeModelIndex] = *(std::pair<std::vector<int>*, int>*)payload->Data;
+            modelsIndex.push_back(nodeModelIndex);
+            auto it = std::find(nodeModelsIndex->begin(), nodeModelsIndex->end(), nodeModelIndex);
+            nodeModelsIndex->erase(it); 
+        }
+        ImGui::EndDragDropTarget();
+    }
+}
+
 void Game::AddDragAndDropTarget(std::map<int, NodeModel> &nodes, int nodeIndex)
 {
     auto &node = nodes[nodeIndex];
@@ -282,7 +301,7 @@ bool Game::NodeChildOfModel(std::map<int, NodeModel> &nodes, int rootNode, int n
 {
     if (rootNode == nodeIndex)
         return (true);
-    
+
     auto node = nodes[rootNode];
     for (size_t i = 0; i < node.children.size(); i++)
     {
