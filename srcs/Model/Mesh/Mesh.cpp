@@ -7,31 +7,28 @@
 Mesh::Mesh(const Glb::GltfData &data, size_t nodeIndex)
 {
     this->nodeIndex = nodeIndex;
+    this->data = data;
     auto node = data.nodes[nodeIndex];
     auto mesh = data.meshes[node.mesh];
-    vertices = mesh.vertices;
     name = mesh.name;
-    indices = mesh.indices;
-    baseColorTexture = "";
-    baseColorFactor = ml::vec4(1, 1, 1, 1);
-    metallicFactor = 1;
-    roughnessFactor = 1;
-    emissiveFactor = ml::vec3(0, 0, 0);
-    if (mesh.material != -1)
+    primitives = mesh.primitives;
+    for (size_t i = 0; i < primitives.size(); i++)
     {
-        auto material = data.materials[mesh.material];
+        int materialIndex = primitives[i].material;
+        if (materialIndex == -1)
+            continue;
+
+        auto material = data.materials[materialIndex];
+        materials[materialIndex] = material;
+        
         int imageIndex = material.pbr.baseColorTexture;
-        if (imageIndex != -1)
-        {
-            auto image = data.images[imageIndex];
-            baseColorTexture = image.name;
-            if (!RessourceManager::TextureExist(image.name))
-                RessourceManager::AddTexture(image.name, image.buffer, image.bufferLength);
-        }
-        baseColorFactor = material.pbr.baseColorFactor;
-        metallicFactor = material.pbr.metallicFactor;
-        roughnessFactor = material.pbr.roughnessFactor;
-        emissiveFactor = material.emissiveFactor;
+        if (imageIndex == -1)
+            continue;
+
+        auto image = data.images[imageIndex];
+        baseColorTextures[imageIndex] = image.name;
+        if (!RessourceManager::TextureExist(image.name))
+            RessourceManager::AddTexture(image.name, image.buffer, image.bufferLength);
 
     }
     if (node.skin != -1)
@@ -39,9 +36,6 @@ Mesh::Mesh(const Glb::GltfData &data, size_t nodeIndex)
         auto skin = data.skins[node.skin];
         joints = skin.joints;
     }
-    VAO = 0;
-    VBO = 0;
-    EBO = 0;
 }
 
 Mesh::~Mesh()
@@ -51,31 +45,40 @@ Mesh::~Mesh()
 
 void Mesh::Init()
 {
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
     
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Glb::Vertex) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short) * indices.size(), indices.data(), GL_STATIC_DRAW);
-    
-    glVertexAttribPointer(0, Glb::nbFloatPerPosition, GL_FLOAT, GL_FALSE, sizeof(Glb::Vertex), (void *)0);
-    glEnableVertexAttribArray(0);
-    
-    glVertexAttribPointer(1, Glb::nbFloatPerTexCoord, GL_FLOAT, GL_FALSE, sizeof(Glb::Vertex), (void *)(sizeof(float) * 3));
-    glEnableVertexAttribArray(1);
+    for (size_t i = 0; i < primitives.size(); i++)
+    {
+        unsigned int VAO, VBO, EBO;
+        glGenVertexArrays(1, &VAO);
+        glBindVertexArray(VAO);
+        glGenBuffers(1, &VBO);
+        glGenBuffers(1, &EBO);
+        
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        
+        glBufferData(GL_ARRAY_BUFFER, sizeof(Glb::Vertex) * primitives[i].vertices.size(), primitives[i].vertices.data(), GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short) * primitives[i].indices.size(), primitives[i].indices.data(), GL_STATIC_DRAW);
+        
+        glVertexAttribPointer(0, Glb::nbFloatPerPosition, GL_FLOAT, GL_FALSE, sizeof(Glb::Vertex), (void *)0);
+        glEnableVertexAttribArray(0);
+        
+        glVertexAttribPointer(1, Glb::nbFloatPerTexCoord, GL_FLOAT, GL_FALSE, sizeof(Glb::Vertex), (void *)(sizeof(float) * 3));
+        glEnableVertexAttribArray(1);
+        
+        glVertexAttribPointer(2, Glb::nbFloatPerNormal, GL_FLOAT, GL_FALSE, sizeof(Glb::Vertex), (void *)(sizeof(float) * 5));
+        glEnableVertexAttribArray(2);
+        
+        glVertexAttribPointer(3, Glb::nbFloatPerJoint, GL_UNSIGNED_SHORT, GL_FALSE, sizeof(Glb::Vertex), (void *)(sizeof(float) * 8));
+        glEnableVertexAttribArray(3);
+        
+        glVertexAttribPointer(4, Glb::nbFloatPerWeight, GL_FLOAT, GL_FALSE, sizeof(Glb::Vertex), (void *)(sizeof(float) * 8 + sizeof(uint16_t) * 4));
+        glEnableVertexAttribArray(4);
 
-    glVertexAttribPointer(2, Glb::nbFloatPerNormal, GL_FLOAT, GL_FALSE, sizeof(Glb::Vertex), (void *)(sizeof(float) * 5));
-    glEnableVertexAttribArray(2);
-    
-    glVertexAttribPointer(3, Glb::nbFloatPerJoint, GL_UNSIGNED_SHORT, GL_FALSE, sizeof(Glb::Vertex), (void *)(sizeof(float) * 8));
-    glEnableVertexAttribArray(3);
-
-    glVertexAttribPointer(4, Glb::nbFloatPerWeight, GL_FLOAT, GL_FALSE,sizeof(Glb::Vertex), (void *)(sizeof(float) * 8 + sizeof(uint16_t) * 4));
-    glEnableVertexAttribArray(4);
+        VAOs.push_back(VAO);
+        VBOs.push_back(VBO);
+        EBOs.push_back(EBO);
+    }
     
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -84,16 +87,15 @@ void Mesh::Init()
 
 void Mesh::Destroy()
 {
-    if (VAO != 0)
-    {
-        glDeleteVertexArrays(1, &VAO);
-        glDeleteBuffers(1, &VBO);
-        glDeleteBuffers(1, &EBO);
-        VAO = 0;
-    }
+    glDeleteVertexArrays(VAOs.size(), VAOs.data());
+    glDeleteBuffers(VBOs.size(), VBOs.data());
+    glDeleteBuffers(EBOs.size(), EBOs.data());
+    VAOs.clear();
+    VBOs.clear();
+    EBOs.clear();
 }
 
-void Mesh::Draw(const ml::vec3 &camPos, const ml::vec3 &camDir, const Light lights[4], const ml::mat4 &projection, const ml::mat4 &view, std::map<int, ml::mat4> &nodesTransform) const
+void Mesh::Draw(const ml::vec3 &camPos, const ml::vec3 &camDir, const Light lights[4], const ml::mat4 &projection, const ml::mat4 &view, std::map<int, ml::mat4> &nodesTransform)
 {
     auto shader = RessourceManager::GetShader("mesh_shader");
     shader->use();
@@ -124,19 +126,32 @@ void Mesh::Draw(const ml::vec3 &camPos, const ml::vec3 &camDir, const Light ligh
     shader->setVec3("uSpotLight.color", ml::vec3(0, 1, 1));
     shader->setFloat("uSpotLight.intensity", 15);
 
-    shader->setVec4("uBaseColor", baseColorFactor);
-    shader->setVec3("uEmissiveColor", emissiveFactor);
-    shader->setFloat("uMetallic", metallicFactor);
-    shader->setFloat("uRoughness", roughnessFactor);
-    shader->setFloat("uAmbientOcclusion", 1.0);
-    bool useBaseColorTexture = (baseColorTexture != "");
-    shader->setInt("uUseBaseColorTexture", useBaseColorTexture);
-    if (useBaseColorTexture)
+    for (size_t i = 0; i < materials.size(); i++)
     {
-        glActiveTexture(GL_TEXTURE0);    
-        glBindTexture(GL_TEXTURE_2D, RessourceManager::GetTexture(baseColorTexture)->getID());
+        shader->setVec4("uMaterials[" + std::to_string(i) + "].baseColorFactor", materials[i].pbr.baseColorFactor);
+        shader->setVec3("uMaterials[" + std::to_string(i) + "].emissiveFactor", materials[i].emissiveFactor);
+        shader->setFloat("uMaterials[" + std::to_string(i) + "].metallicFactor", materials[i].pbr.metallicFactor);
+        shader->setFloat("uMaterials[" + std::to_string(i) + "].roughnessFactor", materials[i].pbr.roughnessFactor);
+        shader->setFloat("uMaterials[" + std::to_string(i) + "].ambientOcclusion", 1.0);
     }
+    
+    for (size_t i = 0; i < primitives.size(); i++)
+    {
+        glBindVertexArray(VAOs[i]);
+        int materialIndex = primitives[i].material;
+        if (materialIndex != -1)
+        {
+            shader->setInt("uMaterialIndex", materialIndex);
+            int baseColorTextureIndex = materials[materialIndex].pbr.baseColorTexture;
+            bool useBaseColorTexture = (baseColorTextureIndex != -1);
+            shader->setInt("uUseBaseColorTexture", useBaseColorTexture);
+            if (useBaseColorTexture)
+            {
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, RessourceManager::GetTexture(baseColorTextures[baseColorTextureIndex])->getID());
+            }
+        }
 
-    glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, 0);
+        glDrawElements(GL_TRIANGLES, primitives[i].indices.size(), GL_UNSIGNED_SHORT, nullptr);
+    }
 }

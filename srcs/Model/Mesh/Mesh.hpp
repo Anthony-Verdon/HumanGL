@@ -11,20 +11,18 @@ class Mesh
 
         void Init();
         void Destroy();
-        void Draw(const ml::vec3 &camPos, const ml::vec3 &camDir, const Light lights[4], const ml::mat4 &projection, const ml::mat4 &view, std::map<int, ml::mat4> &nodesTransform) const;
+        void Draw(const ml::vec3 &camPos, const ml::vec3 &camDir, const Light lights[4], const ml::mat4 &projection, const ml::mat4 &view, std::map<int, ml::mat4> &nodesTransform);
 
     private:
-        unsigned int VAO, VBO, EBO;
-        size_t nodeIndex;
         std::string name;
-        std::vector<Glb::Vertex> vertices;
-        std::vector<uint16_t> indices;
+        std::vector<unsigned int> VAOs;
+        std::vector<unsigned int> VBOs;
+        std::vector<unsigned int> EBOs;
+        std::vector<Glb::Primitive> primitives;
+        std::map<int, Glb::Material> materials;
+        std::map<int, std::string> baseColorTextures;
         std::vector<Glb::Joint> joints;
-
-        // material
-        std::string baseColorTexture;
-        ml::vec4 baseColorFactor;
-        ml::vec3 emissiveFactor;
-        float metallicFactor;
-        float roughnessFactor;
+        
+        size_t nodeIndex;
+        Glb::GltfData data;
 };

@@ -35,20 +35,27 @@ uniform PointLight uPointLights[4];
 uniform DirectionalLight uDirectionalLight;
 uniform SpotLight uSpotLight;
 
-uniform vec3 uBaseColor;
-uniform vec3 uEmissiveColor;
-uniform float uMetallic;
-uniform float uRoughness;
-uniform float uAmbientOcclusion;
+struct Material
+{
+    vec4 baseColorFactor;
+    vec3 emissiveFactor;
+    float metallicFactor;
+    float roughnessFactor;
+    float ambientOcclusion;
 
+};
+
+uniform int uMaterialIndex;
 uniform bool uUseBaseColorTexture;
 uniform sampler2D uBaseColorTexture;
 
+uniform Material uMaterials[100];
+
 const float PI = 3.14159265359;
 
-float DistributionGGX(vec3 N, vec3 H, float roughness)
+float DistributionGGX(vec3 N, vec3 H, float roughnessFactor)
 {
-    float a = roughness * roughness;
+    float a = roughnessFactor * roughnessFactor;
     float a2 = a * a;
     float NdotH = max(dot(N, H), 0.0);
     float NdotH2 = NdotH * NdotH;
@@ -61,9 +68,9 @@ float DistributionGGX(vec3 N, vec3 H, float roughness)
 }
 
 
-float GeometrySchlickGGX(float NdotV, float roughness)
+float GeometrySchlickGGX(float NdotV, float roughnessFactor)
 {
-    float r = roughness + 1.0;
+    float r = roughnessFactor + 1.0;
     float k = r * r / 8.0;
 
     float num = NdotV;
@@ -72,13 +79,13 @@ float GeometrySchlickGGX(float NdotV, float roughness)
     return (num / denom);
 }
 
-float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
+float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughnessFactor)
 {
     float NdotV = max(dot(N, V), 0);
     float NdotL = max(dot(N, L), 0);
     
-    float ggx1 = GeometrySchlickGGX(NdotV, roughness);
-    float ggx2 = GeometrySchlickGGX(NdotL, roughness);
+    float ggx1 = GeometrySchlickGGX(NdotV, roughnessFactor);
+    float ggx2 = GeometrySchlickGGX(NdotL, roughnessFactor);
 
     return (ggx1 * ggx2);
 }
@@ -98,14 +105,14 @@ vec3 CalculatePointLight(vec3 N, vec3 V, vec3 F0, vec3 baseColor, PointLight poi
     vec3 radiance = pointLight.color * attenuation;
 
     vec3 F = FresnelSchlick(max(dot(H, V), 0.0), F0);
-    float NDF = DistributionGGX(N, H, uRoughness);
-    float G = GeometrySmith(N, V, L, uRoughness);
+    float NDF = DistributionGGX(N, H, uMaterials[uMaterialIndex].roughnessFactor);
+    float G = GeometrySmith(N, V, L, uMaterials[uMaterialIndex].roughnessFactor);
     vec3 num = NDF * G * F;
     float denom = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001;
     vec3 specular = num / denom;
 
     vec3 kS = F;
-    vec3 kD = (vec3(1.0) - kS) * (1.0 - uMetallic);
+    vec3 kD = (vec3(1.0) - kS) * (1.0 - uMaterials[uMaterialIndex].metallicFactor);
 
     float NdotL = max(dot(N, L), 0.0);
     return ((kD * baseColor / PI + specular) * radiance * pointLight.color * pointLight.intensity * NdotL);
@@ -119,14 +126,14 @@ vec3 CalculateDirectionalLight(vec3 N, vec3 V, vec3 F0, vec3 baseColor, Directio
     vec3 radiance = directionalLight.color;
 
     vec3 F = FresnelSchlick(max(dot(H, V), 0.0), F0);
-    float NDF = DistributionGGX(N, H, uRoughness);
-    float G = GeometrySmith(N, V, L, uRoughness);
+    float NDF = DistributionGGX(N, H, uMaterials[uMaterialIndex].roughnessFactor);
+    float G = GeometrySmith(N, V, L, uMaterials[uMaterialIndex].roughnessFactor);
     vec3 num = NDF * G * F;
     float denom = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001;
     vec3 specular = num / denom;
 
     vec3 kS = F;
-    vec3 kD = (vec3(1.0) - kS) * (1.0 - uMetallic);
+    vec3 kD = (vec3(1.0) - kS) * (1.0 - uMaterials[uMaterialIndex].metallicFactor);
 
     float NdotL = max(dot(N, L), 0.0);
     return ((kD * baseColor / PI + specular) * radiance * directionalLight.color * directionalLight.intensity * NdotL);
@@ -142,14 +149,14 @@ vec3 CalculateSpotLight(vec3 N, vec3 V, vec3 F0, vec3 baseColor, SpotLight spotL
     vec3 radiance = spotLight.color * attenuation;
 
     vec3 F = FresnelSchlick(max(dot(H, V), 0.0), F0);
-    float NDF = DistributionGGX(N, H, uRoughness);
-    float G = GeometrySmith(N, V, L, uRoughness);
+    float NDF = DistributionGGX(N, H, uMaterials[uMaterialIndex].roughnessFactor);
+    float G = GeometrySmith(N, V, L, uMaterials[uMaterialIndex].roughnessFactor);
     vec3 num = NDF * G * F;
     float denom = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001;
     vec3 specular = num / denom;
 
     vec3 kS = F;
-    vec3 kD = (vec3(1.0) - kS) * (1.0 - uMetallic);
+    vec3 kD = (vec3(1.0) - kS) * (1.0 - uMaterials[uMaterialIndex].metallicFactor);
 
     float NdotL = max(dot(N, L), 0.0);
     vec3 result = (kD * baseColor / PI + specular) * radiance * spotLight.color * spotLight.intensity * NdotL;
@@ -170,9 +177,9 @@ void main()
     if (uUseBaseColorTexture)
         baseColor = vec3(texture(uBaseColorTexture, TexCoord));
     else
-        baseColor = uBaseColor;
+        baseColor = vec3(uMaterials[uMaterialIndex].baseColorFactor);
 
-    vec3 F0 = mix(vec3(0.04), baseColor, uMetallic);
+    vec3 F0 = mix(vec3(0.04), baseColor, uMaterials[uMaterialIndex].metallicFactor);
     vec3 Lo = vec3(0.0);
     for (int i = 0; i < 4; i++)
     {
@@ -183,7 +190,7 @@ void main()
     Lo += CalculateSpotLight(N, V, F0, baseColor, uSpotLight);
 
     vec3 ambient = vec3(0.03) * baseColor;
-    vec3 color = ambient + Lo * uAmbientOcclusion + uEmissiveColor;
+    vec3 color = ambient + Lo * uMaterials[uMaterialIndex].ambientOcclusion + uMaterials[uMaterialIndex].emissiveFactor;
 
     color = color / (color + vec3(1.0));
     color = pow(color, vec3(1.0 / 2.2));
