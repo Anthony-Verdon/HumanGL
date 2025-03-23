@@ -1,6 +1,6 @@
 #pragma once
 
-//#define FULL_SCREEN
+#define FULL_SCREEN
 // window
 #ifdef FULL_SCREEN
 constexpr int WINDOW_WIDTH = 1920;
