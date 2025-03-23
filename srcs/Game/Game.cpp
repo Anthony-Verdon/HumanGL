@@ -266,12 +266,30 @@ void Game::AddDragAndDropTarget(std::map<int, NodeModel> &nodes, int nodeIndex)
         if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MODEL_SELECTED"))
         {
             auto [modelsIndex, modelIndex] = *(std::pair<std::vector<int>*, int>*)payload->Data;
-            node.models.push_back(modelIndex);
-            auto it = std::find(modelsIndex->begin(), modelsIndex->end(), modelIndex);
-            modelsIndex->erase(it); 
+            auto model = ModelManager::GetModel(modelIndex);
+            if (!NodeChildOfModel(model.GetNodes(), model.GetRootIndex(), nodeIndex))
+            {
+                node.models.push_back(modelIndex);
+                auto it = std::find(modelsIndex->begin(), modelsIndex->end(), modelIndex);
+                modelsIndex->erase(it); 
+            }
         }
         ImGui::EndDragDropTarget();
     }
+}
+
+bool Game::NodeChildOfModel(std::map<int, NodeModel> &nodes, int rootNode, int nodeIndex)
+{
+    if (rootNode == nodeIndex)
+        return (true);
+    
+    auto node = nodes[rootNode];
+    for (size_t i = 0; i < node.children.size(); i++)
+    {
+        if (node.children[i] == nodeIndex || NodeChildOfModel(nodes, node.children[i], nodeIndex))
+            return (true);
+    }
+    return (false);
 }
 
 void scroll_callback(GLFWwindow *window, double xOffset, double yOffset)

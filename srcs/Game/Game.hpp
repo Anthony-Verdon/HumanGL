@@ -24,6 +24,7 @@ class Game: public AProgram
         void AddChildNode(std::map<int, NodeModel> &nodes, int nodeIndex);
         void AddDragAndDropSource(std::vector<int> *modelsIndex, int modelIndex);
         void AddDragAndDropTarget(std::map<int, NodeModel> &nodes, int nodeIndex);
+        bool NodeChildOfModel(std::map<int, NodeModel> &nodes, int rootNode, int nodeIndex);
 
     public:
         Game();
