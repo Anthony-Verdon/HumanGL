@@ -21,10 +21,9 @@ class Game: public AProgram
         
         void DrawImGui();
         void AddModels(std::vector<int> *modelsIndex);
-        void AddChildNode(std::map<int, NodeModel> &nodes, int parentIndex, int nodeIndex);
-        void AddDragAndDrop(std::map<int, NodeModel> &nodes, int parentIndex, int nodeIndex);
-        void AddDragAndDrop(std::vector<int> *modelsIndex, int modelIndex);
-        bool CheckNoRecursiveChild(std::map<int, NodeModel> &nodes, int nodeIndex, int childIndex);
+        void AddChildNode(std::map<int, NodeModel> &nodes, int nodeIndex);
+        void AddDragAndDropSource(std::vector<int> *modelsIndex, int modelIndex);
+        void AddDragAndDropTarget(std::map<int, NodeModel> &nodes, int nodeIndex);
 
     public:
         Game();

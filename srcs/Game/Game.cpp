@@ -192,11 +192,11 @@ void Game::AddModels(std::vector<int> *modelsIndex)
         std::string modelStr = "model " + std::to_string((*modelsIndex)[i]);
         if (ImGui::CollapsingHeader(modelStr.c_str()))
         {
-            AddDragAndDrop(modelsIndex, (*modelsIndex)[i]);
+            AddDragAndDropSource(modelsIndex, (*modelsIndex)[i]);
             std::string skeletton = "skeletton## " + modelStr;
             if (ImGui::TreeNode(skeletton.c_str()))
             {
-                AddChildNode(nodes, -1, nodeIndex);
+                AddChildNode(nodes, nodeIndex);
                 model.SetNodes(nodes);
                 ImGui::TreePop();
             }
@@ -216,38 +216,38 @@ void Game::AddModels(std::vector<int> *modelsIndex)
         }
         else
         {
-            AddDragAndDrop(modelsIndex, (*modelsIndex)[i]);
+            AddDragAndDropSource(modelsIndex, (*modelsIndex)[i]);
         }
     }
 }
 
-void Game::AddChildNode(std::map<int, NodeModel> &nodes, int parentIndex, int nodeIndex)
+void Game::AddChildNode(std::map<int, NodeModel> &nodes, int nodeIndex)
 {
     auto &node = nodes[nodeIndex];
 
     if (node.children.size() == 0 && node.models.size() == 0)
     {
-        ImGui::Selectable(node.name.c_str());
-        AddDragAndDrop(nodes, parentIndex, nodeIndex);
+        ImGui::Text("%s", node.name.c_str());
+        AddDragAndDropTarget(nodes, nodeIndex);
     }
     else
     {
         if (ImGui::TreeNode(node.name.c_str()))
         {
-            AddDragAndDrop(nodes, parentIndex, nodeIndex);
+            AddDragAndDropTarget(nodes, nodeIndex);
             for (size_t i = 0; i < node.children.size(); i++)
-                AddChildNode(nodes, nodeIndex, node.children[i]);
+                AddChildNode(nodes, node.children[i]);
             AddModels(&node.models);
             ImGui::TreePop();
         }
         else
         {
-            AddDragAndDrop(nodes, parentIndex, nodeIndex);
+            AddDragAndDropTarget(nodes, nodeIndex);
         }
     }
 }
 
-void Game::AddDragAndDrop(std::vector<int> *modelsIndex, int modelIndex)
+void Game::AddDragAndDropSource(std::vector<int> *modelsIndex, int modelIndex)
 {
     if (ImGui::BeginDragDropSource())
     {
@@ -258,33 +258,12 @@ void Game::AddDragAndDrop(std::vector<int> *modelsIndex, int modelIndex)
     }
 }
 
-void Game::AddDragAndDrop(std::map<int, NodeModel> &nodes, int parentIndex, int nodeIndex)
+void Game::AddDragAndDropTarget(std::map<int, NodeModel> &nodes, int nodeIndex)
 {
     auto &node = nodes[nodeIndex];
-    if (ImGui::BeginDragDropSource())
-    {
-        std::pair<int, int> indexes = std::make_pair(parentIndex, nodeIndex);
-        ImGui::SetDragDropPayload("SKELETTON_NODE_SELECTED", &indexes, sizeof(std::pair<int, int>));
-        ImGui::Text("%s", node.name.c_str());
-        ImGui::EndDragDropSource();
-    }
     if (ImGui::BeginDragDropTarget())
     {
-        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SKELETTON_NODE_SELECTED"))
-        {
-            auto [parentIndex, childIndex] = *(std::pair<int, int>*)payload->Data;
-            if (CheckNoRecursiveChild(nodes, nodeIndex, childIndex))
-            {
-                node.children.push_back(childIndex);
-                if (parentIndex != -1)
-                {
-                    auto &parent = nodes[parentIndex];
-                    auto childIt = std::find(parent.children.begin(), parent.children.end(), childIndex);
-                    parent.children.erase(childIt);
-                }
-            }
-        }
-        else if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MODEL_SELECTED"))
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MODEL_SELECTED"))
         {
             auto [modelsIndex, modelIndex] = *(std::pair<std::vector<int>*, int>*)payload->Data;
             node.models.push_back(modelIndex);
@@ -293,19 +272,6 @@ void Game::AddDragAndDrop(std::map<int, NodeModel> &nodes, int parentIndex, int 
         }
         ImGui::EndDragDropTarget();
     }
-}
-
-bool Game::CheckNoRecursiveChild(std::map<int, NodeModel> &nodes, int newParent, int newChild)
-{
-    auto newChildNode = nodes[newChild];
-
-    for (size_t i = 0; i < newChildNode.children.size(); i++)
-    {
-        if (newChildNode.children[i] == newParent || !CheckNoRecursiveChild(nodes, newParent, newChildNode.children[i]))
-            return (false);
-    }
-
-    return (true);
 }
 
 void scroll_callback(GLFWwindow *window, double xOffset, double yOffset)
