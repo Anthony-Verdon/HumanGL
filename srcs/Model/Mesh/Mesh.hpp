@@ -15,9 +15,9 @@ class Mesh
 
     private:
         std::string name;
-        unsigned int VAO;
+        std::vector<unsigned int> VAOs;
         std::vector<unsigned int> VBOs;
-        unsigned int EBO;
+        std::vector<unsigned int> EBOs;
         std::vector<Glb::Primitive> primitives;
         std::map<int, Glb::Material> materials;
         std::map<int, std::string> baseColorTextures;

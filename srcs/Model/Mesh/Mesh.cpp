@@ -35,9 +35,6 @@ Mesh::Mesh(const Glb::GltfData &data, size_t nodeIndex)
         auto skin = data.skins[node.skin];
         joints = skin.joints;
     }
-
-    VAO = 0;
-    EBO = 0;
 }
 
 Mesh::~Mesh()
@@ -47,17 +44,20 @@ Mesh::~Mesh()
 
 void Mesh::Init()
 {
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-    size_t totalNbIndices = 0;
+    
     for (size_t i = 0; i < primitives.size(); i++)
     {
-        unsigned int VBO;
+        unsigned int VAO, VBO, EBO;
+        glGenVertexArrays(1, &VAO);
+        glBindVertexArray(VAO);
         glGenBuffers(1, &VBO);
+        glGenBuffers(1, &EBO);
         
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
         
         glBufferData(GL_ARRAY_BUFFER, sizeof(Glb::Vertex) * primitives[i].vertices.size(), primitives[i].vertices.data(), GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short) * primitives[i].indices.size(), primitives[i].indices.data(), GL_STATIC_DRAW);
         
         glVertexAttribPointer(0, Glb::nbFloatPerPosition, GL_FLOAT, GL_FALSE, sizeof(Glb::Vertex), (void *)0);
         glEnableVertexAttribArray(0);
@@ -74,20 +74,11 @@ void Mesh::Init()
         glVertexAttribPointer(4, Glb::nbFloatPerWeight, GL_FLOAT, GL_FALSE, sizeof(Glb::Vertex), (void *)(sizeof(float) * 8 + sizeof(uint16_t) * 4));
         glEnableVertexAttribArray(4);
 
+        VAOs.push_back(VAO);
         VBOs.push_back(VBO);
-        totalNbIndices += primitives[i].indices.size();
+        EBOs.push_back(EBO);
     }
     
-    glGenBuffers(1, &EBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short) * totalNbIndices, nullptr, GL_STATIC_DRAW);
-    totalNbIndices = 0;
-    for (size_t i = 0; i < primitives.size(); i++)
-    {
-        glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short) * totalNbIndices, sizeof(unsigned short) * primitives[i].indices.size(), primitives[i].indices.data());
-        totalNbIndices += primitives[i].indices.size();
-    }
-
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -95,13 +86,12 @@ void Mesh::Init()
 
 void Mesh::Destroy()
 {
-    if (VAO != 0)
-    {
-        glDeleteVertexArrays(1, &VAO);
-        glDeleteBuffers(VBOs.size(), VBOs.data());
-        glDeleteBuffers(1, &EBO);
-        VAO = 0;
-    }
+    glDeleteVertexArrays(VAOs.size(), VAOs.data());
+    glDeleteBuffers(VBOs.size(), VBOs.data());
+    glDeleteBuffers(EBOs.size(), EBOs.data());
+    VAOs.clear();
+    VBOs.clear();
+    EBOs.clear();
 }
 
 void Mesh::Draw(const ml::vec3 &camPos, const ml::vec3 &camDir, const Light lights[4], const ml::mat4 &projection, const ml::mat4 &view, std::map<int, ml::mat4> &nodesTransform)
@@ -144,10 +134,9 @@ void Mesh::Draw(const ml::vec3 &camPos, const ml::vec3 &camDir, const Light ligh
         shader->setFloat("uMaterials[" + std::to_string(i) + "].ambientOcclusion", 1.0);
     }
     
-    glBindVertexArray(VAO);
-    size_t totalNbIndices = 0;
     for (size_t i = 0; i < primitives.size(); i++)
     {
+        glBindVertexArray(VAOs[i]);
         int materialIndex = primitives[i].material;
         if (materialIndex != -1)
         {
@@ -162,24 +151,6 @@ void Mesh::Draw(const ml::vec3 &camPos, const ml::vec3 &camDir, const Light ligh
             }
         }
 
-        glBindBuffer(GL_ARRAY_BUFFER, VBOs[i]);
-
-        glVertexAttribPointer(0, Glb::nbFloatPerPosition, GL_FLOAT, GL_FALSE, sizeof(Glb::Vertex), (void *)0);
-        glEnableVertexAttribArray(0);
-        
-        glVertexAttribPointer(1, Glb::nbFloatPerTexCoord, GL_FLOAT, GL_FALSE, sizeof(Glb::Vertex), (void *)(sizeof(float) * 3));
-        glEnableVertexAttribArray(1);
-        
-        glVertexAttribPointer(2, Glb::nbFloatPerNormal, GL_FLOAT, GL_FALSE, sizeof(Glb::Vertex), (void *)(sizeof(float) * 5));
-        glEnableVertexAttribArray(2);
-        
-        glVertexAttribPointer(3, Glb::nbFloatPerJoint, GL_UNSIGNED_SHORT, GL_FALSE, sizeof(Glb::Vertex), (void *)(sizeof(float) * 8));
-        glEnableVertexAttribArray(3);
-        
-        glVertexAttribPointer(4, Glb::nbFloatPerWeight, GL_FLOAT, GL_FALSE, sizeof(Glb::Vertex), (void *)(sizeof(float) * 8 + sizeof(uint16_t) * 4));
-        glEnableVertexAttribArray(4);
-
-        glDrawElements(GL_TRIANGLES, primitives[i].indices.size(), GL_UNSIGNED_SHORT, (void *)(totalNbIndices * sizeof(unsigned short)));
-        totalNbIndices += primitives[i].indices.size();
+        glDrawElements(GL_TRIANGLES, primitives[i].indices.size(), GL_UNSIGNED_SHORT, nullptr);
     }
 }
