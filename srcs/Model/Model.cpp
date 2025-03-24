@@ -89,13 +89,3 @@ void Model::DrawSubModels(size_t nodeIndex, const ml::vec3 &camPos, const ml::ve
     for (size_t i = 0; i < node.models.size(); i++)
         ModelManager::GetModel(node.models[i]).Draw(camPos, camDir, lights, projection, view, nodesTransform[nodeIndex]);
 }
-
-std::vector<std::string> Model::GetAnimations() const
-{
-    return (animator.GetAnimationsName());
-}
-
-void Model::SetAnimation(const std::string &name)
-{
-    animator.Play(name);
-}

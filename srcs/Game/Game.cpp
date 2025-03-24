@@ -201,19 +201,16 @@ void Game::AddModels(std::vector<int> *modelsIndex)
             if (ImGui::TreeNode(skeletton.c_str()))
             {
                 AddChildNode(nodes, nodeIndex);
-                model.SetNodes(nodes);
                 ImGui::TreePop();
             }
             std::string animations = "animations## " + modelStr;
             if (ImGui::TreeNode(animations.c_str()))
             {
-                std::vector<std::string> animations = model.GetAnimations();
+                std::vector<std::string> animations = model.GetAnimationsName();
                 for (auto it = animations.begin(); it != animations.end(); it++)
                 {
                     if (ImGui::Button(it->c_str()))
-                    {
-                        model.SetAnimation(*it);
-                    }
+                        model.Play(*it);
                 }
                 ImGui::TreePop();
             }

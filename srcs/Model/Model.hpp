@@ -26,12 +26,11 @@ class Model
         void Draw(const ml::vec3 &camPos, const ml::vec3 &camDir, const Light lights[4], const ml::mat4 &projection, const ml::mat4 &view, const ml::mat4 &initTransform);
         void DrawSubModels(size_t nodeIndex, const ml::vec3 &camPos, const ml::vec3 &camDir, const Light lights[4], const ml::mat4 &projection, const ml::mat4 &view, std::map<int, ml::mat4> &nodesTransform);
         
-        std::vector<std::string> GetAnimations() const;
-        void SetAnimation(const std::string &name);
+        std::vector<std::string> GetAnimationsName() const { return (animator.GetAnimationsName()); }
+        void Play(const std::string &name) { animator.Play(name); }
 
         std::map<int, NodeModel> &GetNodes() { return (nodes); }
         size_t GetRootIndex() { return (nodeIndex); }
-        void SetNodes(const std::map<int, NodeModel> &nodes) {this->nodes = nodes; }
         
     private:
         void LoadMesh(const Glb::GltfData &data, size_t nodeIndex);
