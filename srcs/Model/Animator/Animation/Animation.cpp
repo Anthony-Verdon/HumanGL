@@ -3,12 +3,14 @@
 #include <iostream>
 #include "geometry/geometry.hpp"
 
-Animation::Animation(const Glb::Animation &animation)
+Animation::Animation(const std::vector<Glb::Node> &nodes, const Glb::Animation &animation)
 {   
     data = animation;
     timer = 0;
     for (size_t i = 0; i < animation.channels.size(); i++)
         nodesTransform[animation.channels[i].node].identity();
+    for (size_t i = 0; i < nodes.size(); i++)
+        nodesInitTransform[i] = nodes[i].transform;
 }
 
 Animation::~Animation()
@@ -99,9 +101,14 @@ void Animation::Update()
 ml::mat4 Animation::GetNodeTransform(size_t node) const
 {
     auto nodeTransform = nodesTransform.find(node);
+    auto nodeInitTransform = nodesInitTransform.find(node);
     if (nodeTransform != nodesTransform.end())
     {
         return (nodeTransform->second);
+    }
+    else if (nodeInitTransform != nodesInitTransform.end())
+    {
+        return (nodeInitTransform->second);
     }
     else
     {

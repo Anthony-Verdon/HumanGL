@@ -38,7 +38,7 @@ void Model::LoadMesh(const Glb::GltfData &data, size_t nodeIndex)
 void Model::LoadAnimations(const Glb::GltfData &data)
 {
     for (size_t i = 0; i < data.animations.size(); i++)
-        animator.LoadAnimation(data.animations[i]);
+        animator.LoadAnimation(data.nodes, data.animations[i]);
 }
 
 void Model::Init()

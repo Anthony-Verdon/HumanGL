@@ -10,7 +10,7 @@ class Animator
         Animator();
         ~Animator();
 
-        void LoadAnimation(const Glb::Animation &animation);
+        void LoadAnimation(const std::vector<Glb::Node> &nodes, const Glb::Animation &animation);
         
         void Play(const std::string &animation);
         void Update();

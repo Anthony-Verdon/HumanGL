@@ -5,7 +5,7 @@
 class Animation
 {
     public:
-        Animation(const Glb::Animation &animation);
+        Animation(const std::vector<Glb::Node> &nodes, const Glb::Animation &animation);
         ~Animation();
 
         void Reset();
@@ -15,6 +15,7 @@ class Animation
     private:
         Glb::Animation data;
         std::map<int, ml::mat4> nodesTransform;
+        std::map<int, ml::mat4> nodesInitTransform;
         float timer;
 
         ml::vec3 CalculateLerp(const ml::vec3 &previousPoint, const ml::vec3 &nextPoint, float interpolation);

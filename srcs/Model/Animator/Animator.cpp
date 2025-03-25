@@ -9,9 +9,9 @@ Animator::~Animator()
 {
 }
 
-void Animator::LoadAnimation(const Glb::Animation &animation)
+void Animator::LoadAnimation(const std::vector<Glb::Node> &nodes, const Glb::Animation &animation)
 {
-    animations.insert(std::make_pair(animation.name, Animation(animation)));
+    animations.insert(std::make_pair(animation.name, Animation(nodes, animation)));
 }
 
 void Animator::Update()
