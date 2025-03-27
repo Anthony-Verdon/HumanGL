@@ -1,6 +1,6 @@
 #pragma once
 
-#include "vec/vec.hpp"
+#include "Matrix/vec/vec.hpp"
 
 class Light
 {

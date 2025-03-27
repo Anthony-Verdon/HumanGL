@@ -3,7 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <string>
 #include "AProgram/AProgram.hpp"
-#include "vec/vec.hpp"
+#include "Matrix/Matrix.hpp"
 
 class WindowManager
 {

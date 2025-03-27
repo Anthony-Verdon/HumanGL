@@ -10,7 +10,7 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-#include "geometry/geometry.hpp"
+#include "Matrix/Matrix.hpp"
 #include <algorithm>
 
 void scroll_callback(GLFWwindow *window, double xOffset, double yOffset);
@@ -134,9 +134,9 @@ void Game::updateCamera()
     else if (camera.getPitch() < -89.0f)
         camera.setPitch(-89.0f);
 
-    ml::vec3 direction(cosf(Toolbox::DegToRad(camera.getYaw())) * cosf(Toolbox::DegToRad(camera.getPitch())),
-                sinf(Toolbox::DegToRad(camera.getPitch())),
-                sinf(Toolbox::DegToRad(camera.getYaw())) * cosf(Toolbox::DegToRad(camera.getPitch())));
+    ml::vec3 direction(cosf(ml::radians(camera.getYaw())) * cosf(ml::radians(camera.getPitch())),
+                sinf(ml::radians(camera.getPitch())),
+                sinf(ml::radians(camera.getYaw())) * cosf(ml::radians(camera.getPitch())));
     camera.setFrontDirection(ml::normalize(direction));
     camera.setRightDirection(ml::normalize(ml::crossProduct(camera.getFrontDirection(), camera.getUpDirection())));
 }
@@ -159,7 +159,7 @@ void Game::updateScene()
     shader->setMat4("projection", projection);
     for (size_t i = 0; i < 4; i++)
     {
-        ml::mat4 model = ml::translate(lights[i].GetPos()) * ml::scale(lights[i].GetScale());
+        ml::mat4 model = ml::translate(ml::mat4(1.0f), lights[i].GetPos()) * ml::scale(ml::mat4(1.0f), lights[i].GetScale());
         shader->setMat4("model", model);
         shader->setVec3("lightColor", lights[i].GetColor());
         lights[i].Draw();

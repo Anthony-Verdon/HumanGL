@@ -120,8 +120,8 @@ void Mesh::Draw(const ml::vec3 &camPos, const ml::vec3 &camDir, const Light ligh
 
     shader->setVec3("uSpotLight.position", camPos);
     shader->setVec3("uSpotLight.direction", camDir);
-    shader->setFloat("uSpotLight.cutOff", cosf(Toolbox::DegToRad(12.5f)));
-    shader->setFloat("uSpotLight.outerCutOff", cosf(Toolbox::DegToRad(17.5f)));
+    shader->setFloat("uSpotLight.cutOff", cosf(ml::radians(12.5f)));
+    shader->setFloat("uSpotLight.outerCutOff", cosf(ml::radians(17.5f)));
     shader->setVec3("uSpotLight.color", ml::vec3(0, 1, 1));
     shader->setFloat("uSpotLight.intensity", 15);
 

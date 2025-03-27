@@ -1,7 +1,7 @@
 #include "Model/Animator/Animation/Animation.hpp"
 #include "Time/Time.hpp"
 #include <iostream>
-#include "geometry/geometry.hpp"
+#include "Matrix/Matrix.hpp"
 
 Animation::Animation(const std::vector<Glb::Node> &nodes, const Glb::Animation &animation)
 {   
@@ -60,12 +60,12 @@ void Animation::Update()
             ml::vec3 previousPoint = ml::vec3(sampler.data[previousBufferIndex + 0], sampler.data[previousBufferIndex + 1], sampler.data[previousBufferIndex + 2]);
             if (sampler.interpolation == "STEP")
             {
-                it->second *= ml::translate(previousPoint);
+                it->second *= ml::translate(ml::mat4(1.0f), previousPoint);
             }
             else if (sampler.interpolation == "LINEAR")
             {
                 ml::vec3 nextPoint = ml::vec3(sampler.data[nextBufferIndex + 0], sampler.data[nextBufferIndex + 1], sampler.data[nextBufferIndex + 2]);
-                it->second *= ml::translate(CalculateLerp(previousPoint, nextPoint, interpolation));
+                it->second *= ml::translate(ml::mat4(1.0f), CalculateLerp(previousPoint, nextPoint, interpolation));
             }
         }
         else if (data.channels[i].type == "rotation")
@@ -73,12 +73,12 @@ void Animation::Update()
             ml::vec4 previousQuat = ml::vec4(sampler.data[previousBufferIndex + 0], sampler.data[previousBufferIndex + 1], sampler.data[previousBufferIndex + 2], sampler.data[previousBufferIndex + 3]);
             if (sampler.interpolation == "STEP")
             {
-                it->second *= ml::rotate(previousQuat);
+                it->second *= ml::rotate(ml::mat4(1.0f), previousQuat);
             }
             else if (sampler.interpolation == "LINEAR")
             {
                 ml::vec4 nextQuat = ml::vec4(sampler.data[nextBufferIndex + 0], sampler.data[nextBufferIndex + 1], sampler.data[nextBufferIndex + 2], sampler.data[nextBufferIndex + 3]);
-                it->second *= ml::rotate(CalculateSlerp(previousQuat, nextQuat, interpolation));
+                it->second *= ml::rotate(ml::mat4(1.0f), CalculateSlerp(previousQuat, nextQuat, interpolation));
             }
 
         }
@@ -87,12 +87,12 @@ void Animation::Update()
             ml::vec3 previousPoint = ml::vec3(sampler.data[previousBufferIndex + 0], sampler.data[previousBufferIndex + 1], sampler.data[previousBufferIndex + 2]);
             if (sampler.interpolation == "STEP")
             {
-                it->second *= ml::scale(previousPoint);
+                it->second *= ml::scale(ml::mat4(1.0f), previousPoint);
             }
             else if (sampler.interpolation == "LINEAR")
             {
                 ml::vec3 nextPoint = ml::vec3(sampler.data[nextBufferIndex + 0], sampler.data[nextBufferIndex + 1], sampler.data[nextBufferIndex + 2]);
-                it->second *= ml::scale(CalculateLerp(previousPoint, nextPoint, interpolation));
+                it->second *= ml::scale(ml::mat4(1.0f), CalculateLerp(previousPoint, nextPoint, interpolation));
             }
         }
     }

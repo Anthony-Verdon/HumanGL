@@ -1,6 +1,6 @@
 #include "Model/ModelLoader/ModelLoader.hpp"
 #include "GlbParser/GlbParser.hpp"
-#include "JsonParser/JsonParser.hpp"
+#include "Json/Json.hpp"
 #include "RessourceManager/RessourceManager.hpp"
 #include "Toolbox.hpp"
 #include <iostream>
@@ -35,7 +35,7 @@ namespace ModelLoader
     {
         std::string gltfStr = Toolbox::readFile(path);
         auto it = gltfStr.begin();
-        auto gltfJson = JsonParser::ParseJson(gltfStr, it);
+        auto gltfJson = Json::ParseJson(gltfStr, it);
         
         std::string pathToGltf = path.substr(0, path.find('/') + 1);
         auto binStr = Toolbox::readFile(pathToGltf + std::string(gltfJson["buffers"][0]["bin"]), std::ios::binary);
