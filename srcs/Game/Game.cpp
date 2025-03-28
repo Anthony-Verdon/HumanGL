@@ -1,8 +1,8 @@
 #include "Game/Game.hpp"
 #include "Engine/WindowManager/WindowManager.hpp"
 #include "Engine/RessourceManager/RessourceManager.hpp"
-#include "Model/ModelLoader/ModelLoader.hpp"
-#include "ModelManager/ModelManager.hpp"
+#include "Engine/3D/ModelLoader/ModelLoader.hpp"
+#include "Engine/3D/ModelManager/ModelManager.hpp"
 #include "Engine/Time/Time.hpp"
 #include "Toolbox.hpp"
 #include "globals.hpp"
@@ -17,7 +17,7 @@ void scroll_callback(GLFWwindow *window, double xOffset, double yOffset);
 
 Game::Game() 
 {
-    camera = Camera();
+    camera = Camera3D();
 
     WindowManager::SetUserPointer(&camera);
     WindowManager::SetScrollCallback(scroll_callback);
@@ -306,7 +306,7 @@ void scroll_callback(GLFWwindow *window, double xOffset, double yOffset)
 {
     (void)xOffset;
 
-    Camera *camera = reinterpret_cast<Camera *>(glfwGetWindowUserPointer(window));
+    Camera3D *camera = reinterpret_cast<Camera3D *>(glfwGetWindowUserPointer(window));
     camera->addToFov((float)-yOffset);
     if (camera->getFov() < 1.0f)
         camera->setFov(1.0f);

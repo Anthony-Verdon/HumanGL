@@ -1,15 +1,15 @@
 #pragma once
 
 #include "Engine/AProgram/AProgram.hpp"
-#include "Model/Model.hpp"
-#include "Camera/Camera.hpp"
+#include "Engine/3D/Model/Model.hpp"
+#include "Engine/3D/Camera3D/Camera3D.hpp"
 #include "Engine/Texture/Texture.hpp"
-#include "Light/Light.hpp"
+#include "Engine/3D/Light/Light.hpp"
 
 class Game: public AProgram
 {
     private:
-        Camera camera;
+        Camera3D camera;
         std::vector<int> modelsIndex;
         bool HoverOrFocusImGUI;
         Light lights[4];
