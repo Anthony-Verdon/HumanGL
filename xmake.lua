@@ -10,10 +10,6 @@ add_requires("glad")
 add_requires("stb")
 add_requires("imgui", {configs = {glfw = true, opengl3 = true}})
 
-namespace("GlbParser", function ()
-    includes("submodules/GlbParser")
-end)
-
 includes("submodules/Engine")
 
 target("scop")
@@ -25,5 +21,4 @@ target("scop")
     add_packages("glad")
     add_packages("stb")
     add_packages("imgui")
-    add_deps("GlbParser::GlbParser")
     add_deps("Engine")
