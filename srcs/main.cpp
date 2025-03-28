@@ -1,5 +1,5 @@
 #include "Game/Game.hpp"
-#include "WindowManager/WindowManager.hpp"
+#include "Engine/WindowManager/WindowManager.hpp"
 #include "globals.hpp"
 #include <cstdlib>
 #include <iostream>

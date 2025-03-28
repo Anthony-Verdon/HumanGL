@@ -1,9 +1,9 @@
 #include "Game/Game.hpp"
-#include "WindowManager/WindowManager.hpp"
-#include "RessourceManager/RessourceManager.hpp"
+#include "Engine/WindowManager/WindowManager.hpp"
+#include "Engine/RessourceManager/RessourceManager.hpp"
 #include "Model/ModelLoader/ModelLoader.hpp"
 #include "ModelManager/ModelManager.hpp"
-#include "Time/Time.hpp"
+#include "Engine/Time/Time.hpp"
 #include "Toolbox.hpp"
 #include "globals.hpp"
 #include <cmath>
@@ -70,7 +70,6 @@ void Game::LoadObjects(int argc, char **argv)
 
 void Game::Run()
 {
-    Time::updateTime();
     ProcessInput();
     updateScene();
     DrawImGui();
@@ -79,22 +78,17 @@ void Game::Run()
 void Game::ProcessInput()
 {
     bool focusRenderer = WindowManager::GetInputMode(GLFW_CURSOR) == GLFW_CURSOR_DISABLED;
-    if (!HoverOrFocusImGUI && WindowManager::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_1))
+    if (!HoverOrFocusImGUI && WindowManager::IsInputPressed(GLFW_MOUSE_BUTTON_1))
         WindowManager::SetInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     
-    static bool keyEnable = true; //@todo when creating engine submodule, replace that
-    if (keyEnable && WindowManager::IsKeyPressed(GLFW_KEY_ESCAPE))
+    if (WindowManager::IsInputPressed(GLFW_KEY_ESCAPE))
     {
         if (focusRenderer)
             WindowManager::SetInputMode(GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         else
             WindowManager::StopUpdateLoop();
-        keyEnable = false;
     }
-    else if (!WindowManager::IsKeyPressed(GLFW_KEY_ESCAPE))
-    {
-        keyEnable = true;
-    }
+
     if (focusRenderer)
         updateCamera();
 }
@@ -105,13 +99,13 @@ void Game::updateCamera()
     // position
     const float speed = camera.getSpeed() * Time::getDeltaTime();
 
-    int front = WindowManager::IsKeyPressed(GLFW_KEY_W) - WindowManager::IsKeyPressed(GLFW_KEY_S);
+    int front = WindowManager::IsInputPressedOrMaintain(GLFW_KEY_W) - WindowManager::IsInputPressedOrMaintain(GLFW_KEY_S);
     camera.addToPosition((float)front * camera.getFrontDirection() * speed);
 
-    int right = WindowManager::IsKeyPressed(GLFW_KEY_D) - WindowManager::IsKeyPressed(GLFW_KEY_A);
+    int right = WindowManager::IsInputPressedOrMaintain(GLFW_KEY_D) - WindowManager::IsInputPressedOrMaintain(GLFW_KEY_A);
     camera.addToPosition((float)right * camera.getRightDirection() * speed);
 
-    int up = WindowManager::IsKeyPressed(GLFW_KEY_SPACE) - WindowManager::IsKeyPressed(GLFW_KEY_LEFT_SHIFT);
+    int up = WindowManager::IsInputPressedOrMaintain(GLFW_KEY_SPACE) - WindowManager::IsInputPressedOrMaintain(GLFW_KEY_LEFT_SHIFT);
     camera.addToPosition((float)up * camera.getUpDirection() * speed);
 
     // orientation
@@ -143,7 +137,7 @@ void Game::updateCamera()
 
 void Game::updateScene()
 {
-    ml::mat4 projection = ml::perspective(camera.getFov(), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
+    ml::mat4 projection = ml::perspective(ml::radians(camera.getFov()), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
     ml::mat4 view = ml::lookAt(camera.getPosition(), camera.getPosition() + camera.getFrontDirection(), camera.getUpDirection());
     
     // models

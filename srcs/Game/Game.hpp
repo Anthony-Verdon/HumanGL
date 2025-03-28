@@ -1,10 +1,9 @@
 #pragma once
 
-#include "AProgram/AProgram.hpp"
+#include "Engine/AProgram/AProgram.hpp"
 #include "Model/Model.hpp"
 #include "Camera/Camera.hpp"
-#include "Texture/Texture.hpp"
-#include "Shader/Shader.hpp"
+#include "Engine/Texture/Texture.hpp"
 #include "Light/Light.hpp"
 
 class Game: public AProgram

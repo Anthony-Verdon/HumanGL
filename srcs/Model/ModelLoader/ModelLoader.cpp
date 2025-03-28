@@ -1,7 +1,7 @@
 #include "Model/ModelLoader/ModelLoader.hpp"
 #include "GlbParser/GlbParser.hpp"
 #include "Json/Json.hpp"
-#include "RessourceManager/RessourceManager.hpp"
+#include "Engine/RessourceManager/RessourceManager.hpp"
 #include "Toolbox.hpp"
 #include <iostream>
 
