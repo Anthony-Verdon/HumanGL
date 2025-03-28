@@ -1,4 +1,3 @@
-set_targetdir("./")
 set_languages("cxx17")
 
 set_toolchains("clang")
@@ -11,9 +10,14 @@ add_requires("glad")
 add_requires("stb")
 add_requires("imgui", {configs = {glfw = true, opengl3 = true}})
 
-includes("submodules/GlbParser")
+namespace("GlbParser", function ()
+    includes("submodules/GlbParser")
+end)
+
+includes("submodules/Engine")
 
 target("scop")
+    set_targetdir("./")
     set_kind("binary")
     add_files("srcs/**.cpp")
     add_includedirs("srcs")
@@ -21,4 +25,5 @@ target("scop")
     add_packages("glad")
     add_packages("stb")
     add_packages("imgui")
-    add_deps("GlbParser")
+    add_deps("GlbParser::GlbParser")
+    add_deps("Engine")

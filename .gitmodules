@@ -1,3 +1,6 @@
 [submodule "submodules/GlbParser"]
 	path = submodules/GlbParser
 	url = git@github.com:Anthony-Verdon/GlbParser.git
+[submodule "submodules/Engine"]
+	path = submodules/Engine
+	url = git@github.com:Anthony-Verdon/Engine.git
