@@ -12,7 +12,7 @@ add_requires("imgui", {configs = {glfw = true, opengl3 = true}})
 
 includes("submodules/Engine")
 
-target("scop")
+target("HumanGL")
     set_targetdir("./")
     set_kind("binary")
     add_files("srcs/**.cpp")
